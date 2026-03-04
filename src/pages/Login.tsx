@@ -14,21 +14,21 @@ export default function Login() {
   };
 
   return (
-    <div className="container">
+    <div className="containerl">
       <h1 className="title">Iniciar Sesión</h1>
 
       <form className="form" onSubmit={handleSubmit}>
         <label htmlFor="email">Correo electrónico</label>
-        <input type="email" id="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <input type="email" id="email" name="email"  placeholder="xxxxxxx@gmail.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
 
         <label htmlFor="password">Contraseña</label>
-        <input type="password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
+        <input type="password" id="password" name="password" placeholder="**********" value={password} onChange={(e) => setPassword(e.target.value)} required/>
 
         <button type="submit">Ingresar</button>
 
         <p className="extra">
           ¿No tienes cuenta?
-          <Link to="/register">Registrarse</Link>
+          <Link to="/register"> Registrarse </Link>
         </p>
       </form>
     </div>

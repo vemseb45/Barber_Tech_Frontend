@@ -15,12 +15,10 @@ export default function Register() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    // Solo letras para nombres y apellidos
     if (name === "nombres" || name === "apellidos") {
       if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(value)) return;
     }
 
-    // Solo números para cédula y teléfono
     if (name === "cedula" || name === "telefono") {
       if (!/^[0-9]*$/.test(value)) return;
     }
@@ -46,29 +44,29 @@ export default function Register() {
   };
 
   return (
-    <div className="container">
+    <div className="containerr">
       <div className="form-wrapper">
         <h1 className="title">Registro</h1>
 
         <form className="form" onSubmit={handleSubmit}>
 
           <label htmlFor="nombres">Nombres</label>
-          <input type="text" name="nombres" value={formData.nombres} onChange={handleChange} required />
+          <input type="text" name="nombres" placeholder="Nombre(s)" value={formData.nombres} onChange={handleChange} required />
 
           <label htmlFor="apellidos">Apellidos</label>
-          <input type="text" name="apellidos" value={formData.apellidos} onChange={handleChange} required />
+          <input type="text" name="apellidos" placeholder="Apellido(s)" value={formData.apellidos} onChange={handleChange} required />
 
           <label htmlFor="cedula">Cédula</label>
-          <input type="text" name="cedula" value={formData.cedula} onChange={handleChange} maxLength={10} required />
+          <input type="text" name="cedula" placeholder="# Cédula" value={formData.cedula} onChange={handleChange} maxLength={10} required />
 
           <label htmlFor="telefono">Teléfono</label>
-          <input type="text" name="telefono" value={formData.telefono} onChange={handleChange} maxLength={10} required />
+          <input type="text" name="telefono" placeholder="Teléfono" value={formData.telefono} onChange={handleChange} maxLength={10} required />
 
           <label htmlFor="email">Correo electrónico</label>
           <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="ejemplo@gmail.com" required />
 
           <label htmlFor="password">Contraseña</label>
-          <input type="password" name="password" value={formData.password}  onChange={handleChange}  required />
+          <input type="password" name="password" placeholder="********" value={formData.password}  onChange={handleChange}  required />
 
           <button type="submit">Registrarse</button>
 

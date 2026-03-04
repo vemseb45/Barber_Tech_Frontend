@@ -146,6 +146,7 @@ body {
     background-repeat: no-repeat;
     background-position: center center;
     background-attachment: fixed;
+    min-height: 100vh;
 }
 
 .logo2 {
@@ -305,9 +306,6 @@ body {
     min-height: 100vh;
     padding: 80px 50px;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .barberias2 {
@@ -316,7 +314,6 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 80px;
-    align-items: center;
 }
 
 .barberias3 {
@@ -324,7 +321,7 @@ body {
 }
 
 h1 {
-    font-size: 50px;
+    font-size: 48px;
     line-height: 64px;
     margin: 0px 0px 40px 0px;
     font-weight: 700;
@@ -335,8 +332,8 @@ h1 {
     width: 100%;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 40px;
     text-align: center;
+    padding-top: 175px;
 }
 
 .containerInicio {
@@ -641,7 +638,7 @@ input[type="radio"] { display: none; }
 
 .TextoRecom {
     width: 450px;            
-    font-size: 30px;
+    font-size: 25px;
     line-height: 44px;
     text-align: center;
     margin-left: 40px;
