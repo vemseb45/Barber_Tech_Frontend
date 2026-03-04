@@ -1,19 +1,36 @@
-import { login } from "../services/authService";
+import "./css/Login.css";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleLogin = async () => {
-    const response = await login({
-      username: "Sebastian",
-      password: "Admin123*",
-    });
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
 
-    console.log(response.data);
+    console.log("Email:", email);
+    console.log("Password:", password);
   };
 
   return (
-    <button onClick={handleLogin}>
-      Probar Login
-    </button>
+    <div className="container">
+      <h1 className="title">Iniciar Sesión</h1>
+
+      <form className="form" onSubmit={handleSubmit}>
+        <label htmlFor="email">Correo electrónico</label>
+        <input type="email" id="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+
+        <label htmlFor="password">Contraseña</label>
+        <input type="password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
+
+        <button type="submit">Ingresar</button>
+
+        <p className="extra">
+          ¿No tienes cuenta?
+          <Link to="/register">Registrarse</Link>
+        </p>
+      </form>
+    </div>
   );
 }
