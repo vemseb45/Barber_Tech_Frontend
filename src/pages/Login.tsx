@@ -14,6 +14,10 @@ export default function Login() {
   };
 
   return (
+    <div className="volver">
+    <p className="volver">
+    <Link to="/">Volver</Link>
+    </p>
     <div className="containerl">
       <h1 className="title">Iniciar Sesión</h1>
 
@@ -27,10 +31,11 @@ export default function Login() {
         <button type="submit">Ingresar</button>
 
         <p className="extra">
-          ¿No tienes cuenta?
+          ¿No tiene cuenta?
           <Link to="/register"> Registrarse </Link>
         </p>
       </form>
     </div>
+</div>
   );
 }

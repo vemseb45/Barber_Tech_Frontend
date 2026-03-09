@@ -656,7 +656,7 @@ input[type="radio"] { display: none; }
 
 /* Responsive Recomendaciones */
     @media (max-width: 920px) {
-    .TituloRecom { width: 760px; margin-top: 24px; }
+    .TituloRecom { width: 760px; }
     h1 { font-size: 36px; line-height: 44px; margin-bottom: 24px; }
 
     .containerRecom {
@@ -671,12 +671,10 @@ input[type="radio"] { display: none; }
         font-size: 20px;
         line-height: 30px;
         text-align: center;
-        margin-left: 0px;
     }
 
     .ImagenRecom img {
         width: 720px;
-        margin-right: 0px;
     }
 }
 

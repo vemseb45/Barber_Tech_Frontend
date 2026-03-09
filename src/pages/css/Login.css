@@ -5,7 +5,8 @@ body {
     background: url("/Imagenes/fondobt.png") no-repeat center center fixed;
     background-size: cover;
 }
-
+/* Volver */
+    
 /*Contenedor del formulario*/
 .containerl {
     background: rgba(0, 0, 0, 0.9); 

@@ -17,7 +17,7 @@ export default function Home() {
 
       <section className="barberias1" id="barberia">
         <div className="TituloInicio">
-          <h1> Tu estilo, a un clic de distancia, ¡BarberTech tu mejor opción! </h1>
+          <h1> Tu estilo, a un clic de distancia, BarberTech tu mejor opción! </h1>
         </div>
 
         <div className="containerInicio">

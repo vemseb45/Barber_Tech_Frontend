@@ -71,7 +71,7 @@ export default function Register() {
           <button type="submit">Registrarse</button>
 
           <p className="extra">
-            ¿Ya tienes cuenta? <Link to="/login">Iniciar sesión</Link>
+            ¿Ya tiene cuenta? <Link to="/login">Iniciar sesión</Link>
           </p>
         </form>
       </div>
