@@ -73,7 +73,7 @@ export default function Register() {
         <form className="form" onSubmit={handleSubmit}>
 
           <label htmlFor="username">Username</label>
-          <input type="text" name="nombre" placeholder="Nombre(s)" value={formData.username} onChange={handleChange} required />
+          <input type="text" name="username" placeholder="Username" value={formData.username} onChange={handleChange} required />
 
           <label htmlFor="nombres">Nombres</label>
           <input type="text" name="nombres" placeholder="Nombre(s)" value={formData.nombres} onChange={handleChange} required />
