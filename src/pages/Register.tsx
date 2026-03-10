@@ -41,7 +41,7 @@ export default function Register() {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/api/usuarios/registro", {
+      const response = await fetch("http://localhost:8000/api/usuarios/registro/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -68,7 +68,7 @@ export default function Register() {
   return (
     <div className="containerr">
       <div className="form-wrapper">
-        <h1 className="title">Registro</h1>
+        <h1 className="title">Registro</h1> 
 
         <form className="form" onSubmit={handleSubmit}>
 
