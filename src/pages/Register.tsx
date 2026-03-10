@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 export default function Register() {
   const [formData, setFormData] = useState({
+    username: "",
     nombres: "",
     apellidos: "",
     cedula: "",
@@ -40,8 +41,7 @@ export default function Register() {
     }
 
     try {
-
-      const response = await fetch("http://localhost:3000/api/users/register", {
+      const response = await fetch("http://localhost:8000/api/usuarios/registro", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -57,12 +57,11 @@ export default function Register() {
       }
 
       alert("Usuario registrado correctamente");
-
       console.log("Respuesta del servidor:", data);
 
     } catch (error) {
       console.error("Error:", error);
-      alert("Error conectando con el servidor");
+      alert("Error al conectar con el servidor");
     }
   };
 
@@ -72,6 +71,9 @@ export default function Register() {
         <h1 className="title">Registro</h1>
 
         <form className="form" onSubmit={handleSubmit}>
+
+          <label htmlFor="username">Username</label>
+          <input type="text" name="nombre" placeholder="Nombre(s)" value={formData.username} onChange={handleChange} required />
 
           <label htmlFor="nombres">Nombres</label>
           <input type="text" name="nombres" placeholder="Nombre(s)" value={formData.nombres} onChange={handleChange} required />
@@ -89,13 +91,14 @@ export default function Register() {
           <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="ejemplo@gmail.com" required />
 
           <label htmlFor="password">Contraseña</label>
-          <input type="password" name="password" placeholder="********" value={formData.password}  onChange={handleChange}  required />
+          <input type="password" name="password" placeholder="********" value={formData.password} onChange={handleChange} required />
 
           <button type="submit">Registrarse</button>
 
           <p className="extra">
             ¿Ya tiene cuenta? <Link to="/login">Iniciar sesión</Link>
           </p>
+
         </form>
       </div>
     </div>
