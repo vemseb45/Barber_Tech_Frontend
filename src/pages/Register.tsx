@@ -29,18 +29,41 @@ export default function Register() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validación correo
     const emailRegex = /^[^\s@]+@[^\s@]+\.com$/;
 
     if (!emailRegex.test(formData.email)) {
-      alert("El correo debe tener formato ejemplo@dominio.com");
+      alert("El correo debe tener formato ejemplo@gmail.com");
       return;
     }
 
-    console.log("Datos enviados:", formData);
+    try {
+
+      const response = await fetch("http://localhost:3000/api/users/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Error al registrar usuario");
+        return;
+      }
+
+      alert("Usuario registrado correctamente");
+
+      console.log("Respuesta del servidor:", data);
+
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error conectando con el servidor");
+    }
   };
 
   return (
