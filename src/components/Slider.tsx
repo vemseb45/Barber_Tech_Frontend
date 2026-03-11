@@ -1,8 +1,36 @@
+import { useEffect } from "react";
+
 export default function Slider() {
+
+  useEffect(() => {
+
+    let current = 1;
+
+    const interval = setInterval(() => {
+
+      const radio = document.getElementById(`slide${current}`) as HTMLInputElement;
+
+      if (radio) {
+        radio.checked = true;
+      }
+
+      current++;
+
+      if (current > 3) {
+        current = 1;
+      }
+
+    }, 4000);
+
+    return () => clearInterval(interval);
+
+  }, []);
+
   return (
     <section className="sliders" id="barberias">
       <div className="slider">
         <h1>Nuestras barberías</h1>
+
         <input type="radio" name="radio-btn" id="slide1" defaultChecked />
         <input type="radio" name="radio-btn" id="slide2" />
         <input type="radio" name="radio-btn" id="slide3" />
@@ -43,6 +71,7 @@ export default function Slider() {
           </div>
 
         </div>
+
         <div className="controls">
           <label className="botonesNav anterior prev-1" htmlFor="slide3">‹‹</label>
           <label className="botonesNav siguiente next-1" htmlFor="slide2">››</label>
@@ -59,6 +88,7 @@ export default function Slider() {
           <label htmlFor="slide2"></label>
           <label htmlFor="slide3"></label>
         </div>
+
       </div>
     </section>
   );
