@@ -5,7 +5,7 @@
   @apply relative min-h-screen bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display antialiased overflow-x-hidden transition-colors duration-300 flex flex-col;
 }
 
-/* Botón tema oscuro/claro*/
+/*Botón cambiar tema claro/oscuro*/
 
 .btn-flip-container {
   @apply fixed bottom-6 right-6 z-[100];
@@ -37,15 +37,23 @@
 }
 
 .btn-flip-front {
-  background: #323237;
+  background: #ffffff; 
   opacity: 1;
   transform: translateY(0) rotateX(0);
 }
 
+.dark .btn-flip-front {
+  background: #2a2a2a; 
+}
+
 .btn-flip-back {
-  background: #adadaf;
+  background: #2a2a2a;
   opacity: 0;
   transform: translateY(-50%) rotateX(90deg);
+}
+
+.dark .btn-flip-back {
+  background: #ffffff;
 }
 
 .btn-flip:hover .btn-flip-front {
@@ -86,7 +94,7 @@
 }
 
 .nav-item {
-  @apply text-sm font-semibold hover:text-primary transition-colors;
+  @apply text-sm font-semibold text-slate-900 dark:text-slate-100 hover:text-primary dark:hover:text-primary transition-colors;
 }
 
 .btn-primary {
@@ -243,7 +251,7 @@
 }
 
 
-/* Testimonios */
+/* Testimonios o reseñas */
 
 .testimonials-section {
   @apply bg-primary/5 px-6 py-20 lg:px-10 transition-colors duration-300;
