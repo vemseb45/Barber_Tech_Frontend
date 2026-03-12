@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #8519d2;
+  --color-bg-light: #f7f6f8;
+  --color-bg-dark: #1a1121;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+html.dark {
+  --color-primary: #3918f7;
+  --color-bg-light: #f6f5f8;
+  --color-bg-dark: #120f23;
+}

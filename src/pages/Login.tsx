@@ -32,7 +32,9 @@ export default function Login() {
           <label htmlFor="password">Contraseña</label>
           <input type="password" id="password" name="password" placeholder="**********" value={password} onChange={(e) => setPassword(e.target.value)} required/>
 
-          <button type="submit">Ingresar</button>
+          <button type="submit" className="btn-neon">
+            Ingresar
+          </button>
 
           <p className="extra">
             ¿No tiene cuenta?

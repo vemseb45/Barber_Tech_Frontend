@@ -101,7 +101,9 @@ export default function Register() {
             <label htmlFor="password">Contraseña</label>
             <input type="password" name="password" placeholder="********" value={formData.password} onChange={handleChange} required />
 
-            <button type="submit">Registrarse</button>
+            <button type="submit" className="btn-neon">
+              Registrarse
+            </button>
 
             <p className="extra">
               ¿Ya tiene cuenta? <Link to="/login">Iniciar sesión</Link>
