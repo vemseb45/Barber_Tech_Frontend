@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import Calendar from "react-calendar";
+import { useState } from "react";
 import "react-calendar/dist/Calendar.css";
 import { motion, AnimatePresence } from "framer-motion";
+import Calendario from "../components/Calendario";
 
 interface Barbero {
   id: number;
@@ -10,6 +10,7 @@ interface Barbero {
 }
 
 export default function AgendaCitas() {
+
   const [barberoSeleccionado, setBarberoSeleccionado] = useState<number | null>(null);
   const [fechaSeleccionada, setFechaSeleccionada] = useState<Date | null>(null);
   const [horaSeleccionada, setHoraSeleccionada] = useState<string>("");
@@ -20,16 +21,8 @@ export default function AgendaCitas() {
     { id: 3, nombre: "Miguel Silva", especialidad: "Asesoría de Imagen" }
   ];
 
-  const bloquesDisponibles = [
-    "09:00",
-    "10:00",
-    "11:30",
-    "14:00",
-    "15:30",
-    "17:00"
-  ];
-
   const handleConfirmar = () => {
+
     if (!barberoSeleccionado || !fechaSeleccionada || !horaSeleccionada) return;
 
     console.log({
@@ -39,9 +32,11 @@ export default function AgendaCitas() {
     });
 
     alert("Cita agendada correctamente");
+
   };
 
   return (
+
     <div className="max-w-3xl mx-auto p-8 bg-white rounded-xl shadow-xl border border-zinc-200 my-10">
 
       <h2 className="text-3xl font-bold text-center mb-10">
@@ -62,17 +57,19 @@ export default function AgendaCitas() {
               setFechaSeleccionada(null);
               setHoraSeleccionada("");
             }}
-            className={`p-4 rounded-xl border text-left transition ${
-              barberoSeleccionado === barbero.id
-                ? "bg-black text-white border-black"
-                : "bg-zinc-50 hover:bg-zinc-100"
-            }`}
+            className={`p-4 rounded-xl border text-left transition ${barberoSeleccionado === barbero.id
+              ? "bg-black text-white border-black"
+              : "bg-zinc-50 hover:bg-zinc-100"
+              }`}
           >
+
             <p className="font-bold text-lg">{barbero.nombre}</p>
             <p className="text-sm opacity-70">{barbero.especialidad}</p>
+
           </motion.button>
 
         ))}
+
       </div>
 
       {/* CALENDARIO */}
@@ -87,15 +84,6 @@ export default function AgendaCitas() {
             exit={{ opacity: 0 }}
             className="mb-10 flex justify-center"
           >
-
-            <Calendar
-              onChange={(value: any) => {
-                setFechaSeleccionada(value);
-                setHoraSeleccionada("");
-              }}
-              value={fechaSeleccionada}
-              minDate={new Date()}
-            />
 
           </motion.div>
 
@@ -112,26 +100,13 @@ export default function AgendaCitas() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="grid grid-cols-3 gap-3 mb-8"
+            className="mb-8"
           >
 
-            {bloquesDisponibles.map((hora) => (
-
-              <motion.button
-                whileTap={{ scale: 0.9 }}
-                key={hora}
-                onClick={() => setHoraSeleccionada(hora)}
-                className={`py-3 rounded-lg font-semibold border transition ${
-                  horaSeleccionada === hora
-                    ? "bg-black text-white border-black"
-                    : "bg-white hover:bg-zinc-100"
-                }`}
-              >
-                {hora}
-
-              </motion.button>
-
-            ))}
+            <Calendario
+              horaSeleccionada={horaSeleccionada}
+              onSeleccionarHora={(hora) => setHoraSeleccionada(hora)}
+            />
 
           </motion.div>
 
@@ -150,5 +125,7 @@ export default function AgendaCitas() {
       </button>
 
     </div>
+
   );
+
 }
