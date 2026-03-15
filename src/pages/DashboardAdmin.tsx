@@ -1,108 +1,158 @@
-// 1. IMPORTACIONES (La Caja de Herramientas): 
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../api/axios";
 import "../index.css";
 
-export default function DashboardAdmin() {
-  
-  // 2. HOOKS DE ESTADO Y NAVEGACIÓN (El Motor): 
-  const navigate = useNavigate();
+// --- INTERFACES ---
+interface Usuario {
+  id: number;
+  username: string;
+  rol: string;
+}
 
-  // 3. LÓGICA DE FUNCIONES (El Cerebro): 
-  const handleLogout = () => {
-    localStorage.removeItem('token'); 
-    localStorage.removeItem('user');  
-    navigate("/");                    
+export default function DashboardAdmin() {
+  const navigate = useNavigate();
+  const [verGestion, setVerGestion] = useState(false);
+  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const [cargando, setCargando] = useState(false);
+
+  useEffect(() => {
+    if (verGestion) {
+      const cargarUsuarios = async () => {
+        setCargando(true);
+        try {
+          const res = await api.get('usuarios/');
+          const data = res.data.data || res.data;
+          setUsuarios(Array.isArray(data) ? data : []);
+        } catch (err: any) {
+          if (err.response?.status === 401) navigate("/");
+        } finally {
+          setCargando(false);
+        }
+      };
+      cargarUsuarios();
+    }
+  }, [verGestion, navigate]);
+
+  const handleCambiarRol = async (id: number, nuevoRol: string) => {
+    try {
+      await api.patch(`usuarios/${id}/cambiar_rol/`, { rol: nuevoRol });
+      setUsuarios((prev) => prev.map((u) => (u.id === id ? { ...u, rol: nuevoRol } : u)));
+    } catch (err) {
+      alert("Error al actualizar");
+    }
   };
 
-  // 4. EL CONTENEDOR BASE (El Escenario): 
   return (
-    <div className="login-page" style={{ 
-      color: 'white', 
-      padding: '100px 20px 20px 20px', 
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      position: 'relative' 
-    }}>
-      
-      {/* 5. INTERFAZ DE SALIDA (La Acción): */}
-      <button 
-        onClick={handleLogout}
-        className="login-btn-neon" /* <-- CORREGIDO AQUÍ */
-        style={{ 
-          position: 'absolute', 
-          top: '30px', 
-          right: '30px', 
-          backgroundColor: '#ff4b2b', 
-          fontSize: '0.8rem',
-          padding: '10px 20px',
-          width: 'auto',
-          border: 'none',
-          borderRadius: '8px',
-          cursor: 'pointer',
-          boxShadow: '0 0 10px rgba(255, 75, 43, 0.5)', 
-          zIndex: 1000
-        }}
-      >
-        🔒 Salir del Sistema
+    <div className="login-page">
+      <button onClick={() => { localStorage.removeItem('token'); navigate("/"); }} style={styles.logoutBtn}>
+        🔒 Salir
       </button>
 
-      <header style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <h1 style={{ fontSize: '2.5rem', textShadow: '0 0 15px #00d2ff', marginBottom: '10px' }}>
-          Panel de Control Maestro
-        </h1>
-        <p style={{ opacity: 0.8 }}>Administración global de Barber Tech</p>
-      </header>
+      <div style={styles.layout.wrapper}>
+        <header style={styles.layout.header}>
+          <h1 style={styles.typography.mainTitle}>
+            {verGestion ? "Gestión de Personal" : "Panel de Control Maestro"}
+          </h1>
+          <p style={styles.typography.subtitle}>Administración global de Barber Tech</p>
+        </header>
 
-      {/* 6. GRID Y TARJETAS DE GESTIÓN (El Contenido): */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
-        gap: '25px', 
-        width: '100%', 
-        maxWidth: '1000px' 
-      }}>
-        
-        <div style={cardStyle}>
-          <h3>Gestión de Barberos</h3>
-          <p style={descriptionStyle}>Registrar, editar o dar de baja personal.</p>
-          <button className="login-btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Administrar</button> {/* <-- CORREGIDO AQUÍ */}
-        </div>
+        {!verGestion ? (
+          <div style={styles.layout.grid}>
 
-        <div style={cardStyle}>
-          <h3>Base de Datos Clientes</h3>
-          <p style={descriptionStyle}>Ver historial y datos de contacto de clientes.</p>
-          <button className="login-btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Ver Usuarios</button> {/* <-- CORREGIDO AQUÍ */}
-        </div>
+            {/* Tarjeta Gestión */}
+            <div className="login-container" style={styles.components.card}>
+              <h3 style={styles.typography.cardTitle}>Gestión de Usuarios</h3>
+              <p style={styles.typography.cardText}>Cambia roles de forma instantánea.</p>
+              <button onClick={() => setVerGestion(true)} className="login-btn-neon" style={styles.components.btnPill}>
+                Gestionar Usuarios
+              </button>
+            </div>
 
-        <div style={cardStyle}>
-          <h3>Reportes y Ganancias</h3>
-          <p style={descriptionStyle}>Estadísticas mensuales y flujo de caja.</p>
-          <button className="login-btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Ver Reportes</button> {/* <-- CORREGIDO AQUÍ */}
-        </div>
-
+            {/* Tarjeta Reportes */}
+            <div className="login-container" style={styles.components.card}>
+              <h3 style={styles.typography.cardTitle}>Reportes de Ventas</h3>
+              <p style={styles.typography.cardText}>Estadísticas y flujo de caja.</p>
+              <button className="login-btn-neon" style={{ ...styles.components.btnPill, opacity: 0.5 }}>
+                Próximamente
+              </button>
+            </div>
+          </div>
+        ) : (
+          
+          <div className="login-container" style={styles.layout.tableWrapper}>
+            <button onClick={() => setVerGestion(false)} className="volver-btn" style={styles.components.backBtn}>
+              ← Volver
+            </button>
+            <table style={styles.table.main}>
+              <thead>
+                <tr style={styles.table.headerRow}>
+                  <th style={styles.table.th}>Usuario</th>
+                  <th style={styles.table.th}>Rol Actual</th>
+                  <th style={styles.table.th}>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {usuarios.map((u) => (
+                  <tr key={u.id} style={styles.table.row}>
+                    <td style={styles.table.td}>{u.username}</td>
+                    <td style={styles.table.td}>
+                      <span style={{ ...styles.components.badge, backgroundColor: u.rol === 'Admin' ? '#8519d2' : '#007bff' }}>
+                        {u.rol}
+                      </span>
+                    </td>
+                    <td style={styles.table.actions}>
+                      <button onClick={() => handleCambiarRol(u.id, 'Barbero')} className="login-btn-neon" style={styles.components.miniBtn}>Barbero</button>
+                      <button onClick={() => handleCambiarRol(u.id, 'Admin')} className="login-btn-neon" style={{ ...styles.components.miniBtn, backgroundColor: '#8519d2' }}>Admin</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-// 7. ESTILOS CONSTANTES (El Diseño): 
-const cardStyle: React.CSSProperties = {
-  background: 'rgba(255, 255, 255, 0.05)',       
-  padding: '25px',
-  borderRadius: '15px',
-  border: '1px solid rgba(0, 210, 255, 0.3)',    
-  backdropFilter: 'blur(10px)',                
-  textAlign: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'space-between'
-};
+// --- ESTILOS POR CATEGORÍAS ---
+const styles = {
+  // 1. ESTRUCTURA Y CONTENEDORES (Layout)
+  layout: {
+    wrapper: { display: 'flex', flexDirection: 'column' as const, alignItems: 'center', padding: '40px' },
+    header: { textAlign: 'center' as const, marginBottom: '50px' },
+    grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '30px', width: '100%', maxWidth: '1000px' },
+    tableWrapper: { width: '100%', maxWidth: '950px', padding: '30px', background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(0,210,255,0.3)' },
+  },
 
-const descriptionStyle: React.CSSProperties = {
-  fontSize: '0.9rem',
-  color: '#ccc',
-  margin: '20px 0',
-  lineHeight: '1.4'
+  // 2. TEXTOS Y FUENTES (Typography)
+  typography: {
+    mainTitle: { fontSize: '2.8rem', color: 'white', textShadow: '0 0 15px #00d2ff' },
+    subtitle: { color: '#00d2ff', letterSpacing: '2px', fontSize: '0.8rem', opacity: 0.8 },
+    cardTitle: { fontSize: '1.5rem', color: 'white', marginBottom: '15px' },
+    cardText: { color: '#ccc', textAlign: 'center' as const, fontSize: '0.9rem' },
+  },
+
+  // 3. ELEMENTOS INTERACTIVOS (Components)
+  components: {
+    card: { padding: '40px', border: '1px solid rgba(0,210,255,0.3)', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(10px)' },
+    btnPill: { borderRadius: '50px', width: '100%', padding: '12px', fontWeight: 'bold' },
+    miniBtn: { fontSize: '0.7rem', padding: '6px 12px', width: 'auto' },
+    backBtn: { marginBottom: '20px' },
+    badge: { color: 'white', padding: '4px 12px', borderRadius: '12px', fontSize: '0.8rem' },
+  },
+
+  // 4. DISEÑO DE TABLA (Table)
+  table: {
+    main: { width: '100%', borderCollapse: 'collapse' as const },
+    headerRow: { borderBottom: '2px solid #00d2ff' },
+    row: { borderBottom: '1px solid rgba(255,255,255,0.1)' },
+    th: { padding: '15px', color: '#00d2ff' },
+    td: { padding: '15px', textAlign: 'center' as const, color: 'white' },
+    actions: { display: 'flex', gap: '10px', justifyContent: 'center', padding: '15px' },
+  },
+
+  // 5. BOTONES ESPECIALES
+  logoutBtn: { position: 'absolute' as const, top: '20px', right: '20px', background: '#ff4b2b', color: 'white', border: 'none', borderRadius: '8px', padding: '8px 15px' },
 };
