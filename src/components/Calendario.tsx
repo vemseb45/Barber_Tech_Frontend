@@ -1,55 +1,51 @@
 import { useState } from "react";
 
-interface Bloque {
+export interface Bloque {
   hora: string;
+  hora_db: string; // El formato HH:MM:SS para Django
   estado: "disponible" | "ocupado";
 }
 
-/* PROPS QUE RECIBE DEL PADRE (AgendaCitasCliente) */
 interface CalendarioProps {
   horaSeleccionada: string;
-  onSeleccionarHora: (hora: string) => void;
+  onSeleccionarHora: (hora: string, hora_db: string) => void;
+  bloquesDelDia: Bloque[]; // Recibimos los bloques dinámicos del backend
 }
 
 export default function Calendario({
   horaSeleccionada,
-  onSeleccionarHora
+  onSeleccionarHora,
+  bloquesDelDia
 }: CalendarioProps) {
 
-  // Simulamos los horarios que traería la base de datos para el día seleccionado
-  const bloquesDelDia: Bloque[] = [
-    { hora: "09:00 AM", estado: "disponible" },
-    { hora: "10:00 AM", estado: "ocupado" },
-    { hora: "11:00 AM", estado: "disponible" },
-    { hora: "12:00 PM", estado: "disponible" },
-    { hora: "02:00 PM", estado: "ocupado" },
-    { hora: "03:00 PM", estado: "disponible" },
-    { hora: "04:00 PM", estado: "disponible" },
-    { hora: "05:00 PM", estado: "disponible" },
-  ];
+  if (bloquesDelDia.length === 0) {
+    return (
+      <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm text-center text-slate-500">
+        No hay horarios disponibles para este día.
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-white p-6 rounded-xl border border-zinc-200 shadow-sm">
+    <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        
         {bloquesDelDia.map((bloque) => (
           <button
             key={bloque.hora}
             disabled={bloque.estado === "ocupado"}
-            onClick={() => onSeleccionarHora(bloque.hora)} // ← comunica al padre la hora
+            onClick={() => onSeleccionarHora(bloque.hora, bloque.hora_db)} // Enviamos ambas horas al padre
             className={`p-3 rounded-lg text-sm font-bold transition-all duration-300
               ${
                 bloque.estado === "ocupado"
-                  ? "bg-zinc-100 text-zinc-400 cursor-not-allowed border border-transparent"
+                  ? "bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed border border-transparent"
                   : horaSeleccionada === bloque.hora
-                  ? "bg-primary text-white border-primary shadow-md transform scale-105" // Color de tu marca si está seleccionado
-                  : "bg-white text-slate-700 border border-zinc-300 hover:border-primary hover:text-primary"
+                  ? "bg-primary text-white border-primary shadow-md transform scale-105"
+                  : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 hover:border-primary hover:text-primary"
               }`}
           >
             {bloque.estado === "ocupado" ? "Ocupado" : bloque.hora}
           </button>
         ))}
-
       </div>
     </div>
   );

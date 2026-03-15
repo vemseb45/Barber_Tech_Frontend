@@ -66,10 +66,18 @@ export default function DashboardBarbero() {
         
         {/* Tarjeta de Citas */}
         <div style={cardStyle}>
-          <h3>Citas para Hoy</h3>
-          <p style={numberStyle}>0</p>
-          <button className="login-btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Ver Agenda</button>
-        </div>
+      <h3>Citas para Hoy</h3>
+      <p style={numberStyle}>0</p>
+      
+      {/* 🚀 Agregamos el onClick aquí */}
+      <button 
+        className="login-btn-neon" 
+        style={{ fontSize: '0.7rem', width: '100%' }}
+        onClick={() => navigate("/AgendaBarbero")} 
+      >
+        Ver Agenda
+      </button>
+    </div>
 
         {/* Tarjeta de Estadísticas */}
         <div style={cardStyle}>
