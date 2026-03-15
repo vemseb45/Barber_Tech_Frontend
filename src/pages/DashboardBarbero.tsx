@@ -1,6 +1,6 @@
 // 1. IMPORTACIONES: Traemos las herramientas externas necesarias
 import { useNavigate } from "react-router-dom";
-import "./css/Landing.css";
+import "../index.css";
 
 export default function DashboardBarbero() {
   // 2. HOOKS: Inicializamos las funciones de React Router
@@ -8,7 +8,6 @@ export default function DashboardBarbero() {
 
   // 3. LÓGICA DE NEGOCIO: Función para cerrar la sesión
   const handleLogout = () => {
-  
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate("/"); 
@@ -29,7 +28,7 @@ export default function DashboardBarbero() {
       {/* 5. INTERFAZ DE SALIDA: Botón de cerrar sesión posicionado arriba a la derecha */}
       <button 
         onClick={handleLogout}
-        className="btn-neon"
+        className="login-btn-neon" /* <-- CAMBIO: btn-neon a login-btn-neon */
         style={{ 
           position: 'absolute', 
           top: '30px', 
@@ -69,14 +68,14 @@ export default function DashboardBarbero() {
         <div style={cardStyle}>
           <h3>Citas para Hoy</h3>
           <p style={numberStyle}>0</p>
-          <button className="btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Ver Agenda</button>
+          <button className="login-btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Ver Agenda</button>
         </div>
 
         {/* Tarjeta de Estadísticas */}
         <div style={cardStyle}>
           <h3>Servicios Realizados</h3>
           <p style={numberStyle}>0</p>
-          <button className="btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Historial</button>
+          <button className="login-btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Historial</button>
         </div>
 
 
@@ -84,7 +83,7 @@ export default function DashboardBarbero() {
         <div style={cardStyle}>
           <h3>Mi Perfil</h3>
           <p style={{ margin: '15px 0', fontSize: '1.1rem' }}>Estado: <span style={{ color: '#00ff00' }}>Disponible</span></p>
-          <button className="btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Editar Perfil</button>
+          <button className="login-btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Editar Perfil</button>
         </div>
 
       </div>
@@ -98,7 +97,7 @@ const cardStyle: React.CSSProperties = {
   padding: '25px',
   borderRadius: '15px',
   border: '1px solid rgba(0, 210, 255, 0.3)',
-  backdropFilter: 'blur(10px)',                 
+  backdropFilter: 'blur(10px)',                
   textAlign: 'center'
 };
 

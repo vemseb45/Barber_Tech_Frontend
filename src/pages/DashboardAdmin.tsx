@@ -1,6 +1,6 @@
 // 1. IMPORTACIONES (La Caja de Herramientas): 
 import { useNavigate } from "react-router-dom";
-import "./css/Landing.css";
+import "../index.css";
 
 export default function DashboardAdmin() {
   
@@ -29,7 +29,7 @@ export default function DashboardAdmin() {
       {/* 5. INTERFAZ DE SALIDA (La Acción): */}
       <button 
         onClick={handleLogout}
-        className="btn-neon"
+        className="login-btn-neon" /* <-- CORREGIDO AQUÍ */
         style={{ 
           position: 'absolute', 
           top: '30px', 
@@ -67,19 +67,19 @@ export default function DashboardAdmin() {
         <div style={cardStyle}>
           <h3>Gestión de Barberos</h3>
           <p style={descriptionStyle}>Registrar, editar o dar de baja personal.</p>
-          <button className="btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Administrar</button>
+          <button className="login-btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Administrar</button> {/* <-- CORREGIDO AQUÍ */}
         </div>
 
         <div style={cardStyle}>
           <h3>Base de Datos Clientes</h3>
           <p style={descriptionStyle}>Ver historial y datos de contacto de clientes.</p>
-          <button className="btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Ver Usuarios</button>
+          <button className="login-btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Ver Usuarios</button> {/* <-- CORREGIDO AQUÍ */}
         </div>
 
         <div style={cardStyle}>
           <h3>Reportes y Ganancias</h3>
           <p style={descriptionStyle}>Estadísticas mensuales y flujo de caja.</p>
-          <button className="btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Ver Reportes</button>
+          <button className="login-btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Ver Reportes</button> {/* <-- CORREGIDO AQUÍ */}
         </div>
 
       </div>

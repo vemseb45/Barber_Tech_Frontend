@@ -1,6 +1,6 @@
 // 1. IMPORTACIONES (La Caja de Herramientas): 
 import { useNavigate } from "react-router-dom";
-import "./css/Landing.css";
+import "../index.css";
 
 export default function DashboardCliente() {
   
@@ -16,6 +16,7 @@ export default function DashboardCliente() {
 
   // 4. EL CONTENEDOR BASE (El Escenario): 
   return (
+    // Usamos login-page porque ya tiene el fondo de pantalla configurado
     <div className="login-page" style={{ 
       color: 'white', 
       padding: '100px 20px 20px 20px', 
@@ -29,7 +30,7 @@ export default function DashboardCliente() {
       {/* 5. INTERFAZ DE SALIDA (La Acción): */}
       <button 
         onClick={handleLogout}
-        className="btn-neon"
+        className="login-btn-neon" // Cambiado de btn-neon a login-btn-neon
         style={{ 
           position: 'absolute', 
           top: '30px', 
@@ -67,19 +68,19 @@ export default function DashboardCliente() {
         <div style={cardStyle}>
           <h3>Agendar Cita</h3>
           <p style={descriptionStyle}>Reserva tu espacio con tu barbero favorito en segundos.</p>
-          <button className="btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Reservar Ahora</button>
+          <button className="login-btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Reservar Ahora</button>
         </div>
 
         <div style={cardStyle}>
           <h3>Mis Citas</h3>
           <p style={descriptionStyle}>Revisa tus próximas visitas o cancela una reserva.</p>
-          <button className="btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Ver mis citas</button>
+          <button className="login-btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Ver mis citas</button>
         </div>
 
         <div style={cardStyle}>
           <h3>Puntos Fidelidad</h3>
-          <p style={descriptionStyle}>Tienes **500 puntos**. ¡Faltan 200 para un corte gratis!</p>
-          <button className="btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Ver Beneficios</button>
+          <p style={descriptionStyle}>Tienes <strong>500 puntos</strong>. ¡Faltan 200 para un corte gratis!</p>
+          <button className="login-btn-neon" style={{ fontSize: '0.7rem', width: '100%' }}>Ver Beneficios</button>
         </div>
 
       </div>

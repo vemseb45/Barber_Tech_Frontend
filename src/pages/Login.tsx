@@ -61,16 +61,16 @@ export default function Login() {
 
   return (
     <div className="login-page">
-      <Link to="/" className="btn-style1 volver-btn">
+      <Link to="/" className="volver-btn">
         ← Volver
       </Link>
 
-      <div className="containerl">
-        <h1 className="title">Iniciar Sesión</h1>
+      <div className="login-container">
+        <h1 className="login-title">Iniciar Sesión</h1>
 
-        <form className="form" onSubmit={handleSubmit}>
+        <form className="login-form" onSubmit={handleSubmit}>
 
-          <label htmlFor="email">Usuario o Correo</label>
+          <label className="login-label" htmlFor="email">Usuario o Correo</label>
           <input
             type="text"
             id="email"
@@ -81,7 +81,7 @@ export default function Login() {
             required
           />
 
-          <label htmlFor="password">Contraseña</label>
+          <label className="login-label" htmlFor="password">Contraseña</label>
           <input
             type="password"
             id="password"
@@ -92,11 +92,11 @@ export default function Login() {
             required
           />
 
-          <button type="submit" className="btn-neon">
+          <button type="submit" className="login-btn-neon">
             Ingresar
           </button>
 
-          <p className="extra">
+          <p className="login-extra">
             ¿No tiene cuenta?
             <Link to="/register"> Registrarse </Link>
           </p>
