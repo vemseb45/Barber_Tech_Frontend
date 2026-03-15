@@ -16,7 +16,7 @@ export default function Login() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ username: email, password })
       });
 
       const data = await response.json();
@@ -26,20 +26,33 @@ export default function Login() {
         return;
       }
 
-      alert("Inicio de sesión exitoso");
-      console.log("Respuesta del servidor:", data);
+      // Guardamos el token
+      if (data.data?.token) {
+        localStorage.setItem('token', data.data.token);
+      }
+      
+      console.log("Datos crudos del servidor:", data);
 
-      const userRole = data.rol || data.usuario?.rol || data.role || data.usuario?.role || (data.usuario && data.usuario.rol);
+      const rawRole = data.data?.user?.rol || data.data?.rol || "";
+      const userRole = rawRole.toString().toLowerCase().trim();
 
-      if (userRole === "cliente") {
-        navigate("/DashboardCliente");
+      console.log("DEBUG - Rol extraído final:", `"${userRole}"`);
+
+      if (userRole === "admin") {
+        console.log("Redirigiendo a Admin...");
+        navigate("/DashboardAdmin");
+
       } else if (userRole === "barbero") {
         navigate("/DashboardBarbero");
-      } else if (userRole === "admin") {
-        navigate("/DashboardAdmin");
+
+      } else if (userRole === "cliente") {
+        navigate("/DashboardCliente");
+        
       } else {
+        console.log("No se reconoció el rol, mandando a Cliente por defecto");
         navigate("/DashboardCliente");
       }
+
     } catch (error) {
       console.error("Error:", error);
       alert("Error al conectar con el servidor");
@@ -48,8 +61,6 @@ export default function Login() {
 
   return (
     <div className="login-page">
-
-      {/* Botón volver */}
       <Link to="/" className="btn-style1 volver-btn">
         ← Volver
       </Link>
@@ -59,11 +70,27 @@ export default function Login() {
 
         <form className="form" onSubmit={handleSubmit}>
 
-          <label htmlFor="email">Correo electrónico</label>
-          <input type="email" id="email" name="email" placeholder="xxxxxxx@gmail.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <label htmlFor="email">Usuario o Correo</label>
+          <input
+            type="text"
+            id="email"
+            name="email"
+            placeholder="Ej: Pipe03NG"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
           <label htmlFor="password">Contraseña</label>
-          <input type="password" id="password" name="password" placeholder="**********" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="**********"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
 
           <button type="submit" className="btn-neon">
             Ingresar
@@ -73,10 +100,8 @@ export default function Login() {
             ¿No tiene cuenta?
             <Link to="/register"> Registrarse </Link>
           </p>
-
         </form>
       </div>
-
     </div>
   );
 }
