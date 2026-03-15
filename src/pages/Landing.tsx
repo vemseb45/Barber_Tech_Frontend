@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import './css/Landing.css';
+import "../index.css";
 
 export default function Landing() {
   const [isDarkMode, setIsDarkMode] = useState(
