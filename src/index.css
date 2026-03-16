@@ -175,3 +175,7 @@
 }
 
 .volver-btn:hover::before { opacity: 1; }
+
+html, body {
+  @apply min-h-screen bg-slate-100 dark:bg-slate-950 transition-colors duration-500;
+}
