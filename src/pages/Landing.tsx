@@ -4,9 +4,7 @@ import { motion } from 'framer-motion';
 import "../index.css";
 
 export default function Landing() {
-  const [isDarkMode, setIsDarkMode] = useState(
-    document.documentElement.classList.contains('dark')
-  );
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const navigate = useNavigate();
   const hasSession = false;
 
@@ -52,116 +50,168 @@ export default function Landing() {
   };
 
   return (
-    <div className="landing-page">
-      
+    <div className="relative min-h-screen bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display antialiased overflow-x-hidden transition-colors duration-300 flex flex-col">
+
+
+      {/* Estilos */}
+      <style>{`
+        .btn-flip {
+          width: 50px;
+          height: 50px;
+          position: relative;
+          cursor: pointer;
+          background: transparent;
+          border: none;
+          padding: 0;
+          outline: none;
+        }
+        .btn-flip-front, .btn-flip-back {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: 0.5s;
+        }
+        .btn-flip-front {
+          background: #ffffff; 
+          opacity: 1;
+          transform: translateY(0) rotateX(0);
+        }
+        .dark .btn-flip-front {
+          background: #2a2a2a; 
+        }
+        .btn-flip-back {
+          background: #2a2a2a;
+          opacity: 0;
+          transform: translateY(-50%) rotateX(90deg);
+        }
+        .dark .btn-flip-back {
+          background: #ffffff;
+        }
+        .btn-flip:hover .btn-flip-front {
+          opacity: 0;
+          transform: translateY(50%) rotateX(90deg);
+        }
+        .btn-flip:hover .btn-flip-back {
+          opacity: 1;
+          transform: translateY(0) rotateX(0);
+        }
+      `}</style>
+
       {/* Botón para cambiar de tema claro/oscuro */}
-      <div className="btn-flip-container">
-        <button className="btn-flip" onClick={toggleTheme}>
+
+      <div className="fixed bottom-6 right-6 z-[100]">
+        <button className="btn-flip shadow-2xl" onClick={toggleTheme}>
           {/* Cara frontal */}
           <div className="btn-flip-front">
-             {isDarkMode ? (
-                <img src="../public/Imagenes/luna.png" alt="Oscuro" className="w-6 h-6 object-contain" />
-             ) : (
-                <img src="/Imagenes/sol.png"  alt="Claro" className="w-6 h-6 object-contain" />
-             )}
+            {isDarkMode ? (
+              <img src="/Imagenes/luna.png" alt="Oscuro" className="w-6 h-6 object-contain" />
+            ) : (
+              <img src="/Imagenes/sol.png" alt="Claro" className="w-6 h-6 object-contain" />
+            )}
           </div>
           {/* Cara trasera */}
           <div className="btn-flip-back">
-             {isDarkMode ? (
-                <img src="/Imagenes/sol.png" alt="Cambiar a Claro" className="w-6 h-6 object-contain" />
-             ) : (
-                <img src="/Imagenes/luna.png" alt="Cambiar a Oscuro" className="w-6 h-6 object-contain" />
-             )}
+            {isDarkMode ? (
+              <img src="/Imagenes/sol.png" alt="Cambiar a Claro" className="w-6 h-6 object-contain" />
+            ) : (
+              <img src="/Imagenes/luna.png" alt="Cambiar a Oscuro" className="w-6 h-6 object-contain" />
+            )}
           </div>
         </button>
       </div>
 
       {/* Navbar (barrita superior) */}
-      <header className="landing-header">
+      <header className="sticky top-0 z-50 w-full border-b border-primary/10 bg-background-light/80 backdrop-blur-md dark:bg-background-dark/80 transition-colors duration-300">
 
 
         {/* Logo y Texto */}
-        <div className="header-container">
-          <motion.div   variants={dropDownVariant} initial="hidden" animate="visible" className="logo-container"  >
-            <motion.img   src="/Imagenes/Recurso 1.png"  alt="BarberTech Logo"  className="w-16 h-16 object-contain drop-shadow-lg"  animate={{ y: [0, -6, 0] }} transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }} whileHover={{ rotate: 180, scale: 1.15 }} />
-            <motion.h1 className="logo-text ml-2" animate={{  scale: [1, 1.02, 1],textShadow: ["0px 0px 4px transparent", "0px 0px 8px rgba(0, 123, 255, 0.4)", "0px 0px 4px transparent"] }} transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }} >
-               BarberTech
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
+          <motion.div variants={dropDownVariant} initial="hidden" animate="visible" className="flex items-center gap-3"  >
+            <motion.img src="/Imagenes/Recurso 1.png" alt="BarberTech Logo" className="w-16 h-16 object-contain drop-shadow-lg" animate={{ y: [0, -6, 0] }} transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }} whileHover={{ rotate: 180, scale: 1.15 }} />
+            <motion.h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 ml-2" animate={{ scale: [1, 1.02, 1], textShadow: ["0px 0px 4px transparent", "0px 0px 8px rgba(0, 123, 255, 0.4)", "0px 0px 4px transparent"] }} transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }} >
+              BarberTech
             </motion.h1>
           </motion.div>
-          <motion.nav 
-            variants={{  hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.2 } } }} 
-            initial="hidden" 
-            animate="visible" 
-            className="nav-links" >
+          <motion.nav
+            variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.2 } } }}
+            initial="hidden"
+            animate="visible"
+            className="hidden md:flex items-center gap-8" >
 
-            {[{ href: "#inicio", name: "Inicio" }, 
-            { href: "#servicios", name: "Servicios" }, 
-            { href: "#galeria", name: "Galería" }, 
-            { href: "#testimonios", name: "Testimonios" }, 
+            {[{ href: "#inicio", name: "Inicio" },
+            { href: "#servicios", name: "Servicios" },
+            { href: "#galeria", name: "Galería" },
+            { href: "#testimonios", name: "Testimonios" },
             { href: "#contacto", name: "Contacto" }].map((link, idx) => (
-              <motion.a key={idx} variants={dropDownVariant} whileHover={{ scale: 1.15, y: -4, rotate: (idx % 2 === 0 ? 3 : -3), color: "var(--color-primary)", textShadow: "0px 4px 15px rgba(0, 123, 255, 0.6)" }} whileTap={{ scale: 0.85 }} transition={{ type: "spring", stiffness: 400, damping: 10 }} className="nav-item relative group pb-1" href={link.href} >
+              <motion.a key={idx} variants={dropDownVariant} whileHover={{ scale: 1.15, y: -4, rotate: (idx % 2 === 0 ? 3 : -3), color: "var(--color-primary)", textShadow: "0px 4px 15px rgba(0, 123, 255, 0.6)" }} whileTap={{ scale: 0.85 }} transition={{ type: "spring", stiffness: 400, damping: 10 }} className="text-sm font-semibold text-slate-900 dark:text-slate-100 hover:text-primary dark:hover:text-primary transition-colors relative group pb-1" href={link.href} >
                 {link.name}
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full rounded-full"></span>
               </motion.a>
             ))}
           </motion.nav>
           <motion.div
-             variants={dropDownVariant}
-             initial="hidden"
-             animate="visible"
+            variants={dropDownVariant}
+            initial="hidden"
+            animate="visible"
           >
-            <motion.button  
-              animate={{ 
-                 y: [0, -4, 0],
-                 boxShadow: ["0px 4px 10px rgba(0,123,255,0.2)", "0px 10px 25px rgba(0,123,255,0.6)", "0px 4px 10px rgba(0,123,255,0.2)"]
+            <motion.button
+              animate={{
+                y: [0, -4, 0],
+                boxShadow: ["0px 4px 10px rgba(0,123,255,0.2)", "0px 10px 25px rgba(0,123,255,0.6)", "0px 4px 10px rgba(0,123,255,0.2)"]
               }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              whileHover={{ scale: 1.1, y: -4, boxShadow: "0px 0px 30px var(--color-primary)", backgroundColor: "#5213fc" }} 
-              whileTap={{ scale: 0.9 }} 
-              onClick={handleReservation} 
-              className="btn-primary" 
+              whileHover={{ scale: 1.1, y: -4, boxShadow: "0px 0px 30px var(--color-primary)", backgroundColor: "#5213fc" }}
+              whileTap={{ scale: 0.9 }}
+              onClick={handleReservation}
+              className="rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/20 hover:bg-[#5213fc] transition-all"
             >
               Reservar Cita
             </motion.button>
           </motion.div>
         </div>
       </header>
-      
+
       {/* Contenido Principal */}
       <main className="flex-grow">
-        
+
         {/* Inicio */}
-        <section className="hero-section" id="inicio">
-          <div className="section-container">
-            <div className="hero-grid">
-              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="hero-content">
-                <motion.div variants={fadeUpVariant} className="hero-badge">
+        <section className="relative overflow-hidden px-6 py-16 lg:px-10 lg:py-24" id="inicio">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
+              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="flex flex-col gap-8">
+                <motion.div variants={fadeUpVariant} className="inline-flex w-fit items-center gap-2 rounded-full bg-primary/10 px-4 py-1 text-primary text-xs font-bold uppercase tracking-wider">
                   <span>La mejor experiencia en barbería</span>
                 </motion.div>
-                <motion.h1 variants={fadeUpVariant} className="hero-title">
+                <motion.h1 variants={fadeUpVariant} className="text-5xl font-extrabold leading-tight tracking-tight text-slate-900 dark:text-slate-100 md:text-6xl">
                   Corte y Estilo con <span className="text-primary">Personalidad</span>
                 </motion.h1>
-                <motion.p variants={fadeUpVariant} className="hero-text">
+                <motion.p variants={fadeUpVariant} className="text-lg text-slate-600 dark:text-slate-400">
                   Tu mejor versión comienza aquí. Experiencia de barbería clásica apoyada con tecnología para hacer tu visita más rápida y cómoda.
                 </motion.p>
-                <motion.div variants={fadeUpVariant} className="hero-buttons">
-                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleReservation} className="btn-hero-primary group">
+                <motion.div variants={fadeUpVariant} className="flex flex-wrap gap-4">
+                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleReservation} className="rounded-xl bg-primary px-8 py-4 text-base font-bold text-white shadow-xl shadow-primary/30 hover:scale-[1.02] transition-transform flex items-center gap-2 group">
                     Reservar Cita Ahora
                   </motion.button>
-                  <motion.a whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} href="#servicios" className="btn-hero-secondary inline-flex items-center justify-center">
+                  <motion.a whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} href="#servicios" className="rounded-xl border border-primary/20 bg-white dark:bg-background-dark px-8 py-4 text-base font-bold text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors inline-flex items-center justify-center">
                     Ver Servicios
                   </motion.a>
                 </motion.div>
               </motion.div>
 
               <motion.div initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="relative">
-                <div className="hero-image-container" data-alt="Barbero profesional" style={{ backgroundImage: 'url("/Imagenes/barbero1.png")' }}></div>
-                <motion.div  initial={{ opacity: 0, y: 20 }}  whileInView={{ opacity: 1, y: 0 }}  viewport={{ once: true }}  transition={{ delay: 0.5, duration: 0.5 }}  animate={{ y: [0, -10, 0] }} className="hero-floating-card"style={{ animation: "float 6s ease-in-out infinite" }} >
+                <div className="aspect-[4/5] w-full rounded-2xl bg-slate-200 bg-cover bg-center shadow-2xl transition-transform hover:scale-105 duration-700" data-alt="Barbero profesional" style={{ backgroundImage: 'url("/Imagenes/barbero1.png")' }}></div>
+                <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.5, duration: 0.5 }} animate={{ y: [0, -10, 0] }} className="absolute -bottom-6 -left-6 hidden md:block rounded-2xl bg-white dark:bg-background-dark p-6 shadow-xl border border-slate-100 dark:border-primary/20" style={{ animation: "float 6s ease-in-out infinite" }} >
                   <div className="flex items-center gap-4">
-                    <div className="avatar-group">
-                      <div className="avatar bg-slate-300"></div>
-                      <div className="avatar bg-slate-400"></div>
-                      <div className="avatar-count">+5k</div>
+                    <div className="flex -space-x-3">
+                      <div className="h-10 w-10 rounded-full border-2 border-white bg-slate-300"></div>
+                      <div className="h-10 w-10 rounded-full border-2 border-white bg-slate-400"></div>
+                      <div className="h-10 w-10 rounded-full border-2 border-white bg-primary text-white flex items-center justify-center text-xs font-bold">+5k</div>
                     </div>
                     <div>
                       <p className="text-sm font-bold">Clientes Felices</p>
@@ -175,50 +225,50 @@ export default function Landing() {
         </section>
 
         {/* Servicios */}
-        <section className="services-section" id="servicios">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer} className="section-container">
-            <div className="section-title-container">
-              <motion.h2 variants={fadeUpVariant} className="section-title">Nuestros Servicios</motion.h2>
-              <motion.div variants={fadeUpVariant} className="section-divider">
-                <div className="section-divider-line"></div>
+        <section className="bg-white dark:bg-background-dark px-6 py-20 lg:px-10 border-y border-slate-200 dark:border-primary/10 transition-colors duration-300" id="servicios">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer} className="mx-auto max-w-7xl">
+            <div className="mb-16 text-center">
+              <motion.h2 variants={fadeUpVariant} className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 md:text-4xl">Nuestros Servicios</motion.h2>
+              <motion.div variants={fadeUpVariant} className="mt-4 flex justify-center">
+                <div className="h-1.5 w-20 rounded-full bg-primary"></div>
               </motion.div>
-              <motion.p variants={fadeUpVariant} className="section-subtitle">Ofrecemos una gama completa de servicios de cuidado personal para el hombre moderno.</motion.p>
+              <motion.p variants={fadeUpVariant} className="mt-6 text-slate-600 dark:text-slate-400">Ofrecemos una gama completa de servicios de cuidado personal para el hombre moderno.</motion.p>
             </div>
-            
-            <div className="services-grid">
-              <motion.div variants={fadeUpVariant} whileHover={{ scale: 1.05, y: -10 }} transition={{ type: "spring", stiffness: 300 }} className="service-card group">
-                <div className="service-icon-bg">
+
+            <div className="grid gap-8 md:grid-cols-3">
+              <motion.div variants={fadeUpVariant} whileHover={{ scale: 1.05, y: -10 }} transition={{ type: "spring", stiffness: 300 }} className="flex flex-col rounded-2xl border border-primary/5 bg-background-light p-8 transition-all hover:shadow-xl hover:border-primary dark:bg-background-dark dark:border-white/5 group">
+                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 transition-transform group-hover:scale-110">
                   <img src="/Imagenes/cortecabello.png" alt="Corte" className="w-8 h-8 object-contain" />
                 </div>
-                <h3 className="service-title">Corte de Cabello</h3>
-                <p className="service-text">Cortes clásicos y de tendencia adaptados a la forma de tu rostro y estilo personal.</p>
-                <div className="service-footer">
-                  <span className="service-price">Desde $25</span>
-                  <span className="service-time">45 min</span>
+                <h3 className="mb-3 text-xl font-bold">Corte de Cabello</h3>
+                <p className="mb-6 text-slate-600 dark:text-slate-400">Cortes clásicos y de tendencia adaptados a la forma de tu rostro y estilo personal.</p>
+                <div className="mt-auto flex items-center justify-between border-t border-primary/10 pt-6">
+                  <span className="font-bold text-primary">Desde $25</span>
+                  <span className="text-sm text-slate-500">45 min</span>
                 </div>
               </motion.div>
-              
-              <motion.div variants={fadeUpVariant} whileHover={{ scale: 1.05, y: -10 }} transition={{ type: "spring", stiffness: 300 }} className="service-card group">
-                <div className="service-icon-bg">
+
+              <motion.div variants={fadeUpVariant} whileHover={{ scale: 1.05, y: -10 }} transition={{ type: "spring", stiffness: 300 }} className="flex flex-col rounded-2xl border border-primary/5 bg-background-light p-8 transition-all hover:shadow-xl hover:border-primary dark:bg-background-dark dark:border-white/5 group">
+                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 transition-transform group-hover:scale-110">
                   <img src="/Imagenes/barba.png" alt="Barba" className="w-8 h-8 object-contain" />
                 </div>
-                <h3 className="service-title">Arreglo de Barba</h3>
-                <p className="service-text">Perfilado preciso, recorte y tratamiento de hidratación para una barba impecable.</p>
-                <div className="service-footer">
-                  <span className="service-price">Desde $15</span>
-                  <span className="service-time">30 min</span>
+                <h3 className="mb-3 text-xl font-bold">Arreglo de Barba</h3>
+                <p className="mb-6 text-slate-600 dark:text-slate-400">Perfilado preciso, recorte y tratamiento de hidratación para una barba impecable.</p>
+                <div className="mt-auto flex items-center justify-between border-t border-primary/10 pt-6">
+                  <span className="font-bold text-primary">Desde $15</span>
+                  <span className="text-sm text-slate-500">30 min</span>
                 </div>
               </motion.div>
-              
-              <motion.div variants={fadeUpVariant} whileHover={{ scale: 1.05, y: -10 }} transition={{ type: "spring", stiffness: 300 }} className="service-card group">
-                <div className="service-icon-bg">
+
+              <motion.div variants={fadeUpVariant} whileHover={{ scale: 1.05, y: -10 }} transition={{ type: "spring", stiffness: 300 }} className="flex flex-col rounded-2xl border border-primary/5 bg-background-light p-8 transition-all hover:shadow-xl hover:border-primary dark:bg-background-dark dark:border-white/5 group">
+                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 transition-transform group-hover:scale-110">
                   <img src="/Imagenes/tratamiento.png" alt="Facial" className="w-8 h-8 object-contain" />
                 </div>
-                <h3 className="service-title">Tratamiento Facial</h3>
-                <p className="service-text">Limpieza profunda, exfoliación y masaje para revitalizar tu piel y relajarte.</p>
-                <div className="service-footer">
-                  <span className="service-price">Desde $20</span>
-                  <span className="service-time">40 min</span>
+                <h3 className="mb-3 text-xl font-bold">Tratamiento Facial</h3>
+                <p className="mb-6 text-slate-600 dark:text-slate-400">Limpieza profunda, exfoliación y masaje para revitalizar tu piel y relajarte.</p>
+                <div className="mt-auto flex items-center justify-between border-t border-primary/10 pt-6">
+                  <span className="font-bold text-primary">Desde $20</span>
+                  <span className="text-sm text-slate-500">40 min</span>
                 </div>
               </motion.div>
             </div>
@@ -226,26 +276,26 @@ export default function Landing() {
         </section>
 
         {/* Galeria */}
-        <section className="gallery-section" id="galeria">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer} className="section-container">
-            <div className="gallery-header">
+        <section className="px-6 py-20 lg:px-10" id="galeria">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer} className="mx-auto max-w-7xl">
+            <div className="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
               <motion.div variants={fadeUpVariant}>
-                <h2 className="section-title text-3xl">Galería de Estilos</h2>
-                <p className="section-subtitle mt-4">Echa un vistazo a algunos de nuestros trabajos recientes.</p>
+                <h2 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 md:text-4xl text-3xl">Galería de Estilos</h2>
+                <p className="mt-6 text-slate-600 dark:text-slate-400 mt-4">Echa un vistazo a algunos de nuestros trabajos recientes.</p>
               </motion.div>
-              <motion.button variants={fadeUpVariant} className="gallery-link">
+              <motion.button variants={fadeUpVariant} className="text-sm font-bold text-primary flex items-center gap-2 hover:underline">
                 Ver Instagram
               </motion.button>
             </div>
-            <div className="gallery-grid">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-4">
               {[
                 "/Imagenes/corte1.jpg",
                 "/Imagenes/corte2.jpg",
                 "/Imagenes/corte3.jpg",
                 "/Imagenes/corte4.avif"
               ].map((src, i) => (
-                <motion.div key={i} variants={scaleUpVariant} whileHover={{ scale: 1.05, rotate: i % 2 === 0 ? 2 : -2, zIndex: 10 }} transition={{ type: "spring", stiffness: 300 }} className="gallery-item">
-                  <img className="gallery-image" data-alt={`Galeria ${i}`} src={src} />
+                <motion.div key={i} variants={scaleUpVariant} whileHover={{ scale: 1.05, rotate: i % 2 === 0 ? 2 : -2, zIndex: 10 }} transition={{ type: "spring", stiffness: 300 }} className="aspect-square overflow-hidden rounded-xl bg-slate-200">
+                  <img className="h-full w-full object-cover transition-transform hover:scale-110 duration-500" data-alt={`Galeria ${i}`} src={src} />
                 </motion.div>
               ))}
             </div>
@@ -253,24 +303,24 @@ export default function Landing() {
         </section>
 
         {/* Testimonios (comentarios de usuarios falsos) */}
-        <section className="testimonials-section" id="testimonios">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer} className="section-container">
-            <motion.h2 variants={fadeUpVariant} className="section-title text-center mb-16">
+        <section className="bg-primary/5 px-6 py-20 lg:px-10 transition-colors duration-300" id="testimonios">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer} className="mx-auto max-w-7xl">
+            <motion.h2 variants={fadeUpVariant} className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 md:text-4xl text-center mb-16">
               Lo que dicen nuestros clientes
             </motion.h2>
-            <div className="testimonials-grid">
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {[
                 { init: "CM", name: "Carlos Méndez", date: "Cliente desde 2022", text: "La mejor barbería de la ciudad. El ambiente es increíble y siempre salgo con un corte perfecto. La atención al detalle es insuperable." },
                 { init: "RG", name: "Roberto García", date: "Cliente frecuente", text: "El servicio de arreglo de barba es otro nivel. Utilizan productos de alta calidad y se nota la experiencia de los barberos." },
                 { init: "JP", name: "Juan Pérez", date: "Cliente nuevo", text: "Moderno, limpio y muy profesional. Reservar cita es super sencillo. Altamente recomendado para cualquiera que busque estilo." }
               ].map((t, idx) => (
-                <motion.div key={idx} variants={fadeUpVariant} whileHover={{ scale: 1.03, y: -5, boxShadow: "0 10px 30px -10px rgba(0,0,0,0.2)" }} transition={{ type: "spring", stiffness: 300 }} className="testimonial-card">
-                  <div className="testimonial-stars text-primary font-bold">
-                     ★★★★★
+                <motion.div key={idx} variants={fadeUpVariant} whileHover={{ scale: 1.03, y: -5, boxShadow: "0 10px 30px -10px rgba(0,0,0,0.2)" }} transition={{ type: "spring", stiffness: 300 }} className="rounded-2xl bg-white dark:bg-background-dark dark:border-white/5 p-8 shadow-sm border border-slate-100">
+                  <div className="mb-4 flex gap-1 items-center text-primary font-bold">
+                    ★★★★★
                   </div>
-                  <p className="testimonial-text">"{t.text}"</p>
-                  <div className="testimonial-author-container">
-                    <div className="testimonial-avatar">{t.init}</div>
+                  <p className="mb-6 italic text-slate-600 dark:text-slate-400">"{t.text}"</p>
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-full bg-slate-200 dark:bg-primary/20 flex items-center justify-center text-primary font-bold">{t.init}</div>
                     <div>
                       <h4 className="font-bold">{t.name}</h4>
                       <p className="text-xs text-slate-500">{t.date}</p>
@@ -283,49 +333,49 @@ export default function Landing() {
         </section>
 
         {/* Contacto */}
-        <section className="contact-section" id="contacto">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer} className="section-container">
-            <div className="contact-grid">
+        <section className="px-6 py-20 lg:px-10" id="contacto">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer} className="mx-auto max-w-7xl">
+            <div className="grid gap-12 lg:grid-cols-2">
               <motion.div variants={fadeUpVariant} className="flex flex-col gap-8">
-                <h2 className="section-title">Visítanos</h2>
-                <div className="contact-info-list">
-                  <motion.div whileHover={{ x: 10, backgroundColor: "var(--color-surface-hover)" }} transition={{ type: "spring", stiffness: 300 }} className="contact-item rounded-lg p-2">
-                    <div className="contact-icon-bg">
+                <h2 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 md:text-4xl">Visítanos</h2>
+                <div className="space-y-6">
+                  <motion.div whileHover={{ x: 10, backgroundColor: "var(--color-surface-hover)" }} transition={{ type: "spring", stiffness: 300 }} className="flex items-start gap-4 rounded-lg p-2">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                       <img src="/Imagenes/ubicacion.png" alt="Ubicación" className="w-5 h-5 object-contain" />
                     </div>
                     <div>
-                      <h4 className="contact-item-title">Ubicación</h4>
-                      <p className="contact-item-text">Calle 123, Barrio 1<br />Colombia, Bogotá</p>
+                      <h4 className="font-bold">Ubicación</h4>
+                      <p className="text-slate-600 dark:text-slate-400">Calle 123, Barrio 1<br />Colombia, Bogotá</p>
                     </div>
                   </motion.div>
-                  <motion.div whileHover={{ x: 10, backgroundColor: "var(--color-surface-hover)" }} transition={{ type: "spring", stiffness: 300 }} className="contact-item rounded-lg p-2">
-                    <div className="contact-icon-bg">
-                       <img src="/Imagenes/reloj.png" alt="Horarios" className="w-5 h-5 object-contain" />
+                  <motion.div whileHover={{ x: 10, backgroundColor: "var(--color-surface-hover)" }} transition={{ type: "spring", stiffness: 300 }} className="flex items-start gap-4 rounded-lg p-2">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <img src="/Imagenes/reloj.png" alt="Horarios" className="w-5 h-5 object-contain" />
                     </div>
                     <div>
-                      <h4 className="contact-item-title">Horarios</h4>
-                      <p className="contact-item-text">Lunes - Viernes: 10:00 AM - 8:00 PM<br />Sábados: 9:00 AM - 6:00 PM<br />Domingos: Cerrado</p>
+                      <h4 className="font-bold">Horarios</h4>
+                      <p className="text-slate-600 dark:text-slate-400">Lunes - Viernes: 10:00 AM - 8:00 PM<br />Sábados: 9:00 AM - 6:00 PM<br />Domingos: Cerrado</p>
                     </div>
                   </motion.div>
-                  <motion.div whileHover={{ x: 10, backgroundColor: "var(--color-surface-hover)" }} transition={{ type: "spring", stiffness: 300 }} className="contact-item rounded-lg p-2">
-                    <div className="contact-icon-bg">
-                       <img src="/Imagenes/telefono.png" alt="Contacto" className="w-5 h-5 object-contain" />
+                  <motion.div whileHover={{ x: 10, backgroundColor: "var(--color-surface-hover)" }} transition={{ type: "spring", stiffness: 300 }} className="flex items-start gap-4 rounded-lg p-2">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <img src="/Imagenes/telefono.png" alt="Contacto" className="w-5 h-5 object-contain" />
                     </div>
                     <div>
-                      <h4 className="contact-item-title">Contacto</h4>
-                      <p className="contact-item-text">+57 XXX-XXX-XXXX <br /> ejemplo@barbertech.com</p>
+                      <h4 className="font-bold">Contacto</h4>
+                      <p className="text-slate-600 dark:text-slate-400">+57 XXX-XXX-XXXX <br /> ejemplo@barbertech.com</p>
                     </div>
                   </motion.div>
                 </div>
-                <button className="btn-contact">¿Cómo llegar?</button>
+                <button className="mt-4 rounded-xl bg-primary px-8 py-4 text-base font-bold text-white shadow-lg shadow-primary/20 w-fit">¿Cómo llegar?</button>
               </motion.div>
 
-              <motion.div variants={scaleUpVariant} whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }} className="map-container">
-                <div className="map-bg" data-location="Mexico City" style={{ backgroundImage: "url('/Imagenes/fondobt.png')" }}></div>
-                <div className="map-overlay">
-                  <div className="map-card">
+              <motion.div variants={scaleUpVariant} whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }} className="h-[400px] overflow-hidden rounded-2xl bg-slate-200 shadow-xl border border-slate-100 dark:border-primary/20 relative">
+                <div className="absolute inset-0 grayscale opacity-60 dark:opacity-30 bg-cover bg-center" data-location="Mexico City" style={{ backgroundImage: "url('/Imagenes/fondobt.png')" }}></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="p-6 bg-white dark:bg-background-dark rounded-xl shadow-2xl text-center border border-slate-100 dark:border-primary/20 flex flex-col items-center">
                     <div className="mb-2">
-                       <img src="/Imagenes/ubicacion.png" alt="Ubicación" className="w-8 h-8 object-contain" />
+                      <img src="/Imagenes/ubicacion.png" alt="Ubicación" className="w-8 h-8 object-contain" />
                     </div>
                     <h5 className="font-bold">BarberTech</h5>
                     <button className="text-primary text-sm font-bold flex items-center gap-1 mx-auto hover:underline mt-4">
@@ -340,41 +390,41 @@ export default function Landing() {
       </main>
 
       {/* Footer (incluye la parte de las redes y así)*/}
-      <footer className="landing-footer">
-        <div className="section-container">
-          <div className="footer-grid grid-cols-1 md:grid-cols-3">
+      <footer className="border-t border-primary/10 bg-slate-100 px-6 py-12 dark:bg-background-dark lg:px-10 transition-colors duration-300 mt-auto">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-10 grid-cols-1 md:grid-cols-3">
             <div>
               <div className="footer-logo-container">
-                <h1 className="logo-text">BarberTech</h1>
+                <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">BarberTech</h1>
               </div>
-              <p className="footer-text">Definiendo el estilo masculino. <br /> Calidad, precisión y confort en cada servicio.</p>
+              <p className="text-sm text-slate-500">Definiendo el estilo masculino. <br /> Calidad, precisión y confort en cada servicio.</p>
             </div>
             <div>
-              <h4 className="footer-title">Legal</h4>
-              <ul className="footer-links">
+              <h4 className="mb-6 font-bold uppercase tracking-wider text-xs">Legal</h4>
+              <ul className="space-y-4 text-sm text-slate-500">
                 <li><a className="hover:text-primary" href="#">Términos de Servicio</a></li>
                 <li><a className="hover:text-primary" href="#">Política de Privacidad</a></li>
                 <li><a className="hover:text-primary" href="#">Política de Cookies</a></li>
               </ul>
             </div>
             <div>
-                <h4 className="footer-title">Síguenos</h4>
-                <div className="footer-socials">
-                  <motion.a whileHover={{ y: -5, scale: 1.1 }} whileTap={{ scale: 0.9 }} transition={{ type: "spring", stiffness: 300 }} className="social-icon" href="#">
-                    <img src="/Imagenes/facebook.png" alt="Facebook" className="w-5 h-5 object-contain" />
-                  </motion.a>
-                  <motion.a whileHover={{ y: -5, scale: 1.1 }} whileTap={{ scale: 0.9 }} transition={{ type: "spring", stiffness: 300 }} className="social-icon" href="#">
-                    <img src="/Imagenes/instagram.png" alt="Instagram" className="w-5 h-5 object-contain" />
-                  </motion.a>
-                  <motion.a whileHover={{ y: -5, scale: 1.1 }} whileTap={{ scale: 0.9 }} transition={{ type: "spring", stiffness: 300 }} className="social-icon" href="#">
-                    <img src="/Imagenes/twitter.webp" alt="Twitter" className="w-5 h-5 object-contain" />
-                  </motion.a>
-                </div>
+              <h4 className="mb-6 font-bold uppercase tracking-wider text-xs">Síguenos</h4>
+              <div className="flex gap-4">
+                <motion.a whileHover={{ y: -5, scale: 1.1 }} whileTap={{ scale: 0.9 }} transition={{ type: "spring", stiffness: 300 }} className="flex h-10 w-10 items-center justify-center rounded-full bg-white hover:bg-primary hover:text-white transition-colors dark:bg-slate-800 dark:hover:bg-[#5213fc]" href="#">
+                  <img src="/Imagenes/facebook.png" alt="Facebook" className="w-5 h-5 object-contain" />
+                </motion.a>
+                <motion.a whileHover={{ y: -5, scale: 1.1 }} whileTap={{ scale: 0.9 }} transition={{ type: "spring", stiffness: 300 }} className="flex h-10 w-10 items-center justify-center rounded-full bg-white hover:bg-primary hover:text-white transition-colors dark:bg-slate-800 dark:hover:bg-[#5213fc]" href="#">
+                  <img src="/Imagenes/instagram.png" alt="Instagram" className="w-5 h-5 object-contain" />
+                </motion.a>
+                <motion.a whileHover={{ y: -5, scale: 1.1 }} whileTap={{ scale: 0.9 }} transition={{ type: "spring", stiffness: 300 }} className="flex h-10 w-10 items-center justify-center rounded-full bg-white hover:bg-primary hover:text-white transition-colors dark:bg-slate-800 dark:hover:bg-[#5213fc]" href="#">
+                  <img src="/Imagenes/twitter.webp" alt="Twitter" className="w-5 h-5 object-contain" />
+                </motion.a>
               </div>
             </div>
-            <div className="footer-bottom">
-              <p>© 2026 BarberTech. Todos los derechos reservados. Diseñado con pasión.</p>
-            </div>
+          </div>
+          <div className="mt-12 border-t border-primary/5 pt-8 text-center text-sm text-slate-500">
+            <p>© 2026 BarberTech. Todos los derechos reservados. Diseñado con pasión.</p>
+          </div>
         </div>
       </footer>
     </div>
