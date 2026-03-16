@@ -16,10 +16,11 @@ export default function AgendaBarbero() {
   const [citasDelDia, setCitasDelDia] = useState<Cita[]>([]);
   const [fechaFiltro, setFechaFiltro] = useState<string>(new Date().toISOString().split('T')[0]);
   const [cargando, setCargando] = useState<boolean>(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   // 🚨 ID del barbero logueado. 
   // Para pruebas usa "4" (destrozamamis) o "5" (niok223) que están en tu DB.
-  const miIdBarbero = "4"; 
+  const miIdBarbero = "4";
 
   useEffect(() => {
     setCargando(true);
@@ -41,6 +42,28 @@ export default function AgendaBarbero() {
       .finally(() => setCargando(false));
   }, [fechaFiltro]);
 
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+
+    if (savedTheme === "dark") {
+      document.documentElement.classList.add("dark");
+      setIsDarkMode(true);
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = !isDarkMode;
+    setIsDarkMode(newTheme);
+
+    if (newTheme) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  };
+
   return (
     <div className="landing-page py-12 px-4 sm:px-6 flex flex-col items-center justify-center min-h-screen">
       {/* Botón Volver */}
@@ -57,11 +80,11 @@ export default function AgendaBarbero() {
             <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">Mi Agenda</h2>
             <p className="text-slate-500 dark:text-slate-400 mt-1">Revisa tus citas programadas</p>
           </div>
-          
+
           <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
             <label className="font-semibold text-slate-700 dark:text-slate-200">Ver día:</label>
-            <input 
-              type="date" 
+            <input
+              type="date"
               value={fechaFiltro}
               onChange={(e) => setFechaFiltro(e.target.value)}
               className="p-1 bg-transparent border-none focus:outline-none text-slate-900 dark:text-white font-medium"
@@ -71,7 +94,7 @@ export default function AgendaBarbero() {
 
         {/* Listado de Citas */}
         {cargando ? (
-           <p className="text-center text-slate-500 py-10">Cargando citas...</p>
+          <p className="text-center text-slate-500 py-10">Cargando citas...</p>
         ) : citasDelDia.length === 0 ? (
           <div className="text-center py-12 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
             <p className="text-slate-500 dark:text-slate-400 text-lg">No tienes citas agendadas para este día. ¡Tómate un café! ☕</p>
@@ -79,10 +102,10 @@ export default function AgendaBarbero() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {citasDelDia.map((cita, index) => (
-              <motion.div 
+              <motion.div
                 key={cita.id}
-                initial={{ opacity: 0, y: 10 }} 
-                animate={{ opacity: 1, y: 0 }} 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 className="p-5 border border-slate-200 dark:border-slate-700 rounded-xl hover:shadow-lg transition-all duration-300 bg-slate-50 dark:bg-slate-800 flex justify-between items-center group"
               >
@@ -95,7 +118,7 @@ export default function AgendaBarbero() {
                   </h3>
                   <p className="text-slate-600 dark:text-slate-400 text-sm">Servicio ID: {cita.id_servicio}</p>
                 </div>
-                
+
                 {/* Botones de Acción */}
                 <div className="flex flex-col gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
                   <button className="px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 font-bold rounded-lg hover:bg-green-200 transition-colors text-xs">
@@ -109,6 +132,18 @@ export default function AgendaBarbero() {
             ))}
           </div>
         )}
+      </div>
+      <div className="fixed bottom-6 right-6 z-[100]">
+        <button
+          onClick={toggleTheme}
+          className="w-12 h-12 flex items-center justify-center rounded-full bg-white dark:bg-slate-800 shadow-xl border border-slate-200 dark:border-slate-700 hover:scale-110 transition"
+        >
+          {isDarkMode ? (
+            <img src="/Imagenes/luna.png" className="w-6 h-6" />
+          ) : (
+            <img src="/Imagenes/sol.png" className="w-6 h-6" />
+          )}
+        </button>
       </div>
     </div>
   );
