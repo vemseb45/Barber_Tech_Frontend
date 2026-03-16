@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
-import Register from "./pages/Register";
+import Register from "./pages/Registro";
 import AgendaCitasCliente from "./pages/agendaClientes";
 import AgendaBarbero from "./pages/agendaBarbero";
 import DashboardBarbero from "./pages/DashboardBarbero";
