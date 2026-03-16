@@ -10,7 +10,7 @@ export default function Landing() {
 
   const handleReservation = () => {
     if (hasSession) {
-      navigate('/dashboard');
+      navigate('/DashboardCliente');
     } else {
       navigate('/login');
     }
@@ -149,7 +149,7 @@ export default function Landing() {
             { href: "#galeria", name: "Galería" },
             { href: "#testimonios", name: "Testimonios" },
             { href: "#contacto", name: "Contacto" }].map((link, idx) => (
-              <motion.a key={idx} variants={dropDownVariant} whileHover={{ scale: 1.15, y: -4, rotate: (idx % 2 === 0 ? 3 : -3), color: "var(--color-primary)", textShadow: "0px 4px 15px rgba(0, 123, 255, 0.6)" }} whileTap={{ scale: 0.85 }} transition={{ type: "spring", stiffness: 400, damping: 10 }} className="text-sm font-semibold text-slate-900 dark:text-slate-100 hover:text-primary dark:hover:text-primary transition-colors relative group pb-1" href={link.href} >
+              <motion.a key={idx} variants={dropDownVariant} whileHover={{ scale: 1.15, y: -4, rotate: (idx % 2 === 0 ? 3 : -3), textShadow: "0px 4px 15px rgba(0, 123, 255, 0.6)" }} whileTap={{ scale: 0.85 }} transition={{ type: "spring", stiffness: 400, damping: 10 }} className="text-sm font-semibold text-slate-900 dark:text-slate-100 hover:text-primary dark:hover:text-primary transition-colors relative group pb-1" href={link.href} >
                 {link.name}
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full rounded-full"></span>
               </motion.a>
