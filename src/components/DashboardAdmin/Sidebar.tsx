@@ -21,6 +21,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('refresh_token');
     navigate('/');
   };
 
