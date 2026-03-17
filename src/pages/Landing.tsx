@@ -52,12 +52,11 @@ export default function Landing() {
   return (
     <div className="relative min-h-screen bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display antialiased overflow-x-hidden transition-colors duration-300 flex flex-col">
 
-
-      {/* Estilos */}
+      {/* Estilos botón cambiar modo claro/oscuro */}
       <style>{`
         .btn-flip {
-          width: 50px;
-          height: 50px;
+          width: 44px;
+          height: 44px;
           position: relative;
           cursor: pointer;
           background: transparent;
@@ -76,22 +75,26 @@ export default function Landing() {
           align-items: center;
           justify-content: center;
           transition: 0.5s;
+          box-shadow: 0px 4px 10px rgba(0,0,0,0.05);
+        }
+        .dark .btn-flip-front, .dark .btn-flip-back {
+          box-shadow: 0px 4px 10px rgba(255,255,255,0.05);
         }
         .btn-flip-front {
-          background: #ffffff; 
+          background: #F3F6F8; 
           opacity: 1;
           transform: translateY(0) rotateX(0);
         }
         .dark .btn-flip-front {
-          background: #2a2a2a; 
+          background: #1e293b; 
         }
         .btn-flip-back {
-          background: #2a2a2a;
+          background: #1e293b;
           opacity: 0;
           transform: translateY(-50%) rotateX(90deg);
         }
         .dark .btn-flip-back {
-          background: #ffffff;
+          background: #F3F6F8;
         }
         .btn-flip:hover .btn-flip-front {
           opacity: 0;
@@ -102,29 +105,6 @@ export default function Landing() {
           transform: translateY(0) rotateX(0);
         }
       `}</style>
-
-      {/* Botón para cambiar de tema claro/oscuro */}
-
-      <div className="fixed bottom-6 right-6 z-[100]">
-        <button className="btn-flip shadow-2xl" onClick={toggleTheme}>
-          {/* Cara frontal */}
-          <div className="btn-flip-front">
-            {isDarkMode ? (
-              <img src="/Imagenes/luna.png" alt="Oscuro" className="w-6 h-6 object-contain" />
-            ) : (
-              <img src="/Imagenes/sol.png" alt="Claro" className="w-6 h-6 object-contain" />
-            )}
-          </div>
-          {/* Cara trasera */}
-          <div className="btn-flip-back">
-            {isDarkMode ? (
-              <img src="/Imagenes/sol.png" alt="Cambiar a Claro" className="w-6 h-6 object-contain" />
-            ) : (
-              <img src="/Imagenes/luna.png" alt="Cambiar a Oscuro" className="w-6 h-6 object-contain" />
-            )}
-          </div>
-        </button>
-      </div>
 
       {/* Navbar (barrita superior) */}
       <header className="sticky top-0 z-50 w-full border-b border-primary/10 bg-background-light/80 backdrop-blur-md dark:bg-background-dark/80 transition-colors duration-300">
@@ -159,7 +139,28 @@ export default function Landing() {
             variants={dropDownVariant}
             initial="hidden"
             animate="visible"
+            className="flex items-center gap-4"
           >
+            <motion.div>
+              <button className="btn-flip" onClick={toggleTheme} aria-label="Alternar tema">
+                {/* Cara frontal */}
+                <div className="btn-flip-front">
+                  {isDarkMode ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e2e8f0" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4E5D78" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                  )}
+                </div>
+                {/* Cara trasera */}
+                <div className="btn-flip-back">
+                  {isDarkMode ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4E5D78" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e2e8f0" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                  )}
+                </div>
+              </button>
+            </motion.div>
             <motion.button
               animate={{
                 y: [0, -4, 0],

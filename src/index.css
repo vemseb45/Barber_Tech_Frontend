@@ -7,6 +7,8 @@
   --color-primary: #8519d2;
   --color-background-light: #f7f6f8;
   --color-background-dark: #1a1121;
+  --color-card-dark: #23182b;
+  --color-border-dark: #362640;
   --font-display: ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -178,4 +180,58 @@
 
 html, body {
   @apply min-h-screen bg-slate-100 dark:bg-slate-950 transition-colors duration-500;
+}
+
+/* =========================================
+   5. BOTÓN ANIMADO TEMA CLARO/OSCURO
+   ========================================= */
+.btn-flip {
+  width: 44px;
+  height: 44px;
+  position: relative;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+  outline: none;
+}
+.btn-flip-front, .btn-flip-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.5s;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.05);
+}
+.dark .btn-flip-front, .dark .btn-flip-back {
+  box-shadow: 0px 4px 10px rgba(255,255,255,0.05);
+}
+.btn-flip-front {
+  background: #F3F6F8;
+  opacity: 1;
+  transform: translateY(0) rotateX(0);
+}
+.dark .btn-flip-front {
+  background: #1e293b;
+}
+.btn-flip-back {
+  background: #1e293b;
+  opacity: 0;
+  transform: translateY(-50%) rotateX(90deg);
+}
+.dark .btn-flip-back {
+  background: #F3F6F8;
+}
+.btn-flip:hover .btn-flip-front {
+  opacity: 0;
+  transform: translateY(50%) rotateX(90deg);
+}
+.btn-flip:hover .btn-flip-back {
+  opacity: 1;
+  transform: translateY(0) rotateX(0);
 }

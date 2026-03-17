@@ -14,6 +14,8 @@ export default {
         "primary-hover": "#5213fc",
         "background-light": "#f6f5f8",
         "background-dark": "#120f23",
+        "card-dark": "#23182b",
+        "border-dark": "#362640",
       },
       fontFamily: { display: ["Manrope", "sans-serif"] },
     },
