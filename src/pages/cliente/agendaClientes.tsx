@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import Calendario from "../components/Calendario";
-import type { Bloque } from "../components/Calendario"; 
-import "../index.css";
+import Calendario from "../../components/Calendario";
+import type { Bloque } from "../../components/Calendario"; 
+import "../../index.css";
 
 interface Barbero {
   id: string;

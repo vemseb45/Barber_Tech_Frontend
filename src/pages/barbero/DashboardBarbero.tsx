@@ -1,10 +1,13 @@
+/* --- src/pages/barbero/DashboardBarbero.tsx --- */
 import React, { useState } from 'react';
-import BarberoLayout from '../layouts/BarberoLayout';
-import ViewInicio from '../components/DashboardBarbero/ViewInicio';
-import ViewCitas from '../components/DashboardBarbero/ViewCitas';
-import ViewAjustes from '../components/DashboardBarbero/ViewAjustes';
-import ViewServicios from '../components/DashboardBarbero/ViewServicios';
-import type { BarberoView } from '../types';
+
+// IMPORTACIONES ACTUALIZADAS: Se agrega un "../" extra para subir dos niveles
+import BarberoLayout from '../../layouts/BarberoLayout';
+import ViewInicio from '../../components/DashboardBarbero/ViewInicio';
+import ViewCitas from '../../components/DashboardBarbero/ViewCitas';
+import ViewAjustes from '../../components/DashboardBarbero/ViewAjustes';
+import ViewServicios from '../../components/DashboardBarbero/ViewServicios';
+import type { BarberoView } from '../../types';
 
 const DashboardBarbero: React.FC = () => {
   const [activeView, setActiveView] = useState<BarberoView>('Inicio');

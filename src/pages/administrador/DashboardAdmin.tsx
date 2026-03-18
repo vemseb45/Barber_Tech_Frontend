@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import AdminLayout from '../layouts/AdminLayout';
-import ViewInicio from '../components/DashboardAdmin/ViewInicio';
-import ViewUsuarios from '../components/DashboardAdmin/ViewUsuarios';
-import ViewServicios from '../components/DashboardAdmin/ViewServicios';
-import type { AdminView } from '../types';
+import AdminLayout from '../../layouts/AdminLayout';
+import ViewInicio from '../../components/DashboardAdmin/ViewInicio';
+import ViewUsuarios from '../../components/DashboardAdmin/ViewUsuarios';
+import ViewServicios from '../../components/DashboardAdmin/ViewServicios';
+import type { AdminView } from '../../types';
 
 const DashboardAdmin: React.FC = () => {
   const [activeView, setActiveView] = useState<AdminView>('Inicio');
