@@ -13,9 +13,11 @@ import {
   ChevronRight 
 } from "lucide-react";
 
-// 1. IMPORTA TU COMPONENTE DESDE EL ARCHIVO EXTERNO
-import ViewAgenda from "../../components/DashboardCliente/Viewagenda"; // <-- Ajusta la ruta si está en otra carpeta
-// --- SUB-COMPONENTE: INICIO (Mantenlo aquí o muévelo a otro archivo) ---
+// 1. IMPORTACIÓN DE TUS COMPONENTES EXTERNOS
+import ViewAgenda from "../../components/DashboardCliente/Viewagenda";
+import ViewAjustesCliente from "../../components/DashboardCliente/Viewajustes"; // <--- Asegúrate de que la ruta y el nombre coincidan
+
+// --- SUB-COMPONENTE: INICIO ---
 const ViewInicio = ({ onReservaClick }: { onReservaClick: () => void }) => (
   <motion.div 
     initial={{ opacity: 0, y: 20 }} 
@@ -79,12 +81,9 @@ export default function DashboardCliente() {
   const navigate = useNavigate();
   const [activeView, setActiveView] = useState<'Inicio' | 'Reservas' | 'Perfil'>('Inicio');
   
-  // Sincronizar dark mode
   useEffect(() => {
     const isDark = document.documentElement.classList.contains('dark');
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    }
+    if (isDark) document.documentElement.classList.add('dark');
   }, []);
 
   const menuItems = [
@@ -133,7 +132,6 @@ export default function DashboardCliente() {
           })}
         </nav>
 
-        {/* FOOTER */}
         <div className="border-t border-slate-200 dark:border-slate-800 pt-8 mt-auto">
           <button 
             onClick={() => navigate("/login")}
@@ -154,7 +152,6 @@ export default function DashboardCliente() {
             exit={{ opacity: 0, x: -10 }}
             transition={{ duration: 0.3 }}
           >
-            {/* RENDERIZADO CONDICIONAL */}
             {activeView === 'Inicio' && (
               <ViewInicio onReservaClick={() => setActiveView('Reservas')} />
             )}
@@ -164,9 +161,7 @@ export default function DashboardCliente() {
             )}
 
             {activeView === 'Perfil' && (
-              <div className="flex items-center justify-center h-64 text-slate-400 font-bold italic uppercase border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[40px]">
-                Configuración de Perfil (Próximamente)
-              </div>
+              <ViewAjustesCliente /> // <--- ¡AQUÍ SE CARGA TU NUEVA VISTA!
             )}
           </motion.div>
         </AnimatePresence>
