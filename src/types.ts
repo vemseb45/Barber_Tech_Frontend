@@ -17,3 +17,4 @@ export interface Servicio {
 }
 
 export type AdminView = 'Inicio' | 'Usuarios' | 'Servicios' | 'Reportes' | 'Barberías';
+export type BarberoView = 'Inicio' | 'Citas' | 'Clientes' | 'Servicios' | 'Ajustes';
