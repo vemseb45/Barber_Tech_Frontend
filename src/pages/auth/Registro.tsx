@@ -1,8 +1,8 @@
 /* --- src/pages/Register.tsx --- */
-
 import "../../index.css";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -15,29 +15,31 @@ export default function Register() {
     password: ""
   });
   
-  const [darkMode, setDarkMode] = useState(false);
+  // Sincronización inicial con el tema del documento
+  const [darkMode, setDarkMode] = useState(document.documentElement.classList.contains('dark'));
   const navigate = useNavigate(); 
 
-  // Sincronización de tema (Igual que el Login)
+  // Efecto para aplicar el tema al cambiar el estado
   useEffect(() => {
-    const isDark = document.documentElement.classList.contains('dark');
-    setDarkMode(isDark);
-  }, []);
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
 
-  const toggleTheme = () => {
-    const newMode = !darkMode;
-    setDarkMode(newMode);
-    document.documentElement.classList.toggle('dark', newMode);
-  };
+  const toggleTheme = () => setDarkMode(!darkMode);
 
-  // TU LÓGICA ORIGINAL DE VALIDACIÓN
+  // Lógica de validación y cambio de inputs
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
+    // Validar solo letras para nombres/apellidos
     if (name === "nombres" || name === "apellidos") {
       if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(value)) return;
     }
 
+    // Validar solo números para cédula/teléfono
     if (name === "cedula" || name === "telefono") {
       if (!/^[0-9]*$/.test(value)) return;
     }
@@ -48,12 +50,10 @@ export default function Register() {
     });
   };
 
-  // TU LÓGICA ORIGINAL DE ENVÍO A DJANGO
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.com$/;
-
     if (!emailRegex.test(formData.email)) {
       alert("El correo debe tener formato ejemplo@gmail.com");
       return;
@@ -82,136 +82,113 @@ export default function Register() {
     }
   };
 
+  // Clase común para todos los inputs para evitar repetición y errores de color
+  const inputClass = "w-full p-4 rounded-2xl bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/5 text-slate-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm placeholder:text-slate-400 dark:placeholder:text-slate-500";
+
   return (
-    <div className="login-page-mono animate-fade-in" style={styles.pageContainer}>
+    <div className="min-h-screen flex flex-col px-6 md:px-10 transition-colors duration-500 bg-slate-50 dark:bg-[#0a0a0f] text-slate-900 dark:text-slate-100 font-sans antialiased">
       
-      {/* HEADER MODERNO */}
-      <header style={styles.header}>
-        <div style={styles.logoContainer}>
-          <span style={styles.logoIcon}>✂️</span>
-          <h1 style={styles.logoText}>BARBER TECH</h1>
+      {/* Header */}
+      <header className="flex justify-between items-center py-6 max-w-7xl mx-auto w-full">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">✂️</span>
+          <h1 className="text-lg font-black tracking-tighter uppercase">
+            Barber <span className="text-primary">Tech</span>
+          </h1>
         </div>
-        <div style={styles.navSimulada}>
-          <button onClick={toggleTheme} style={styles.themeBtn}>
+        <div className="flex items-center gap-6">
+          <button 
+            onClick={toggleTheme} 
+            className="text-xl hover:scale-110 transition-transform p-2 cursor-pointer"
+            aria-label="Cambiar tema"
+          >
             {darkMode ? '☀️' : '🌙'}
           </button>
-          <Link to="/login" className="btn-primary-hover" style={styles.backBtn}>
+          <Link 
+            to="/login" 
+            className="bg-primary hover:bg-[#7112b3] px-6 py-2 rounded-full text-white font-bold text-xs shadow-lg shadow-primary/30 transition-all"
+          >
             ← Volver
           </Link>
         </div>
       </header>
 
-      <main style={styles.mainContent}>
-        <form className="login-form-mono animate-fade-in" onSubmit={handleSubmit} style={styles.form}>
-          
-          <div style={styles.badge}>ÚNETE A LA EXPERIENCIA</div>
-          <h2 style={styles.mainTitle}>
-            Crea tu <span style={styles.purpleText}>Cuenta</span>
-          </h2>
-          <p style={styles.description}>Completa tus datos para empezar.</p>
-
-          {/* GRID DE INPUTS (2 COLUMNAS) */}
-          <div style={styles.inputsGrid}>
-            
-            {/* Username */}
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Username</label>
-              <div className="input-container-themed" style={styles.inputWrapper}>
-                <input type="text" name="username" value={formData.username} onChange={handleChange} placeholder="Ej: Pipe01" style={styles.input} required />
-              </div>
-            </div>
-
-            {/* Correo */}
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Correo</label>
-              <div className="input-container-themed" style={styles.inputWrapper}>
-                <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="ejemplo@gmail.com" style={styles.input} required />
-              </div>
-            </div>
-
-            {/* Nombres */}
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Nombres</label>
-              <div className="input-container-themed" style={styles.inputWrapper}>
-                <input type="text" name="nombres" value={formData.nombres} onChange={handleChange} placeholder="Tus nombres" style={styles.input} required />
-              </div>
-            </div>
-
-            {/* Apellidos */}
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Apellidos</label>
-              <div className="input-container-themed" style={styles.inputWrapper}>
-                <input type="text" name="apellidos" value={formData.apellidos} onChange={handleChange} placeholder="Tus apellidos" style={styles.input} required />
-              </div>
-            </div>
-
-            {/* Cédula */}
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Cédula</label>
-              <div className="input-container-themed" style={styles.inputWrapper}>
-                <input type="text" name="cedula" value={formData.cedula} onChange={handleChange} maxLength={10} placeholder="12345678" style={styles.input} required />
-              </div>
-            </div>
-
-            {/* Teléfono */}
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Teléfono</label>
-              <div className="input-container-themed" style={styles.inputWrapper}>
-                <input type="text" name="telefono" value={formData.telefono} onChange={handleChange} maxLength={10} placeholder="300..." style={styles.input} required />
-              </div>
-            </div>
-
-            {/* Contraseña (Ocupa las 2 columnas para que no se vea apretado) */}
-            <div style={{...styles.inputGroup, gridColumn: 'span 2'}}>
-              <label style={styles.label}>Contraseña</label>
-              <div className="input-container-themed" style={styles.inputWrapper}>
-                <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="********" style={styles.input} required />
-              </div>
-            </div>
-
-          </div>
-
-          <div style={styles.actionButtons}>
-            <button type="submit" className="btn-primary-hover" style={styles.btnRegistrarse}>
-              Registrarse
-            </button>
-            <p style={styles.extraText}>
-              ¿Ya tienes cuenta? <Link to="/login" style={styles.link}>Inicia Sesión</Link>
+      {/* Contenido Principal */}
+      <main className="flex-grow flex justify-center items-center py-10">
+        <motion.form 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          onSubmit={handleSubmit}
+          className="w-full max-w-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 p-8 md:p-12 rounded-[40px] shadow-2xl shadow-black/5 text-center"
+        >
+          <div className="mb-10">
+            <span className="text-primary text-[10px] font-black tracking-[3px] uppercase block mb-2">
+              Únete a la experiencia
+            </span>
+            <h2 className="text-4xl font-black mb-2">
+              Crea tu <span className="text-primary">Cuenta</span>
+            </h2>
+            <p className="text-slate-500 dark:text-slate-400 text-sm">
+              Completa tus datos para empezar tu transformación.
             </p>
           </div>
-        </form>
+
+          {/* Grid de Inputs */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+            
+            <div className="text-left">
+              <label className="text-xs font-bold mb-2 block ml-1 text-slate-700 dark:text-slate-300">Username</label>
+              <input type="text" name="username" value={formData.username} onChange={handleChange} placeholder="Ej: Pipe01" className={inputClass} required />
+            </div>
+
+            <div className="text-left">
+              <label className="text-xs font-bold mb-2 block ml-1 text-slate-700 dark:text-slate-300">Correo</label>
+              <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="ejemplo@gmail.com" className={inputClass} required />
+            </div>
+
+            <div className="text-left">
+              <label className="text-xs font-bold mb-2 block ml-1 text-slate-700 dark:text-slate-300">Nombres</label>
+              <input type="text" name="nombres" value={formData.nombres} onChange={handleChange} placeholder="Tus nombres" className={inputClass} required />
+            </div>
+
+            <div className="text-left">
+              <label className="text-xs font-bold mb-2 block ml-1 text-slate-700 dark:text-slate-300">Apellidos</label>
+              <input type="text" name="apellidos" value={formData.apellidos} onChange={handleChange} placeholder="Tus apellidos" className={inputClass} required />
+            </div>
+
+            <div className="text-left">
+              <label className="text-xs font-bold mb-2 block ml-1 text-slate-700 dark:text-slate-300">Cédula</label>
+              <input type="text" name="cedula" value={formData.cedula} onChange={handleChange} maxLength={10} placeholder="12345678" className={inputClass} required />
+            </div>
+
+            <div className="text-left">
+              <label className="text-xs font-bold mb-2 block ml-1 text-slate-700 dark:text-slate-300">Teléfono</label>
+              <input type="text" name="telefono" value={formData.telefono} onChange={handleChange} maxLength={10} placeholder="300..." className={inputClass} required />
+            </div>
+
+            <div className="text-left md:col-span-2">
+              <label className="text-xs font-bold mb-2 block ml-1 text-slate-700 dark:text-slate-300">Contraseña</label>
+              <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="********" className={inputClass} required />
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center gap-4">
+            <button 
+              type="submit" 
+              className="w-full max-w-xs bg-primary hover:bg-[#7112b3] text-white font-black py-4 rounded-2xl shadow-xl shadow-primary/30 transition-all active:scale-95 cursor-pointer"
+            >
+              Registrarse ahora
+            </button>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              ¿Ya tienes cuenta? <Link to="/login" className="text-primary font-bold hover:underline">Inicia Sesión</Link>
+            </p>
+          </div>
+        </motion.form>
       </main>
+
+      <footer className="py-8 text-center text-[10px] opacity-30 uppercase tracking-[2px]">
+        © 2026 BarberTech. Estilo con precisión.
+      </footer>
     </div>
   );
 }
-
-const styles = {
-  pageContainer: {
-    minHeight: '100vh',
-    display: 'flex',
-    flexDirection: 'column' as const,
-    padding: '0 40px',
-  },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0' },
-  logoContainer: { display: 'flex', alignItems: 'center', gap: '8px' },
-  logoIcon: { fontSize: '1.4rem' },
-  logoText: { fontSize: '1.1rem', fontWeight: '800', letterSpacing: '1px' },
-  navSimulada: { display: 'flex', alignItems: 'center', gap: '25px' },
-  themeBtn: { background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.2rem', color: 'inherit' },
-  backBtn: { padding: '10px 22px', borderRadius: '50px', background: '#7924c7', color: 'white', textDecoration: 'none', fontWeight: 'bold' as const, fontSize: '0.8rem' },
-  mainContent: { flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px 0' },
-  form: { width: '100%', maxWidth: '550px', textAlign: 'center' as const },
-  badge: { color: '#7924c7', fontSize: '0.7rem', fontWeight: 'bold' as const, letterSpacing: '1px', marginBottom: '10px' },
-  mainTitle: { fontSize: '2.5rem', fontWeight: '900' as const, lineHeight: '1', marginBottom: '10px' },
-  purpleText: { color: '#7924c7' },
-  description: { color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '25px' },
-  inputsGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' },
-  inputGroup: { textAlign: 'left' as const },
-  label: { fontSize: '0.8rem', fontWeight: '600' as const, marginBottom: '5px', display: 'block' },
-  inputWrapper: { border: '1px solid rgba(121, 36, 199, 0.2)', borderRadius: '12px', overflow: 'hidden' },
-  input: { width: '100%', padding: '12px', background: 'var(--input-bg-custom)', border: 'none', color: 'var(--text-main)', outline: 'none' },
-  actionButtons: { display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: '10px' },
-  btnRegistrarse: { width: '100%', maxWidth: '250px', padding: '15px', borderRadius: '50px', background: '#7924c7', color: 'white', border: 'none', fontWeight: 'bold' as const, cursor: 'pointer' },
-  extraText: { fontSize: '0.85rem', color: 'var(--text-muted)' },
-  link: { color: '#7924c7', textDecoration: 'none', fontWeight: 'bold' as const }
-};

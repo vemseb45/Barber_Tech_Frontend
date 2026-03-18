@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, DollarSign, Calendar, ArrowUpRight, TrendingUp } from 'lucide-react';
+import { Users, DollarSign, Calendar, ArrowUpRight, TrendingUp, CheckCircle2 } from 'lucide-react';
 
 const ViewInicio: React.FC = () => {
   const stats = [
@@ -9,6 +9,8 @@ const ViewInicio: React.FC = () => {
       change: '+12%',
       trend: 'up',
       icon: Users,
+      color: 'text-blue-500',
+      bg: 'bg-blue-500/10'
     },
     {
       label: 'Ingresos Mes',
@@ -16,6 +18,8 @@ const ViewInicio: React.FC = () => {
       change: '+8.4%',
       trend: 'up',
       icon: DollarSign,
+      color: 'text-emerald-500',
+      bg: 'bg-emerald-500/10'
     },
     {
       label: 'Citas Hoy',
@@ -23,113 +27,106 @@ const ViewInicio: React.FC = () => {
       change: '5 pendientes',
       trend: 'neutral',
       icon: Calendar,
+      color: 'text-primary',
+      bg: 'bg-primary/10'
     },
   ];
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      
+      {/* HEADER DE BIENVENIDA */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h2 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight">
+            ¡Hola de nuevo, Carlos! 👋
+          </h2>
+          <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">
+            Esto es lo que está pasando en tu barbería hoy.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm text-xs font-bold text-slate-600 dark:text-slate-300">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Servidor Online
+        </div>
+      </div>
 
-      {/* STATS */}
+      {/* STATS CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {stats.map((stat, index) => (
           <div
             key={index}
-            className="p-6 rounded-2xl border shadow-sm hover:shadow-md transition-all"
-            style={{
-              background: "var(--input-bg-custom)",
-              borderColor: "rgba(255,255,255,0.08)"
-            }}
+            className="group p-8 rounded-[32px] bg-white dark:bg-[#1e293b] border border-slate-100 dark:border-slate-700/50 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 relative overflow-hidden"
           >
-            <div className="flex justify-between items-start">
+            <div className="flex justify-between items-start relative z-10">
               <div>
-                <p className="font-medium text-sm" style={{ color: "var(--text-muted)" }}>
+                <p className="font-bold text-xs uppercase tracking-widest text-slate-400 dark:text-slate-500">
                   {stat.label}
                 </p>
-                <h3 className="text-3xl font-bold mt-1" style={{ color: "var(--text-main)" }}>
+                <h3 className="text-3xl font-black mt-2 text-slate-800 dark:text-white">
                   {stat.value}
                 </h3>
               </div>
 
-              <div
-                className="p-3 rounded-xl"
-                style={{
-                  background: "rgba(133, 25, 210, 0.1)",
-                  color: "var(--color-primary)"
-                }}
-              >
-                <stat.icon size={24} />
+              <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} transition-transform group-hover:scale-110 duration-300`}>
+                <stat.icon size={24} strokeWidth={2.5} />
               </div>
             </div>
 
-            <div className="mt-4 flex items-center gap-1">
-              {stat.trend === 'up' && (
-                <span className="flex items-center text-sm font-medium text-green-500">
-                  <ArrowUpRight size={16} className="mr-1" />
+            <div className="mt-6 flex items-center gap-2 relative z-10">
+              {stat.trend === 'up' ? (
+                <div className="flex items-center px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 text-xs font-bold">
+                  <ArrowUpRight size={14} className="mr-1" />
                   {stat.change}
-                </span>
-              )}
-              {stat.trend === 'neutral' && (
-                <span className="text-sm font-medium" style={{ color: "var(--text-muted)" }}>
+                </div>
+              ) : (
+                <div className="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 text-xs font-bold">
                   {stat.change}
-                </span>
+                </div>
               )}
-              {stat.trend !== 'neutral' && (
-                <span className="text-xs ml-1" style={{ color: "var(--text-muted)" }}>
-                  vs mes pasado
-                </span>
-              )}
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
+                vs periodo anterior
+              </span>
+            </div>
+            
+            {/* Decoración sutil de fondo */}
+            <div className="absolute -right-4 -bottom-4 text-slate-50 dark:text-slate-800/20 transform rotate-12 opacity-0 group-hover:opacity-100 transition-opacity">
+               <stat.icon size={120} />
             </div>
           </div>
         ))}
       </div>
 
-      {/* GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* GRID PRINCIPAL */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
 
-        {/* GRAFICO */}
-        <div
-          className="p-6 rounded-2xl border shadow-sm min-h-[350px] flex flex-col"
-          style={{
-            background: "var(--input-bg-custom)",
-            borderColor: "rgba(255,255,255,0.08)"
-          }}
-        >
-          <div className="flex justify-between items-center mb-6">
-            <h4 className="font-bold text-lg" style={{ color: "var(--text-main)" }}>
-              Rendimiento Semanal
-            </h4>
-
-            <div className="flex items-center gap-2 text-xs font-medium" style={{ color: "var(--text-muted)" }}>
-              <span className="flex items-center gap-1">
-                <TrendingUp size={14} style={{ color: "var(--color-primary)" }} />
-                Citas
-              </span>
+        {/* GRÁFICO DE RENDIMIENTO (3/5) */}
+        <div className="lg:col-span-3 p-8 rounded-[32px] bg-white dark:bg-[#1e293b] border border-slate-100 dark:border-slate-700/50 shadow-sm flex flex-col min-h-[400px]">
+          <div className="flex justify-between items-center mb-10">
+            <div>
+              <h4 className="font-black text-xl text-slate-800 dark:text-white">Rendimiento Semanal</h4>
+              <p className="text-xs text-slate-400 font-medium">Volumen de citas completadas</p>
             </div>
+            <select className="bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-2 text-xs font-bold text-slate-500 outline-none focus:ring-2 focus:ring-primary/20">
+              <option>Últimos 7 días</option>
+              <option>Este mes</option>
+            </select>
           </div>
 
-          <div className="flex-1 flex items-end justify-between gap-2 px-4 pb-2">
-            {[40, 65, 50, 85, 70, 95, 60].map((height, i) => (
-              <div key={i} className="flex-1 flex flex-col items-center gap-2 group">
-                
-                <div
-                  className="w-full rounded-t-lg transition-all duration-500 group-hover:shadow-lg relative"
-                  style={{
-                    height: `${height}%`,
-                    background: "rgba(133, 25, 210, 0.3)"
-                  }}
-                >
+          <div className="flex-1 flex items-end justify-between gap-3 px-2">
+            {[45, 60, 40, 85, 75, 100, 65].map((height, i) => (
+              <div key={i} className="flex-1 flex flex-col items-center gap-4 group">
+                <div className="w-full relative">
                   <div
-                    className="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{
-                      background: "#111",
-                      color: "#fff"
-                    }}
+                    className="w-full rounded-2xl transition-all duration-700 group-hover:brightness-110 relative bg-gradient-to-t from-primary to-orange-400 shadow-lg shadow-primary/10"
+                    style={{ height: `${height * 2}px` }}
                   >
-                    {height}
+                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] font-bold py-1.5 px-2.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-1">
+                      {height}%
+                    </div>
                   </div>
                 </div>
-
-                <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>
+                <span className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
                   {['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'][i]}
                 </span>
               </div>
@@ -137,57 +134,51 @@ const ViewInicio: React.FC = () => {
           </div>
         </div>
 
-        {/* CITAS */}
-        <div
-          className="p-6 rounded-2xl border shadow-sm"
-          style={{
-            background: "var(--input-bg-custom)",
-            borderColor: "rgba(255,255,255,0.08)"
-          }}
-        >
-          <h4 className="font-bold text-lg mb-6" style={{ color: "var(--text-main)" }}>
-            Citas Recientes
-          </h4>
+        {/* CITAS RECIENTES (2/5) */}
+        <div className="lg:col-span-2 p-8 rounded-[32px] bg-white dark:bg-[#1e293b] border border-slate-100 dark:border-slate-700/50 shadow-sm">
+          <div className="flex justify-between items-center mb-8">
+            <h4 className="font-black text-xl text-slate-800 dark:text-white">Próximas Citas</h4>
+            <CheckCircle2 className="text-primary opacity-50" size={20} />
+          </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {[
-              { name: 'Juan Pérez', service: 'Corte de Cabello + Barba', time: '10:30 AM' },
-              { name: 'Mario Gómez', service: 'Limpieza Facial', time: '11:15 AM' },
-              { name: 'Luis Rivas', service: 'Corte Clásico', time: '12:00 PM' },
-              { name: 'Ana Torres', service: 'Tratamiento Capilar', time: '01:30 PM' },
+              { name: 'Juan Pérez', service: 'Fade + Barba', time: '10:30', color: 'bg-blue-500' },
+              { name: 'Mario Gómez', service: 'Limpieza Facial', time: '11:15', color: 'bg-purple-500' },
+              { name: 'Luis Rivas', service: 'Corte Clásico', time: '12:00', color: 'bg-orange-500' },
+              { name: 'Ana Torres', service: 'Tratamiento', time: '13:30', color: 'bg-emerald-500' },
+              { name: 'Roberto S.', service: 'Afeitado', time: '14:15', color: 'bg-red-500' },
             ].map((cita, i) => (
               <div
                 key={i}
-                className="flex items-center justify-between p-3 rounded-xl transition-colors group hover:bg-white/5"
+                className="flex items-center justify-between p-4 rounded-2xl transition-all duration-300 hover:bg-slate-50 dark:hover:bg-slate-800 group cursor-pointer border border-transparent hover:border-slate-100 dark:hover:border-slate-700"
               >
-                <div className="flex items-center gap-3">
-                  <img
-                    src={`https://ui-avatars.com/api/?name=${cita.name}&background=8519d2&color=fff`}
-                    alt={cita.name}
-                    className="w-10 h-10 rounded-full"
-                  />
+                <div className="flex items-center gap-4">
+                  <div className={`w-10 h-10 rounded-xl ${cita.color} flex items-center justify-center text-white font-black text-xs shadow-lg shadow-black/5 group-hover:scale-110 transition-transform`}>
+                    {cita.name.charAt(0)}
+                  </div>
                   <div>
-                    <p className="font-medium text-sm" style={{ color: "var(--text-main)" }}>
+                    <p className="font-bold text-sm text-slate-800 dark:text-white leading-none">
                       {cita.name}
                     </p>
-                    <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                    <p className="text-[11px] font-medium text-slate-400 mt-1.5">
                       {cita.service}
                     </p>
                   </div>
                 </div>
 
-                <span
-                  className="text-[10px] font-bold px-2 py-1 rounded-lg"
-                  style={{
-                    background: "rgba(133, 25, 210, 0.1)",
-                    color: "var(--color-primary)"
-                  }}
-                >
-                  {cita.time}
-                </span>
+                <div className="text-right">
+                  <span className="text-xs font-black text-primary bg-primary/10 px-3 py-1.5 rounded-lg">
+                    {cita.time}
+                  </span>
+                </div>
               </div>
             ))}
           </div>
+          
+          <button className="w-full mt-8 py-4 text-xs font-black text-slate-400 uppercase tracking-[0.2em] border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-2xl hover:border-primary hover:text-primary transition-all duration-300">
+            Ver Agenda Completa
+          </button>
         </div>
       </div>
     </div>

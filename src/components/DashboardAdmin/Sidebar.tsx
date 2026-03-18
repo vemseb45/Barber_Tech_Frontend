@@ -1,6 +1,15 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, Scissors, Store, BarChart3, LogOut } from 'lucide-react';
+import { 
+  LayoutDashboard, 
+  Users, 
+  Scissors, 
+  Store, 
+  BarChart3, 
+  LogOut, 
+  ShieldCheck, 
+  ChevronRight 
+} from 'lucide-react';
 import type { AdminView } from '../../types';
 
 interface SidebarProps {
@@ -12,11 +21,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
   const navigate = useNavigate();
   
   const menuItems = [
-    { id: 'Inicio' as AdminView, icon: LayoutDashboard, label: 'Inicio' },
-    { id: 'Usuarios' as AdminView, icon: Users, label: 'Usuarios' },
-    { id: 'Servicios' as AdminView, icon: Scissors, label: 'Servicios' },
-    { id: 'Barberías' as AdminView, icon: Store, label: 'Barberías' },
-    { id: 'Reportes' as AdminView, icon: BarChart3, label: 'Reportes' },
+    { id: 'Inicio' as AdminView, icon: LayoutDashboard, label: 'Dashboard' },
+    { id: 'Usuarios' as AdminView, icon: Users, label: 'Equipo' },
+    { id: 'Servicios' as AdminView, icon: Scissors, label: 'Catálogo' },
+    { id: 'Barberías' as AdminView, icon: Store, label: 'Sucursales' },
+    { id: 'Reportes' as AdminView, icon: BarChart3, label: 'Analíticas' },
   ];
 
   const handleLogout = () => {
@@ -26,49 +35,73 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
   };
 
   return (
-    <aside className="w-64 bg-white dark:bg-[#1e1b33] border-r border-slate-200 dark:border-slate-800 flex flex-col h-screen sticky top-0 transition-all duration-300">
-      <div className="p-6 flex items-center gap-3">
-        <div className="w-10 h-10 bg-[#7924c7] rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-[#7924c7]/20">
-          B
+    <aside className="w-72 bg-white dark:bg-[#0f172a] border-r border-slate-200 dark:border-slate-800 flex flex-col h-screen sticky top-0 transition-all duration-300 z-50">
+      
+      {/* ADMIN BRANDING */}
+      <div className="p-8 flex items-center gap-4">
+        <div className="w-12 h-12 bg-gradient-to-tr from-[#7924c7] to-[#9d50bb] rounded-[18px] flex items-center justify-center text-white shadow-xl shadow-purple-500/20 shrink-0 transform hover:scale-105 transition-transform duration-300">
+          <ShieldCheck size={26} strokeWidth={2.5} />
         </div>
-        <span className="font-bold text-xl tracking-tight dark:text-white">BarberAdmin</span>
+        <div className="flex flex-col">
+          <span className="font-black text-xl tracking-tight dark:text-white leading-none">BarberAdmin</span>
+          <span className="text-[10px] font-bold text-[#7924c7] uppercase tracking-[0.2em] mt-1">Control Panel</span>
+        </div>
       </div>
 
-      <nav className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto">
-        {menuItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => onViewChange(item.id)}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
-              activeView === item.id
-                ? 'bg-[#7924c7] text-white shadow-lg shadow-[#7924c7]/30'
-                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-            }`}
-          >
-            <item.icon size={20} />
-            <span className="font-medium">{item.label}</span>
-          </button>
-        ))}
+      {/* MAIN NAVIGATION */}
+      <nav className="flex-1 px-4 space-y-1.5 mt-4 overflow-y-auto custom-scrollbar">
+        <p className="px-5 text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.25em] mb-4">Gestión Global</p>
+        
+        {menuItems.map((item) => {
+          const isActive = activeView === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => onViewChange(item.id)}
+              className={`w-full group flex items-center justify-between px-5 py-3.5 rounded-2xl transition-all duration-300 cursor-pointer ${
+                isActive 
+                  ? 'bg-[#7924c7] text-white shadow-lg shadow-purple-500/30 translate-x-1' 
+                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-[#7924c7] dark:hover:text-slate-200'
+              }`}
+            >
+              <div className="flex items-center gap-4 font-bold text-sm">
+                <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} className={isActive ? "animate-pulse" : "group-hover:rotate-12 transition-transform"} />
+                <span>{item.label}</span>
+              </div>
+              {isActive && <ChevronRight size={16} className="opacity-60" />}
+            </button>
+          );
+        })}
       </nav>
 
-      <div className="p-6 border-t border-slate-200 dark:border-slate-800">
-        <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl mb-4">
-          <div className="w-10 h-10 rounded-full bg-[#7924c7] flex items-center justify-center text-white font-bold border-2 border-[#7924c7]">
-            CA
-          </div>
-          <div className="overflow-hidden">
-            <p className="text-sm font-semibold truncate dark:text-white">Carlos Admin</p>
-            <p className="text-xs text-slate-500 truncate">Super Administrador</p>
+      {/* FOOTER / ADMIN PROFILE */}
+      <div className="p-6 mt-auto">
+        <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800/40 dark:to-slate-900/40 border border-slate-200 dark:border-slate-700/50 rounded-[28px] p-4 mb-4">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="w-11 h-11 rounded-full bg-[#7924c7] flex items-center justify-center text-white font-black text-sm border-2 border-white dark:border-slate-800 shadow-md">
+                CA
+              </div>
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 border-2 border-white dark:border-slate-800 rounded-full flex items-center justify-center">
+                <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+              </div>
+            </div>
+            <div className="overflow-hidden">
+              <p className="text-sm font-black truncate text-slate-800 dark:text-white leading-tight">Carlos Admin</p>
+              <p className="text-[10px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-tighter">Super Administrador</p>
+            </div>
           </div>
         </div>
+
         <button 
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-4 py-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
+          className="w-full flex items-center justify-center gap-3 px-4 py-3.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-2xl transition-all duration-300 font-black text-xs uppercase tracking-widest border border-transparent hover:border-red-100 dark:hover:border-red-900/20 cursor-pointer"
         >
-          <LogOut size={18} />
-          <span className="text-sm font-medium">Cerrar Sesión</span>
+          <LogOut size={16} strokeWidth={3} />
+          <span>Finalizar Sesión</span>
         </button>
       </div>
+
     </aside>
   );
 };

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { UserPlus, Search } from 'lucide-react';
+import { UserPlus, Search, Shield, User, Scissors, MoreVertical } from 'lucide-react';
 import api from '../../api/axios';
 import type { Usuario } from '../../types';
 
 const ViewUsuarios: React.FC = () => {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const [busqueda, setBusqueda] = useState('');
   const [cargando, setCargando] = useState(false);
 
-  // Conexión con tu backend
   useEffect(() => {
     const cargarUsuarios = async () => {
       setCargando(true);
@@ -24,7 +24,6 @@ const ViewUsuarios: React.FC = () => {
     cargarUsuarios();
   }, []);
 
-  // Tu función para cambiar roles
   const handleCambiarRol = async (id: number, nuevoRol: string) => {
     try {
       await api.patch(`usuarios/${id}/cambiar_rol/`, { rol: nuevoRol });
@@ -34,91 +33,116 @@ const ViewUsuarios: React.FC = () => {
     }
   };
 
+  const usuariosFiltrados = usuarios.filter(u => 
+    u.username?.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="relative w-full sm:w-96">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-          <input
-            type="text"
-            placeholder="Buscar usuarios..."
-            className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1e1b33] focus:ring-2 focus:ring-[#7924c7]/20 focus:border-[#7924c7] outline-none transition-all dark:text-white"
-          />
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      
+      {/* HEADER & ACTIONS */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+          <h2 className="text-3xl font-bold text-slate-800 dark:text-white">Gestión de Usuarios</h2>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">Administra los accesos y roles de tu equipo.</p>
         </div>
-        <button className="bg-[#7924c7] hover:bg-[#5213fc] text-white px-5 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-[#7924c7]/20 font-medium">
+        
+        <button className="w-full md:w-auto bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-2xl flex items-center justify-center gap-3 transition-all shadow-xl shadow-primary/25 font-bold text-sm cursor-pointer active:scale-95">
           <UserPlus size={20} />
-          <span>Añadir Usuario</span>
+          <span>Nuevo Usuario</span>
         </button>
       </div>
 
-      <div className="bg-white dark:bg-[#1e1b33] rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+      {/* FILTROS */}
+      <div className="bg-white dark:bg-[#1e293b] p-4 rounded-[24px] border border-slate-200 dark:border-slate-700/50 shadow-sm">
+        <div className="relative group">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" size={20} />
+          <input
+            type="text"
+            placeholder="Buscar por nombre de usuario..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            className="w-full pl-12 pr-6 py-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 outline-none focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all dark:text-white font-medium"
+          />
+        </div>
+      </div>
+
+      {/* TABLA DE USUARIOS */}
+      <div className="bg-white dark:bg-[#1e293b] rounded-[32px] border border-slate-200 dark:border-slate-700/50 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 uppercase text-[10px] font-bold tracking-wider">
-              <tr>
-                <th className="px-6 py-4">Usuario</th>
-                <th className="px-6 py-4">Rol Actual</th>
-                <th className="px-6 py-4 text-center">Acciones Rápidas</th>
+          <table className="w-full text-left border-separate border-spacing-0">
+            <thead>
+              <tr className="bg-slate-50 dark:bg-slate-800/50">
+                <th className="px-8 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800">Perfil de Usuario</th>
+                <th className="px-8 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800">Nivel de Acceso</th>
+                <th className="px-8 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 text-center">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {cargando ? (
                 <tr>
-                  <td colSpan={3} className="text-center py-8 text-slate-500 font-medium animate-pulse">
-                    Cargando usuarios desde el servidor...
+                  <td colSpan={3} className="px-8 py-20">
+                    <div className="flex flex-col items-center justify-center gap-3">
+                      <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                      <span className="text-slate-400 font-bold text-sm">Sincronizando base de datos...</span>
+                    </div>
                   </td>
                 </tr>
-              ) : usuarios.length === 0 ? (
+              ) : usuariosFiltrados.length === 0 ? (
                 <tr>
-                   <td colSpan={3} className="text-center py-8 text-slate-500 font-medium">
-                    No se encontraron usuarios.
+                  <td colSpan={3} className="px-8 py-20 text-center">
+                    <p className="text-slate-400 font-medium">No se encontraron usuarios que coincidan.</p>
                   </td>
                 </tr>
               ) : (
-                usuarios.map((user) => (
-                  <tr key={user.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors group">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm ${
-                          user.rol === 'Admin' ? 'bg-purple-100 text-purple-600' : 
-                          user.rol === 'Barbero' ? 'bg-orange-100 text-orange-600' : 
-                          'bg-blue-100 text-blue-600'
+                usuariosFiltrados.map((user) => (
+                  <tr key={user.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition-all group">
+                    <td className="px-8 py-6">
+                      <div className="flex items-center gap-4">
+                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-lg shadow-sm ${
+                          user.rol === 'Admin' ? 'bg-purple-500/10 text-purple-600' : 
+                          user.rol === 'Barbero' ? 'bg-orange-500/10 text-orange-600' : 
+                          'bg-blue-500/10 text-blue-600'
                         }`}>
-                          {user.username ? user.username.substring(0, 2).toUpperCase() : 'U'}
+                          {user.username?.substring(0, 1).toUpperCase()}
                         </div>
                         <div>
-                          <p className="font-semibold text-sm dark:text-white">{user.username}</p>
-                          <p className="text-xs text-slate-500">ID: {user.id}</p>
+                          <p className="font-bold text-slate-800 dark:text-white">{user.username}</p>
+                          <p className="text-[11px] text-slate-400 font-medium uppercase tracking-tighter">ID: UID-{user.id}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={`text-xs font-bold px-3 py-1.5 rounded-lg ${
+                    <td className="px-8 py-6">
+                      <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[11px] font-bold ${
                         user.rol === 'Admin' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' :
                         user.rol === 'Barbero' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' :
                         'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
                       }`}>
+                        {user.rol === 'Admin' ? <Shield size={14} /> : user.rol === 'Barbero' ? <Scissors size={14} /> : <User size={14} />}
                         {user.rol}
-                      </span>
+                      </div>
                     </td>
-                    <td className="px-6 py-4 text-center">
-                      <div className="flex justify-center gap-2">
+                    <td className="px-8 py-6">
+                      <div className="flex justify-center gap-3">
                         {user.rol !== 'Barbero' && (
                           <button 
                             onClick={() => handleCambiarRol(user.id, 'Barbero')}
-                            className="text-[10px] font-bold px-3 py-1.5 border border-orange-200 text-orange-600 hover:bg-orange-50 dark:border-orange-900/50 dark:hover:bg-orange-900/20 rounded-lg transition-colors"
+                            className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-orange-600 hover:bg-orange-600 hover:text-white hover:border-orange-600 rounded-xl text-[11px] font-black transition-all cursor-pointer shadow-sm"
                           >
-                            Hacer Barbero
+                            HACER BARBERO
                           </button>
                         )}
                         {user.rol !== 'Admin' && (
                           <button 
                             onClick={() => handleCambiarRol(user.id, 'Admin')}
-                            className="text-[10px] font-bold px-3 py-1.5 border border-purple-200 text-purple-600 hover:bg-purple-50 dark:border-purple-900/50 dark:hover:bg-purple-900/20 rounded-lg transition-colors"
+                            className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-purple-600 hover:bg-purple-600 hover:text-white hover:border-purple-600 rounded-xl text-[11px] font-black transition-all cursor-pointer shadow-sm"
                           >
-                            Hacer Admin
+                            HACER ADMIN
                           </button>
                         )}
+                        <button className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors">
+                          <MoreVertical size={18} />
+                        </button>
                       </div>
                     </td>
                   </tr>

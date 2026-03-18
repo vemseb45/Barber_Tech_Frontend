@@ -1,98 +1,175 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  LayoutDashboard, 
+  CalendarPlus, 
+  User, 
+  LogOut, 
+  Sparkles, 
+  Clock, 
+  MapPin, 
+  Gift, 
+  ChevronRight 
+} from "lucide-react";
 
-export default function DashboardCliente() {
-  const location = useLocation();
-  const navigate = useNavigate();
+// 1. IMPORTA TU COMPONENTE DESDE EL ARCHIVO EXTERNO
+import ViewAgenda from "../../components/DashboardCliente/Viewagenda"; // <-- Ajusta la ruta si está en otra carpeta
+// --- SUB-COMPONENTE: INICIO (Mantenlo aquí o muévelo a otro archivo) ---
+const ViewInicio = ({ onReservaClick }: { onReservaClick: () => void }) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }} 
+    animate={{ opacity: 1, y: 0 }}
+    className="space-y-8"
+  >
+    {/* BANNER DINÁMICO */}
+    <div className="relative overflow-hidden bg-primary rounded-[40px] p-10 text-white shadow-2xl shadow-primary/20">
+      <div className="relative z-10 max-w-lg">
+        <h2 className="text-4xl font-black leading-tight">¿Listo para tu próximo gran cambio?</h2>
+        <p className="mt-4 text-white/80 font-medium">Reserva hoy y mantén tu estilo impecable con nuestros barberos expertos.</p>
+        <button 
+          onClick={onReservaClick}
+          className="mt-8 bg-white text-primary px-8 py-4 rounded-[20px] font-black text-sm uppercase tracking-widest flex items-center gap-3 hover:scale-105 transition-transform cursor-pointer"
+        >
+          Reservar Ahora <CalendarPlus size={18} />
+        </button>
+      </div>
+      <div className="absolute top-[-20%] right-[-10%] w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+    </div>
 
-  const menuItems = [
-    { name: "Inicio", icon: "🏠", path: "/dashboardCliente" },
-    { name: "Reservas", icon: "📅", path: "/agendaCliente" },
-    { name: "Perfil", icon: "👤", path: "/cliente/perfil" },
-  ];
-
-  useEffect(() => {
-    document.documentElement.classList.add('dark');
-  }, []);
-
-  return (
-    <div className="dashboard-container">
-      
-      {/* SIDEBAR */}
-      <aside className="sidebar-aside">
-        <div className="flex items-center gap-[14px] mb-12">
-          <div className="logo-box">B</div>
-          <h2 className="text-xl font-bold tracking-tight">BarberTech</h2>
-        </div>
-        
-        <nav className="flex flex-col gap-3 flex-1">
-          {menuItems.map((item) => (
-            <Link
-              key={item.name}
-              to={item.path}
-              className={`nav-link-custom ${location.pathname === item.path ? 'nav-link-active' : ''}`}
-            >
-              <span className="text-lg">{item.icon}</span>
-              {item.name}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="border-t border-white/10 pt-6">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="w-11 h-11 rounded-full bg-[var(--color-primary)] flex items-center justify-center font-bold">JP</div>
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold">Juan Pérez</span>
-              <span className="text-xs text-slate-500">Cliente Platinum</span>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* PRÓXIMA CITA */}
+      <div className="lg:col-span-2 p-8 bg-white dark:bg-white/5 rounded-[32px] border border-slate-200 dark:border-white/10 shadow-sm">
+        <h4 className="font-black text-xl mb-6 text-slate-800 dark:text-white">Tu Próxima Cita</h4>
+        <div className="flex flex-col md:flex-row gap-6 p-6 bg-slate-50 dark:bg-white/5 rounded-[28px] border border-dashed border-slate-200 dark:border-white/10">
+          <div className="flex flex-col items-center justify-center px-6 border-r border-slate-200 dark:border-white/10">
+            <span className="text-4xl font-black text-primary">18</span>
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Marzo</span>
+          </div>
+          <div className="space-y-3 flex-1">
+            <div className="flex items-center gap-3 font-bold text-slate-700 dark:text-slate-200">
+              <Clock size={18} className="text-primary" /> 15:30 PM
+            </div>
+            <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400 font-medium">
+              <MapPin size={18} className="text-primary" /> Barbería Central - Silla 02
+            </div>
+            <div className="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-xl text-xs font-black">
+              Corte Premium + Barba
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* LEALTAD */}
+      <div className="p-8 bg-gradient-to-br from-amber-400 to-orange-500 rounded-[32px] text-white flex flex-col items-center justify-center text-center shadow-xl shadow-orange-500/20">
+        <Gift size={40} className="mb-4" />
+        <h4 className="text-4xl font-black">450</h4>
+        <p className="font-bold text-xs uppercase tracking-widest mt-2 opacity-90">Puntos Barber</p>
+        <div className="mt-6 w-full bg-white/20 h-2 rounded-full overflow-hidden">
+          <div className="bg-white h-full w-[75%] shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+        </div>
+        <p className="text-[10px] mt-4 font-black uppercase tracking-tighter">¡Faltan 50 puntos para un corte gratis!</p>
+      </div>
+    </div>
+  </motion.div>
+);
+
+// --- COMPONENTE PRINCIPAL ---
+export default function DashboardCliente() {
+  const navigate = useNavigate();
+  const [activeView, setActiveView] = useState<'Inicio' | 'Reservas' | 'Perfil'>('Inicio');
+  
+  // Sincronizar dark mode
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
+
+  const menuItems = [
+    { id: 'Inicio', name: "Inicio", icon: LayoutDashboard },
+    { id: 'Reservas', name: "Reservas", icon: CalendarPlus },
+    { id: 'Perfil', name: "Perfil", icon: User },
+  ];
+
+  return (
+    <div className="min-h-screen flex bg-slate-50 dark:bg-[#0a0a0f] text-slate-900 dark:text-slate-100 transition-colors duration-500 font-sans">
+      
+      {/* SIDEBAR */}
+      <aside className="w-72 bg-white dark:bg-[#0f172a] border-r border-slate-200 dark:border-slate-800 p-8 flex flex-col sticky top-0 h-screen">
+        <div className="flex items-center gap-4 mb-12 group">
+          <div className="w-12 h-12 bg-primary rounded-[18px] flex items-center justify-center text-white shadow-xl shadow-primary/30 group-hover:rotate-6 transition-transform">
+            <Sparkles size={24} />
+          </div>
+          <div className="flex flex-col">
+            <h2 className="text-xl font-black tracking-tighter uppercase italic leading-none dark:text-white">
+              Barber<span className="text-primary">Tech</span>
+            </h2>
+            <span className="text-[10px] font-bold text-primary uppercase tracking-widest mt-1">Client Pro</span>
+          </div>
+        </div>
+        
+        <nav className="flex-1 space-y-2">
+          {menuItems.map((item) => {
+            const isActive = activeView === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveView(item.id as any)}
+                className={`w-full flex items-center justify-between px-5 py-4 rounded-[20px] font-bold text-sm transition-all cursor-pointer ${
+                  isActive 
+                    ? 'bg-primary text-white shadow-xl shadow-primary/20 translate-x-1' 
+                    : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-primary'
+                }`}
+              >
+                <div className="flex items-center gap-4">
+                  <item.icon size={20} strokeWidth={isActive ? 3 : 2} />
+                  {item.name}
+                </div>
+                {isActive && <ChevronRight size={14} className="opacity-50" />}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* FOOTER */}
+        <div className="border-t border-slate-200 dark:border-slate-800 pt-8 mt-auto">
           <button 
             onClick={() => navigate("/login")}
-            className="text-red-400 text-sm font-semibold flex items-center hover:text-red-300 transition-colors"
+            className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-red-500/5 text-red-500 hover:bg-red-500 hover:text-white transition-all font-black text-xs uppercase tracking-[0.2em] cursor-pointer"
           >
-            <span className="mr-2">↪️</span> Cerrar sesión
+            <LogOut size={16} strokeWidth={3} /> Cerrar sesión
           </button>
         </div>
       </aside>
 
       {/* CONTENIDO PRINCIPAL */}
-      <main className="flex-1 flex flex-col gap-8">
-        <header className="mt-2">
-          <h1 className="text-4xl font-extrabold mb-2">Panel de Control</h1>
-          <p className="text-slate-400">Gestiona tus citas y preferencias de estilo.</p>
-        </header>
+      <main className="flex-1 p-12 overflow-y-auto bg-slate-50 dark:bg-[#0a0a0f]">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeView}
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -10 }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* RENDERIZADO CONDICIONAL */}
+            {activeView === 'Inicio' && (
+              <ViewInicio onReservaClick={() => setActiveView('Reservas')} />
+            )}
+            
+            {activeView === 'Reservas' && (
+              <ViewAgenda /> 
+            )}
 
-        <div className="animate-fade-in flex flex-col gap-5 max-w-[720px]">
-          
-          {/* CARD: AGENDAR */}
-          <Link to="/agendaCliente" className="action-card-modern">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">Agendar Cita</h3>
-              <span className="text-2xl text-primary-custom">📅</span>
-            </div>
-            <p className="text-slate-400 text-sm leading-relaxed mb-6">
-              Selecciona tu barbero de preferencia y reserva un espacio en el calendario.
-            </p>
-            <div className="text-right font-bold text-sm text-primary-custom">
-              Explorar disponibilidad →
-            </div>
-          </Link>
-
-          {/* CARD: PERFIL */}
-          <Link to="/cliente/perfil" className="action-card-modern">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">Mi Perfil</h3>
-              <span className="text-2xl text-primary-custom">👤</span>
-            </div>
-            <p className="text-slate-400 text-sm leading-relaxed mb-6">
-              Actualiza tu información personal y preferencias de seguridad.
-            </p>
-            <div className="text-right font-bold text-sm text-primary-custom">
-              Editar información →
-            </div>
-          </Link>
-
-        </div>
+            {activeView === 'Perfil' && (
+              <div className="flex items-center justify-center h-64 text-slate-400 font-bold italic uppercase border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[40px]">
+                Configuración de Perfil (Próximamente)
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </main>
     </div>
   );

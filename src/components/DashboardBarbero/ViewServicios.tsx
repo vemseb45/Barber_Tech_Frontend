@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Clock, Scissors, Edit2, Layers, Droplets } from 'lucide-react';
+import { Plus, Clock, Scissors, Edit2, Layers, Droplets, Image as ImageIcon } from 'lucide-react';
 
 interface ServicioType {
   id: number;
@@ -23,11 +23,10 @@ export default function ViewServicios() {
       id: 1,
       name: 'Corte de Cabello',
       price: '$20.00',
-      description: 'Corte clásico o moderno personalizado según tu estilo, con acabado profesion...',
+      description: 'Corte clásico o moderno personalizado según tu estilo, con acabado profesional y productos premium.',
       duration: '30 min',
       category: 'Cabello',
       icon: Scissors,
-      // Usando imagen de Unsplash para demostrar el concepto
       image: 'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?q=80&w=500&auto=format&fit=crop',
       tag: 'Popular'
     },
@@ -35,7 +34,7 @@ export default function ViewServicios() {
       id: 2,
       name: 'Arreglo de Barba',
       price: '$15.00',
-      description: 'Perfilado preciso, rebaje de volumen y tratamiento de hidratación con aceites...',
+      description: 'Perfilado preciso, rebaje de volumen y tratamiento de hidratación con aceites esenciales.',
       duration: '25 min',
       category: 'Barba',
       icon: Scissors,
@@ -45,7 +44,7 @@ export default function ViewServicios() {
       id: 3,
       name: 'Tratamiento Facial',
       price: '$30.00',
-      description: 'Limpieza profunda con vapor, exfoliación y mascarilla refrescante para una piel...',
+      description: 'Limpieza profunda con vapor, exfoliación y mascarilla refrescante para una piel renovada.',
       duration: '45 min',
       category: 'Tratamientos',
       icon: Droplets,
@@ -55,7 +54,7 @@ export default function ViewServicios() {
       id: 4,
       name: 'Combo Imperial',
       price: '$45.00',
-      description: 'Nuestra experiencia completa: Corte Premium + Arreglo de Barba + Lavado...',
+      description: 'Nuestra experiencia completa: Corte Premium + Arreglo de Barba + Lavado y Tratamiento.',
       duration: '60 min',
       category: 'Combos',
       icon: Layers,
@@ -70,37 +69,13 @@ export default function ViewServicios() {
   const [editingService, setEditingService] = useState<ServicioType | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Formulario de estado para el modal
   const [formData, setFormData] = useState({
     nombre: '',
     descripcion: '',
     precio: '',
     duracion_minutos: '',
-    id_especialidad: 1 // Por defecto
+    id_especialidad: 1
   });
-
-  // ========== LÓGICA DE API (DJANGO) ==========
-  const API_URL = 'http://127.0.0.1:8000/api/servicios/'; // Ajustar según la ruta exacta de tu backend en Django
-
-  useEffect(() => {
-    fetchServicios();
-  }, []);
-
-  const fetchServicios = async () => {
-    try {
-      setIsLoading(true);
-      // Descomentar cuando Django esté listo:
-      // const response = await fetch(API_URL);
-      // const data = await response.json();
-      // setServiciosData(data); // Asumiendo que retorna un array de objetos
-      
-      // Simulamos la carga temporalmente
-      setTimeout(() => setIsLoading(false), 500);
-    } catch (error) {
-      console.error("Error al obtener servicios:", error);
-      setIsLoading(false);
-    }
-  };
 
   const handleOpenModal = (servicio: ServicioType | null = null) => {
     if (servicio) {
@@ -110,7 +85,7 @@ export default function ViewServicios() {
         descripcion: servicio.description,
         precio: servicio.price.replace('$', ''),
         duracion_minutos: servicio.duration.replace(' min', ''),
-        id_especialidad: 1 // Ajustar con la info real de la BD
+        id_especialidad: 1
       });
     } else {
       setEditingService(null);
@@ -126,63 +101,42 @@ export default function ViewServicios() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      /* Descomentar cuando la API reciba datos:
-      const method = editingService ? 'PUT' : 'POST';
-      const url = editingService ? `${API_URL}${editingService.id}/` : API_URL;
-      
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-      if(response.ok) {
-         fetchServicios();
-         closeModal();
-      }
-      */
-      
-      // Simulación de guardado exitoso para la UI temporalmente
-      alert(`Servicio ${editingService ? 'editado' : 'creado'} correctamente (Simulación)`);
-      closeModal();
-
-    } catch (error) {
-      console.error("Error al guardar:", error);
-    }
+    alert(`Servicio ${editingService ? 'actualizado' : 'creado'} con éxito`);
+    closeModal();
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-
   return (
-    <div className="animate-in fade-in duration-500 relative">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+    <div className="space-y-8 animate-in fade-in duration-700">
+      
+      {/* HEADER SECCIÓN */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Servicios</h2>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">Administra y actualiza tu catálogo de servicios profesionales</p>
+          <h2 className="text-3xl font-bold text-slate-800 dark:text-white">Servicios</h2>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">Gestiona el catálogo de tu barbería</p>
         </div>
         <button 
           onClick={() => handleOpenModal()} 
-          className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white font-bold rounded-xl hover:brightness-110 shadow-lg shadow-primary/20 transition-all text-sm"
+          className="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-[#7112b3] text-white font-bold rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95 cursor-pointer text-sm"
         >
-          <Plus size={18} />
+          <Plus size={20} />
           Nuevo Servicio
         </button>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-6 border-b border-slate-200 dark:border-border-dark mb-8 overflow-x-auto custom-scrollbar">
+      {/* FILTROS TABS */}
+      <div className="flex gap-2 p-1 bg-slate-100 dark:bg-white/5 rounded-2xl w-fit overflow-x-auto scrollbar-hide">
         {tabs.map(tab => (
           <button 
             key={tab} 
             onClick={() => setActiveTab(tab)}
-            className={`pb-3 text-sm font-bold whitespace-nowrap border-b-2 transition-colors ${
+            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap cursor-pointer ${
               tab === activeTab 
-                ? 'border-primary text-primary' 
-                : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+                ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-sm' 
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
             }`}
           >
             {tab}
@@ -190,127 +144,134 @@ export default function ViewServicios() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        
+      {/* GRID DE SERVICIOS */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {isLoading ? (
-          <div className="col-span-full flex justify-center py-12">
-            <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+          <div className="col-span-full flex flex-col items-center justify-center py-20 opacity-50">
+            <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
+            <p className="font-bold text-slate-400">Cargando catálogo...</p>
           </div>
         ) : (
           serviciosData.filter(s => activeTab === 'Todos' || s.category === activeTab).map((servicio) => {
-             const Icon = servicio.icon || Scissors;
-             return (
-            <div key={servicio.id} className="bg-white dark:bg-card-dark rounded-2xl border border-slate-200 dark:border-border-dark overflow-hidden flex flex-col shadow-sm group hover:shadow-md transition-shadow">
-              
-              <div className="h-48 bg-slate-200 dark:bg-slate-800 relative overflow-hidden">
-                <img src={servicio.image} alt={servicio.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                {servicio.tag && (
-                  <span className={`absolute top-4 right-4 text-[10px] font-black px-3 py-1.5 rounded-full z-10 ${servicio.tagColor || 'bg-white/90 text-slate-800 backdrop-blur-sm shadow-sm'}`}>
-                    {servicio.tag}
-                  </span>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-              </div>
+            const Icon = servicio.icon || Scissors;
+            return (
+              <div key={servicio.id} className="group bg-white dark:bg-[#1e293b] rounded-[32px] border border-slate-200 dark:border-slate-700/50 overflow-hidden flex flex-col shadow-sm hover:shadow-2xl hover:shadow-primary/5 transition-all duration-300">
+                
+                {/* Imagen del Servicio */}
+                <div className="h-52 relative overflow-hidden">
+                  <img 
+                    src={servicio.image} 
+                    alt={servicio.name} 
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
+                  
+                  {servicio.tag && (
+                    <span className={`absolute top-4 right-4 text-[10px] font-bold px-3 py-1.5 rounded-full backdrop-blur-md shadow-lg ${servicio.tagColor || 'bg-white/90 text-slate-900'}`}>
+                      {servicio.tag}
+                    </span>
+                  )}
 
-              <div className="p-6 flex flex-col flex-1">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-bold text-lg dark:text-white leading-tight">{servicio.name}</h3>
-                  <span className="font-black text-primary text-xl">{servicio.price}</span>
+                  <div className="absolute bottom-4 left-6">
+                    <span className="text-2xl font-black text-white drop-shadow-md">{servicio.price}</span>
+                  </div>
                 </div>
-                
-                <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-6 leading-relaxed">
-                  {servicio.description}
-                </p>
-                
-                <div className="flex items-center gap-4 text-xs font-bold text-slate-500 dark:text-slate-400 mb-6 mt-auto">
-                  <span className="flex items-center gap-1.5"><Clock size={16} className="text-slate-400" /> {servicio.duration}</span>
-                  <span className="flex items-center gap-1.5"><Icon size={16} className="text-slate-400" /> {servicio.category}</span>
-                </div>
-                
-                <button onClick={() => handleOpenModal(servicio)} className="w-full py-2.5 rounded-xl border-2 border-primary/20 dark:border-primary/40 text-primary font-bold text-sm hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors flex items-center justify-center gap-2">
-                  <Edit2 size={16} /> Editar Servicio
-                </button>
-              </div>
 
-            </div>
-           );
+                {/* Contenido */}
+                <div className="p-8 flex flex-col flex-1">
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="font-bold text-xl text-slate-800 dark:text-white">{servicio.name}</h3>
+                    <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                      <Icon size={18} />
+                    </div>
+                  </div>
+                  
+                  <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-6 leading-relaxed">
+                    {servicio.description}
+                  </p>
+                  
+                  <div className="flex items-center gap-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-8 mt-auto">
+                    <span className="flex items-center gap-2"><Clock size={16} className="text-primary" /> {servicio.duration}</span>
+                    <span className="flex items-center gap-2 text-primary/80">{servicio.category}</span>
+                  </div>
+                  
+                  <button 
+                    onClick={() => handleOpenModal(servicio)} 
+                    className="w-full py-3.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 font-bold text-sm hover:bg-primary hover:text-white hover:border-primary transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Edit2 size={16} /> Editar Detalles
+                  </button>
+                </div>
+              </div>
+            );
           })
         )}
 
-        {/* Add New Service Card */}
-         <div onClick={() => handleOpenModal()} className="rounded-2xl border-2 border-dashed border-slate-200 dark:border-border-dark flex flex-col items-center justify-center p-8 text-center text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/30 hover:border-primary/50 transition-colors cursor-pointer min-h-[400px]">
-          <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center mb-4 text-slate-600 dark:text-slate-300 shadow-inner block overflow-hidden relative">
-             <Plus size={24} className="z-10 relative" />
+        {/* Card Agregar Nuevo (Estilo Placeholder) */}
+        <button 
+          onClick={() => handleOpenModal()} 
+          className="rounded-[32px] border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center p-10 text-center group hover:bg-white dark:hover:bg-primary/5 hover:border-primary/50 transition-all duration-300 cursor-pointer min-h-[450px]"
+        >
+          <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all text-slate-400 shadow-inner">
+            <Plus size={32} />
           </div>
-          <h3 className="font-bold text-slate-700 dark:text-slate-300 mb-1">Agregar nuevo servicio</h3>
-          <p className="text-sm">Expande tu catálogo</p>
-        </div>
-
+          <h3 className="font-bold text-lg text-slate-700 dark:text-slate-300 mb-2">Nuevo Servicio</h3>
+          <p className="text-sm text-slate-400 max-w-[200px]">Haz crecer tu negocio añadiendo más opciones</p>
+        </button>
       </div>
 
-      {/* =========== MODAL CREAR / EDITAR =========== */}
+      {/* MODAL (Refinado) */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-card-dark rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-200 dark:border-border-dark animate-in slide-in-from-bottom-8 duration-300">
-            
-            <div className="px-6 py-4 border-b border-slate-100 dark:border-border-dark flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
-              <h3 className="text-xl font-bold dark:text-white flex items-center gap-2">
-                {editingService ? <Edit2 size={20} className="text-primary"/> : <Plus size={20} className="text-primary"/>}
-                {editingService ? 'Editar Servicio' : 'Nuevo Servicio'}
-              </h3>
-              <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 transition-colors">✕</button>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={closeModal}></div>
+          
+          <div className="relative bg-white dark:bg-[#1e293b] rounded-[32px] shadow-2xl w-full max-w-xl overflow-hidden border border-slate-200 dark:border-slate-700 animate-in zoom-in-95 duration-200">
+            <div className="p-8 border-b border-slate-100 dark:border-slate-700/50 flex justify-between items-center">
+              <div>
+                <h3 className="text-2xl font-bold text-slate-800 dark:text-white">
+                  {editingService ? 'Modificar Servicio' : 'Crear Servicio'}
+                </h3>
+                <p className="text-sm text-slate-500 mt-1">Completa la información detallada</p>
+              </div>
+              <button onClick={closeModal} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors cursor-pointer text-slate-400">✕</button>
             </div>
 
-            <form onSubmit={handleSave} className="p-6">
+            <form onSubmit={handleSave} className="p-8 space-y-6">
               <div className="space-y-4">
-                
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Nombre del Servicio</label>
-                  <input required name="nombre" value={formData.nombre} onChange={handleChange} type="text" className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all placeholder:text-slate-400" placeholder="Ej. Corte de Cabello" />
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Nombre</label>
+                  <input required name="nombre" value={formData.nombre} onChange={handleChange} type="text" className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-5 py-3 text-slate-900 dark:text-white focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Precio ($)</label>
-                    <input required name="precio" value={formData.precio} onChange={handleChange} type="number" step="0.01" className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all" placeholder="25.00" />
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Precio ($)</label>
+                    <input required name="precio" value={formData.precio} onChange={handleChange} type="number" step="0.01" className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-5 py-3 text-slate-900 dark:text-white outline-none focus:border-primary transition-all" />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Duración (min)</label>
-                    <input required name="duracion_minutos" value={formData.duracion_minutos} onChange={handleChange} type="number" className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all" placeholder="45" />
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Duración (min)</label>
+                    <input required name="duracion_minutos" value={formData.duracion_minutos} onChange={handleChange} type="number" className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-5 py-3 text-slate-900 dark:text-white outline-none focus:border-primary transition-all" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Especialidad (Categoría)</label>
-                  <select name="id_especialidad" value={formData.id_especialidad} onChange={handleChange} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all">
-                    <option value={1}>Corte de Cabello</option>
-                    <option value={2}>Barba y Bigote</option>
-                    <option value={3}>Colorimetría</option>
-                    <option value={4}>Tratamientos Capilares</option>
-                  </select>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Descripción</label>
+                  <textarea required name="descripcion" value={formData.descripcion} onChange={handleChange} rows={3} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-5 py-3 text-slate-900 dark:text-white outline-none focus:border-primary transition-all resize-none"></textarea>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Descripción</label>
-                  <textarea required name="descripcion" value={formData.descripcion} onChange={handleChange} rows={3} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all resize-none placeholder:text-slate-400" placeholder="¿Qué incluye este servicio?"></textarea>
-                </div>
-
               </div>
 
-              <div className="mt-8 flex items-center justify-end gap-3 pt-6 border-t border-slate-100 dark:border-border-dark">
-                <button type="button" onClick={closeModal} className="px-5 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+              <div className="flex gap-3 pt-4">
+                <button type="button" onClick={closeModal} className="flex-1 py-4 rounded-2xl text-slate-500 font-bold hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer">
                   Cancelar
                 </button>
-                <button type="submit" className="px-5 py-2.5 rounded-xl bg-primary text-white font-bold hover:bg-[#5213fc] transition-colors shadow-lg shadow-primary/20 flex items-center gap-2">
-                  Guardar Servicio
+                <button type="submit" className="flex-[2] py-4 bg-primary text-white font-bold rounded-2xl hover:bg-[#7112b3] shadow-lg shadow-primary/20 transition-all active:scale-95 cursor-pointer">
+                  Guardar Cambios
                 </button>
               </div>
             </form>
-
           </div>
         </div>
       )}
-
     </div>
   );
 }

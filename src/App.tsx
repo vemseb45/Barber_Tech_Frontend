@@ -2,7 +2,6 @@ import { Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Registro";
-import AgendaCitasCliente from "./components/DashboardCliente/agendaClientes";
 import DashboardBarbero from "./pages/barbero/DashboardBarbero";
 import DashboardAdmin from "./pages/administrador/DashboardAdmin";
 import DashboardCliente from "./pages/cliente/DashboardCliente";
@@ -15,7 +14,6 @@ function App() {
       <Route path="/dashboardBarbero" element={<DashboardBarbero />} />
       <Route path="/DashboardAdmin" element={<DashboardAdmin />} />
       <Route path="/DashboardCliente" element={<DashboardCliente />} />
-      <Route path="/agendaCliente" element={<AgendaCitasCliente />} />
     </Routes>
   );
 }

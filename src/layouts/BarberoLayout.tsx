@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, Search } from 'lucide-react';
+import { Bell, Search, Sun, Moon } from 'lucide-react'; // Usamos Sun y Moon para código más limpio
 import Sidebar from '../components/DashboardBarbero/Sidebar';
 import type { BarberoView } from '../types';
 
@@ -38,53 +38,54 @@ const BarberoLayout: React.FC<BarberoLayoutProps> = ({ children, activeView, onV
   }, []);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-200">
+    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-[#0a0a0f] text-slate-900 dark:text-slate-100 transition-colors duration-300">
+      
+      {/* SIDEBAR */}
       <Sidebar activeView={activeView} onViewChange={onViewChange} />
 
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="h-20 bg-white dark:bg-card-dark border-b border-slate-200 dark:border-border-dark flex items-center justify-between px-8 z-10 transition-colors duration-200">
+        
+        {/* HEADER */}
+        <header className="h-20 bg-white dark:bg-white/5 border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-8 z-10 transition-all">
           <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">
-              {activeView === 'Inicio' ? 'Panel de Barbero' : activeView}
+            <h1 className="text-2xl font-black tracking-tight text-slate-800 dark:text-white uppercase italic">
+              {activeView === 'Inicio' ? 'Panel Barbero' : activeView}
             </h1>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="hidden md:flex items-center relative">
-              <Search className="absolute left-3 text-slate-400" size={18} />
+            {/* Buscador */}
+            <div className="hidden md:flex items-center relative group">
+              <Search className="absolute left-3 text-slate-400 group-focus-within:text-primary transition-colors" size={18} />
               <input 
                 type="text" 
                 placeholder="Buscar..." 
-                className="pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-sm border-none focus:ring-2 focus:ring-primary/20 outline-none w-64 transition-all dark:text-white"
+                className="pl-10 pr-4 py-2.5 bg-slate-100 dark:bg-white/5 rounded-2xl text-sm border border-transparent focus:border-primary/50 focus:ring-4 focus:ring-primary/10 outline-none w-64 transition-all dark:text-white"
               />
             </div>
 
-            <button className="btn-flip" onClick={toggleTheme} aria-label="Cambiar Tema">
-              <div className="btn-flip-front">
-                {isDarkMode ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e2e8f0" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4E5D78" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-                )}
-              </div>
-              <div className="btn-flip-back">
-                {isDarkMode ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4E5D78" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e2e8f0" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                )}
-              </div>
+            {/* Botón de Tema - Estilo Minimalista */}
+            <button 
+              onClick={toggleTheme}
+              className="p-2.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:scale-110 active:scale-95 transition-all cursor-pointer text-slate-600 dark:text-yellow-400"
+              aria-label="Cambiar Tema"
+            >
+              {isDarkMode ? <Sun size={20} fill="currentColor" /> : <Moon size={20} fill="currentColor" />}
             </button>
 
-            <button className="relative p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all text-slate-600 dark:text-slate-400">
+            {/* Notificaciones */}
+            <button className="relative p-2.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-200 dark:hover:bg-white/10 transition-all text-slate-600 dark:text-slate-400 cursor-pointer">
               <Bell size={20} />
-              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-card-dark"></span>
+              <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-red-500 rounded-full ring-2 ring-white dark:ring-[#1a1a1f]"></span>
             </button>
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-          {children}
+        {/* CONTENIDO DINÁMICO */}
+        <div className="flex-1 overflow-y-auto p-8 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+          <div className="max-w-7xl mx-auto">
+            {children}
+          </div>
         </div>
       </main>
     </div>
