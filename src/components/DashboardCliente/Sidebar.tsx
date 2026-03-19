@@ -16,7 +16,6 @@ const SidebarCliente: React.FC<SidebarProps> = ({ activeView, onViewChange }) =>
     { name: 'Inicio', icon: Home, label: 'Mi Panel' },
     { name: 'Reservas', icon: CalendarPlus, label: 'Nueva Cita' },
     { name: 'Historial', icon: History, label: 'Mis Citas' },
-    { name: 'Favoritos', icon: Star, label: 'Barberos' },
     { name: 'Ajustes', icon: Settings, label: 'Perfil' },
   ];
 

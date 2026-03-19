@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../layouts/AdminLayout';
 import ViewInicio from '../../components/DashboardAdmin/ViewInicio';
-import ViewUsuarios from '../../components/DashboardAdmin/ViewUsuarios';
+import ViewClientes from '../../components/DashboardAdmin/ViewUsuarios'; // 👈 Nuevo
+import ViewBarberos from '../../components/DashboardAdmin/ViewBarberos'; // 👈 Nuevo
 import ViewServicios from '../../components/DashboardAdmin/ViewServicios';
-import { motion, AnimatePresence } from 'framer-motion'; // Para transiciones suaves entre vistas
+import { motion, AnimatePresence } from 'framer-motion'; 
 import type { AdminView } from '../../types';
 
 const DashboardAdmin: React.FC = () => {
@@ -15,7 +16,6 @@ const DashboardAdmin: React.FC = () => {
   }, []);
 
   const renderContent = () => {
-    // Envolvemos el contenido en un motion.div para que el cambio de vista sea elegante
     return (
       <AnimatePresence mode="wait">
         <motion.div
@@ -28,13 +28,24 @@ const DashboardAdmin: React.FC = () => {
         >
           {(() => {
             switch (activeView) {
-              case 'Inicio': return <ViewInicio />;
-              case 'Usuarios': return <ViewUsuarios />;
-              case 'Servicios': return <ViewServicios />;
+              case 'Inicio': 
+                return <ViewInicio />;
+              
+              case 'Clientes': // 👈 Caso para la sub-vista de Clientes
+                return <ViewClientes />;
+              
+              case 'Barberos': // 👈 Caso para la sub-vista de Barberos
+                return <ViewBarberos />;
+              
+              case 'Servicios': 
+                return <ViewServicios />;
+              
               case 'Barberías':
                 return <PlaceholderView icon="🏪" title="Módulo de Barberías" />;
+              
               case 'Reportes':
                 return <PlaceholderView icon="📊" title="Módulo de Reportes" />;
+              
               default:
                 return <ViewInicio />;
             }
@@ -51,7 +62,7 @@ const DashboardAdmin: React.FC = () => {
   );
 };
 
-// Componente pequeño para los módulos en construcción
+// Componente para módulos en construcción
 const PlaceholderView: React.FC<{ icon: string; title: string }> = ({ icon, title }) => (
   <div className="flex flex-col items-center justify-center h-[60vh] text-slate-400 space-y-4">
     <div className="w-24 h-24 bg-slate-100 dark:bg-white/5 rounded-3xl flex items-center justify-center border border-slate-200 dark:border-white/10 shadow-xl">

@@ -16,5 +16,5 @@ export interface Servicio {
   imagen: string;
 }
 
-export type AdminView = 'Inicio' | 'Usuarios' | 'Servicios' | 'Reportes' | 'Barberías';
+export type AdminView = 'Inicio' | 'Usuarios' | 'Servicios' | 'Reportes' | 'Barberías' | 'Clientes' | 'Barberos';
 export type BarberoView = 'Inicio' | 'Citas' | 'Clientes' | 'Servicios' | 'Ajustes';

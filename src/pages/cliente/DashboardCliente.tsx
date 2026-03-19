@@ -1,23 +1,13 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  LayoutDashboard, 
-  CalendarPlus, 
-  User, 
-  LogOut, 
-  Sparkles, 
-  Clock, 
-  MapPin, 
-  Gift, 
-  ChevronRight 
-} from "lucide-react";
+import { CalendarPlus, Clock, MapPin, Gift } from "lucide-react";
 
-// 1. IMPORTACIÓN DE TUS COMPONENTES EXTERNOS
+// 1. IMPORTACIÓN DEL LAYOUT Y TUS COMPONENTES EXTERNOS
+import ClienteLayout from '../../layouts/ClienteLayout';
 import ViewAgenda from "../../components/DashboardCliente/Viewagenda";
-import ViewAjustesCliente from "../../components/DashboardCliente/Viewajustes"; // <--- Asegúrate de que la ruta y el nombre coincidan
+import ViewAjustesCliente from "../../components/DashboardCliente/Viewajustes";
 
-// --- SUB-COMPONENTE: INICIO ---
+// --- SUB-COMPONENTE: INICIO (Tu contenido original) ---
 const ViewInicio = ({ onReservaClick }: { onReservaClick: () => void }) => (
   <motion.div 
     initial={{ opacity: 0, y: 20 }} 
@@ -78,94 +68,43 @@ const ViewInicio = ({ onReservaClick }: { onReservaClick: () => void }) => (
 
 // --- COMPONENTE PRINCIPAL ---
 export default function DashboardCliente() {
-  const navigate = useNavigate();
-  const [activeView, setActiveView] = useState<'Inicio' | 'Reservas' | 'Perfil'>('Inicio');
-  
-  useEffect(() => {
-    const isDark = document.documentElement.classList.contains('dark');
-    if (isDark) document.documentElement.classList.add('dark');
-  }, []);
-
-  const menuItems = [
-    { id: 'Inicio', name: "Inicio", icon: LayoutDashboard },
-    { id: 'Reservas', name: "Reservas", icon: CalendarPlus },
-    { id: 'Perfil', name: "Perfil", icon: User },
-  ];
+  // El estado debe usar los IDs definidos en tu Layout: 'Inicio', 'MisCitas', 'Favoritos', 'Perfil'
+  const [activeView, setActiveView] = useState('Inicio');
 
   return (
-    <div className="min-h-screen flex bg-slate-50 dark:bg-[#0a0a0f] text-slate-900 dark:text-slate-100 transition-colors duration-500 font-sans">
-      
-      {/* SIDEBAR */}
-      <aside className="w-72 bg-white dark:bg-[#0f172a] border-r border-slate-200 dark:border-slate-800 p-8 flex flex-col sticky top-0 h-screen">
-        <div className="flex items-center gap-4 mb-12 group">
-          <div className="w-12 h-12 bg-primary rounded-[18px] flex items-center justify-center text-white shadow-xl shadow-primary/30 group-hover:rotate-6 transition-transform">
-            <Sparkles size={24} />
-          </div>
-          <div className="flex flex-col">
-            <h2 className="text-xl font-black tracking-tighter uppercase italic leading-none dark:text-white">
-              Barber<span className="text-primary">Tech</span>
-            </h2>
-            <span className="text-[10px] font-bold text-primary uppercase tracking-widest mt-1">Client Pro</span>
-          </div>
-        </div>
-        
-        <nav className="flex-1 space-y-2">
-          {menuItems.map((item) => {
-            const isActive = activeView === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => setActiveView(item.id as any)}
-                className={`w-full flex items-center justify-between px-5 py-4 rounded-[20px] font-bold text-sm transition-all cursor-pointer ${
-                  isActive 
-                    ? 'bg-primary text-white shadow-xl shadow-primary/20 translate-x-1' 
-                    : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-primary'
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  <item.icon size={20} strokeWidth={isActive ? 3 : 2} />
-                  {item.name}
-                </div>
-                {isActive && <ChevronRight size={14} className="opacity-50" />}
-              </button>
-            );
-          })}
-        </nav>
+    <ClienteLayout 
+      activeView={activeView} 
+      onViewChange={(view) => setActiveView(view)}
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeView}
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -10 }}
+          transition={{ duration: 0.3 }}
+        >
+          {/* Sincronización con los IDs de tu Sidebar */}
+          {activeView === 'Inicio' && (
+            <ViewInicio onReservaClick={() => setActiveView('Inicio')} />
+          )}
+          
+          {activeView === 'MisCitas' && (
+            <ViewAgenda /> 
+          )}
 
-        <div className="border-t border-slate-200 dark:border-slate-800 pt-8 mt-auto">
-          <button 
-            onClick={() => navigate("/login")}
-            className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-red-500/5 text-red-500 hover:bg-red-500 hover:text-white transition-all font-black text-xs uppercase tracking-[0.2em] cursor-pointer"
-          >
-            <LogOut size={16} strokeWidth={3} /> Cerrar sesión
-          </button>
-        </div>
-      </aside>
+          {activeView === 'Favoritos' && (
+            <div className="p-12 text-center bg-white dark:bg-white/5 rounded-[32px] border border-dashed border-slate-200 dark:border-white/10">
+              <h3 className="text-xl font-bold">Tus Barberos Favoritos</h3>
+              <p className="text-slate-500 mt-2">Aquí aparecerán los barberos que marques con estrella.</p>
+            </div>
+          )}
 
-      {/* CONTENIDO PRINCIPAL */}
-      <main className="flex-1 p-12 overflow-y-auto bg-slate-50 dark:bg-[#0a0a0f]">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeView}
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -10 }}
-            transition={{ duration: 0.3 }}
-          >
-            {activeView === 'Inicio' && (
-              <ViewInicio onReservaClick={() => setActiveView('Reservas')} />
-            )}
-            
-            {activeView === 'Reservas' && (
-              <ViewAgenda /> 
-            )}
-
-            {activeView === 'Perfil' && (
-              <ViewAjustesCliente /> // <--- ¡AQUÍ SE CARGA TU NUEVA VISTA!
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </main>
-    </div>
+          {activeView === 'Perfil' && (
+            <ViewAjustesCliente />
+          )}
+        </motion.div>
+      </AnimatePresence>
+    </ClienteLayout>
   );
 }
