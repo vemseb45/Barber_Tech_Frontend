@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { UserPlus, Search, Shield, User, Scissors, MoreVertical } from 'lucide-react';
+import { UserPlus, Search, Shield, User, Scissors, Calendar, Trash2, MoreVertical } from 'lucide-react';
 import api from '../../api/axios';
 import type { Usuario } from '../../types';
+import ModalAsignarHorario from './asignarHorario'; // Asegúrate de que la ruta sea correcta
 
 const ViewUsuarios: React.FC = () => {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [busqueda, setBusqueda] = useState('');
   const [cargando, setCargando] = useState(false);
 
+  // Estados para el Modal de Horarios
+  const [modalOpen, setModalOpen] = useState(false);
+  const [barberoSeleccionado, setBarberoSeleccionado] = useState<{ id: number; nombre: string } | null>(null);
+
+  // 1. CARGAR TODOS LOS USUARIOS AL INICIO
   useEffect(() => {
     const cargarUsuarios = async () => {
       setCargando(true);
@@ -24,6 +30,7 @@ const ViewUsuarios: React.FC = () => {
     cargarUsuarios();
   }, []);
 
+  // 2. CAMBIAR ROL (Admin, Barbero, Cliente)
   const handleCambiarRol = async (id: number, nuevoRol: string) => {
     try {
       await api.patch(`usuarios/${id}/cambiar_rol/`, { rol: nuevoRol });
@@ -33,6 +40,13 @@ const ViewUsuarios: React.FC = () => {
     }
   };
 
+  // 3. FUNCIÓN PARA ABRIR EL MODAL DE HORARIOS
+  const abrirModalHorario = (id: number, nombre: string) => {
+    setBarberoSeleccionado({ id, nombre });
+    setModalOpen(true);
+  };
+
+  // 4. FILTRADO POR BÚSQUEDA (Muestra todos los roles)
   const usuariosFiltrados = usuarios.filter(u => 
     u.username?.toLowerCase().includes(busqueda.toLowerCase())
   );
@@ -44,7 +58,7 @@ const ViewUsuarios: React.FC = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
           <h2 className="text-3xl font-bold text-slate-800 dark:text-white">Gestión de Usuarios</h2>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">Administra los accesos y roles de tu equipo.</p>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">Administra los accesos, roles y horarios del equipo.</p>
         </div>
         
         <button className="w-full md:w-auto bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-2xl flex items-center justify-center gap-3 transition-all shadow-xl shadow-primary/25 font-bold text-sm cursor-pointer active:scale-95">
@@ -53,7 +67,7 @@ const ViewUsuarios: React.FC = () => {
         </button>
       </div>
 
-      {/* FILTROS */}
+      {/* BARRA DE BÚSQUEDA */}
       <div className="bg-white dark:bg-[#1e293b] p-4 rounded-[24px] border border-slate-200 dark:border-slate-700/50 shadow-sm">
         <div className="relative group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" size={20} />
@@ -81,17 +95,14 @@ const ViewUsuarios: React.FC = () => {
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {cargando ? (
                 <tr>
-                  <td colSpan={3} className="px-8 py-20">
-                    <div className="flex flex-col items-center justify-center gap-3">
-                      <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                      <span className="text-slate-400 font-bold text-sm">Sincronizando base de datos...</span>
-                    </div>
+                  <td colSpan={3} className="px-8 py-20 text-center">
+                    <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto"></div>
                   </td>
                 </tr>
               ) : usuariosFiltrados.length === 0 ? (
                 <tr>
                   <td colSpan={3} className="px-8 py-20 text-center">
-                    <p className="text-slate-400 font-medium">No se encontraron usuarios que coincidan.</p>
+                    <p className="text-slate-400 font-medium">No se encontraron usuarios.</p>
                   </td>
                 </tr>
               ) : (
@@ -124,6 +135,19 @@ const ViewUsuarios: React.FC = () => {
                     </td>
                     <td className="px-8 py-6">
                       <div className="flex justify-center gap-3">
+                        
+                        {/* 🔹 ACCIÓN SOLO PARA BARBEROS: Gestionar Horarios */}
+                        {user.rol === 'Barbero' && (
+                          <button 
+                            onClick={() => abrirModalHorario(user.id, user.username)}
+                            className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-xl text-[11px] font-black transition-all shadow-md hover:bg-orange-700 hover:-translate-y-0.5 active:scale-95"
+                          >
+                            <Calendar size={14} />
+                            HORARIOS
+                          </button>
+                        )}
+
+                        {/* Cambio de Rol a Barbero */}
                         {user.rol !== 'Barbero' && (
                           <button 
                             onClick={() => handleCambiarRol(user.id, 'Barbero')}
@@ -132,6 +156,8 @@ const ViewUsuarios: React.FC = () => {
                             HACER BARBERO
                           </button>
                         )}
+
+                        {/* Cambio de Rol a Admin */}
                         {user.rol !== 'Admin' && (
                           <button 
                             onClick={() => handleCambiarRol(user.id, 'Admin')}
@@ -140,6 +166,7 @@ const ViewUsuarios: React.FC = () => {
                             HACER ADMIN
                           </button>
                         )}
+
                         <button className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors">
                           <MoreVertical size={18} />
                         </button>
@@ -152,6 +179,19 @@ const ViewUsuarios: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* 🔹 COMPONENTE MODAL INTEGRADO */}
+      {barberoSeleccionado && (
+        <ModalAsignarHorario 
+          isOpen={modalOpen}
+          onClose={() => {
+            setModalOpen(false);
+            setBarberoSeleccionado(null);
+          }}
+          barberoId={barberoSeleccionado.id}
+          nombreBarbero={barberoSeleccionado.nombre}
+        />
+      )}
     </div>
   );
 };
