@@ -2,10 +2,12 @@ import "../../index.css";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion"; // Aprovechamos que tienes framer-motion
+import { Sun, Moon, Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   // Inicializamos basado en la clase del documento para mantener consistencia con la Landing
   const [darkMode, setDarkMode] = useState(document.documentElement.classList.contains('dark'));
   const navigate = useNavigate();
@@ -51,22 +53,31 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col px-10 transition-colors duration-500 bg-slate-50 dark:bg-[#0a0a0f] text-slate-900 dark:text-slate-100 font-sans">
-
+    <div className="min-h-screen flex flex-col px-6 md:px-10 transition-colors duration-500 bg-slate-50 dark:bg-[#0a0a0f] text-slate-900 dark:text-slate-100 font-sans antialiased">
+      
       {/* Header */}
-      <header className="flex justify-between items-center py-6">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-black">B</div>
-          <h1 className="text-lg font-extrabold tracking-tighter">BARBER TECH</h1>
+      <header className="flex justify-between items-center py-6 max-w-7xl mx-auto w-full">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 bg-primary text-white rounded-xl flex items-center justify-center font-black shadow-lg shadow-primary/30 text-lg">
+            B
+          </div>
+          <h1 className="text-lg font-black tracking-tighter uppercase">
+            Barber <span className="text-primary">Tech</span>
+          </h1>
         </div>
         <div className="flex items-center gap-6">
           <button
             onClick={toggleTheme}
-            className="text-2xl hover:scale-110 transition-transform p-2"
+            className="p-2.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:scale-110 active:scale-95 transition-all text-slate-600 dark:text-yellow-400 cursor-pointer shadow-sm"
+            title="Alternar modo visual"
+            aria-label="Cambiar tema"
           >
-            {darkMode ? '☀️' : '🌙'}
+            {darkMode ? <Sun size={20} fill="currentColor" /> : <Moon size={20} fill="currentColor" />}
           </button>
-          <Link to="/" className="bg-primary hover:bg-primary-hover px-6 py-2 rounded-full text-white font-bold text-sm shadow-lg shadow-primary/30 transition-all">
+          <Link 
+            to="/" 
+            className="bg-primary hover:bg-[#7112b3] border border-transparent hover:border-[#7112b3] px-6 py-2 rounded-full text-white font-bold text-xs shadow-md shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_0.5em_0_#7112b3]"
+          >
             ← Volver
           </Link>
         </div>
@@ -108,32 +119,38 @@ export default function Login() {
 
             <div className="relative">
               <label className="text-xs font-bold mb-2 block ml-1">Contraseña</label>
-              <input
-                type="password"
-                placeholder="**********"
-                className="w-full p-4 rounded-2xl bg-slate-100 dark:bg-white/5 border border-transparent focus:border-primary outline-none transition-all text-sm"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <span className="absolute right-5 bottom-4 opacity-30 cursor-pointer">👁️</span>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="**********"
+                  className="w-full p-4 pr-12 rounded-2xl bg-slate-100 dark:bg-white/5 border border-transparent focus:border-primary outline-none transition-all text-sm"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors focus:outline-none"
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
             </div>
           </div>
 
-          <div className="flex gap-4 mt-10 w-full justify-center">
+          <div className="flex flex-col items-center gap-4 mt-10 w-full justify-center">
             <button
               type="submit"
-              className="flex-1 max-w-[180px] bg-primary hover:bg-[#7112b3] text-white font-black py-4 rounded-2xl shadow-xl shadow-primary/30 transition-all active:scale-95 cursor-pointer text-sm"
+              className="w-full max-w-xs bg-primary hover:bg-[#7112b3] text-white font-black py-4 rounded-2xl shadow-xl shadow-primary/30 transition-all active:scale-95 cursor-pointer"
             >
               Ingresar
             </button>
 
-            <Link
-              to="/register"
-              className="flex-1 max-w-[180px] flex items-center justify-center border border-slate-300 dark:border-white/10 text-slate-600 dark:text-slate-300 py-4 rounded-2xl font-bold text-sm hover:bg-slate-100 dark:hover:bg-white/5 transition-all text-center"
-            >
-              Registrarse
-            </Link>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              ¿No tienes cuenta? <Link to="/register" className="text-primary font-bold hover:underline">Registrarse</Link>
+            </p>
           </div>
         </motion.form>
       </main>

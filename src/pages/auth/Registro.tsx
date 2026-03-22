@@ -3,6 +3,7 @@ import "../../index.css";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Sun, Moon, Eye, EyeOff } from "lucide-react";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -12,9 +13,13 @@ export default function Register() {
     cedula: "",
     telefono: "",
     email: "",
-    password: ""
+    password: "",
+    confirmPassword: ""
   });
   
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   // Sincronización inicial con el tema del documento
   const [darkMode, setDarkMode] = useState(document.documentElement.classList.contains('dark'));
   const navigate = useNavigate(); 
@@ -59,11 +64,17 @@ export default function Register() {
       return;
     }
 
+    if (formData.password !== formData.confirmPassword) {
+      alert("Las contraseñas no coinciden");
+      return;
+    }
+
     try {
+      const { confirmPassword, ...dataToSend } = formData;
       const response = await fetch("http://localhost:8000/api/usuarios/registro/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(dataToSend)
       });
 
       const data = await response.json();
@@ -90,23 +101,26 @@ export default function Register() {
       
       {/* Header */}
       <header className="flex justify-between items-center py-6 max-w-7xl mx-auto w-full">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">✂️</span>
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 bg-primary text-white rounded-xl flex items-center justify-center font-black shadow-lg shadow-primary/30 text-lg">
+            B
+          </div>
           <h1 className="text-lg font-black tracking-tighter uppercase">
             Barber <span className="text-primary">Tech</span>
           </h1>
         </div>
         <div className="flex items-center gap-6">
-          <button 
-            onClick={toggleTheme} 
-            className="text-xl hover:scale-110 transition-transform p-2 cursor-pointer"
+          <button
+            onClick={toggleTheme}
+            className="p-2.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:scale-110 active:scale-95 transition-all text-slate-600 dark:text-yellow-400 cursor-pointer shadow-sm"
+            title="Alternar modo visual"
             aria-label="Cambiar tema"
           >
-            {darkMode ? '☀️' : '🌙'}
+            {darkMode ? <Sun size={20} fill="currentColor" /> : <Moon size={20} fill="currentColor" />}
           </button>
           <Link 
             to="/login" 
-            className="bg-primary hover:bg-[#7112b3] px-6 py-2 rounded-full text-white font-bold text-xs shadow-lg shadow-primary/30 transition-all"
+            className="bg-primary hover:bg-[#7112b3] border border-transparent hover:border-[#7112b3] px-6 py-2 rounded-full text-white font-bold text-xs shadow-md shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_0.5em_0_#7112b3]"
           >
             ← Volver
           </Link>
@@ -166,9 +180,50 @@ export default function Register() {
               <input type="text" name="telefono" value={formData.telefono} onChange={handleChange} maxLength={10} placeholder="300..." className={inputClass} required />
             </div>
 
-            <div className="text-left md:col-span-2">
+            <div className="text-left relative">
               <label className="text-xs font-bold mb-2 block ml-1 text-slate-700 dark:text-slate-300">Contraseña</label>
-              <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="********" className={inputClass} required />
+              <div className="relative">
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  name="password" 
+                  value={formData.password} 
+                  onChange={handleChange} 
+                  placeholder="********" 
+                  className={`${inputClass} pr-12`} 
+                  required 
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors focus:outline-none cursor-pointer"
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+            </div>
+
+            <div className="text-left relative">
+              <label className="text-xs font-bold mb-2 block ml-1 text-slate-700 dark:text-slate-300">Confirmar Contraseña</label>
+              <div className="relative">
+                <input 
+                  type={showConfirmPassword ? "text" : "password"} 
+                  name="confirmPassword" 
+                  value={formData.confirmPassword} 
+                  onChange={handleChange} 
+                  placeholder="********" 
+                  className={`${inputClass} pr-12`} 
+                  required 
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors focus:outline-none cursor-pointer"
+                  aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                >
+                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
             </div>
           </div>
 

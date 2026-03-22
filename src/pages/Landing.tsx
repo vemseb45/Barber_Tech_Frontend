@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, type Variants } from 'framer-motion';
 import "../index.css";
+import { Sun, Moon } from "lucide-react";
 
 export default function Landing() {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -99,23 +100,13 @@ export default function Landing() {
           </motion.nav>
 
           <div className="flex items-center gap-4">
-            <button 
-              className="relative w-12 h-12 overflow-hidden rounded-full bg-slate-200 dark:bg-white/5 flex items-center justify-center transition-all border border-black/5 dark:border-white/10" 
-              onClick={toggleTheme} 
+            <button
+              onClick={toggleTheme}
+              className="p-2.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:scale-110 active:scale-95 transition-all text-slate-600 dark:text-yellow-400 cursor-pointer shadow-sm"
+              title="Alternar modo visual"
               aria-label="Alternar tema"
             >
-              <motion.div 
-                animate={{ rotate: isDarkMode ? 0 : 180, y: isDarkMode ? 0 : 40, opacity: isDarkMode ? 1 : 0 }}
-                className="absolute inset-0 flex items-center justify-center text-lg"
-              >
-                ☀️
-              </motion.div>
-              <motion.div 
-                animate={{ rotate: isDarkMode ? -180 : 0, y: isDarkMode ? -40 : 0, opacity: isDarkMode ? 0 : 1 }}
-                className="absolute inset-0 flex items-center justify-center text-lg"
-              >
-                🌙
-              </motion.div>
+              {isDarkMode ? <Sun size={20} fill="currentColor" /> : <Moon size={20} fill="currentColor" />}
             </button>
 
             <motion.button
@@ -127,8 +118,7 @@ export default function Landing() {
               whileHover={{ scale: 1.1, y: -4, backgroundColor: "#5213fc" }}
               whileTap={{ scale: 0.9 }}
               onClick={handleReservation}
-              className="rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-white shadow-lg transition-all"
-            >
+              className="rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-white shadow-lg transition-all">
               Reservar Cita
             </motion.button>
           </div>
@@ -160,8 +150,9 @@ export default function Landing() {
                 </motion.div>
               </motion.div>
 
+              {/* Imagen principal */}
               <motion.div initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="relative">
-                <div className="aspect-[4/5] w-full rounded-[40px] bg-slate-200 bg-cover bg-center shadow-2xl transition-transform hover:scale-[1.02] duration-700 border-4 border-white dark:border-white/10" style={{ backgroundImage: 'url("/Imagenes/barbero1.png")' }}></div>
+                <div className="aspect-[4/5] w-full rounded-[40px] bg-slate-200 bg-cover bg-center shadow-2xl transition-transform hover:scale-[1.02] duration-700 border-4 border-white dark:border-white/10" style={{ backgroundImage: 'url("/Imagenes/barbero1.avif")' }}></div>
                 <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }} className="absolute -bottom-6 -left-6 hidden md:block rounded-3xl bg-white dark:bg-[#1a1a24] p-6 shadow-2xl border border-slate-100 dark:border-white/10">
                   <div className="flex items-center gap-4">
                     <div className="flex -space-x-3">
@@ -226,7 +217,12 @@ export default function Landing() {
               </motion.button>
             </div>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-              {["/Imagenes/corte1.jpg", "/Imagenes/corte2.jpg", "/Imagenes/corte3.jpg", "/Imagenes/corte4.avif"].map((src, i) => (
+              {[
+              "/Imagenes/corte1.png", 
+              "/Imagenes/corte2.jpg", 
+              "/Imagenes/corte3.jpg", 
+              "/Imagenes/corte4.jpg"
+            ].map((src, i) => (
                 <motion.div key={i} variants={scaleUpVariant} whileHover={{ scale: 1.05, rotate: i % 2 === 0 ? 2 : -2, zIndex: 10 }} className="aspect-square overflow-hidden rounded-3xl bg-slate-200 border-4 border-white dark:border-white/10 shadow-lg">
                   <img className="h-full w-full object-cover transition-transform hover:scale-110 duration-500" src={src} alt={`Galeria ${i}`} />
                 </motion.div>

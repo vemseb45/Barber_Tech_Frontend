@@ -43,9 +43,10 @@ const ClienteLayout: React.FC<ClienteLayoutProps> = ({ children, activeView, onV
             {/* Theme Toggle */}
             <button 
               onClick={() => setIsDarkMode(!isDarkMode)}
-              className="p-3 rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-yellow-400 hover:scale-105 transition-all shadow-sm cursor-pointer"
+              className="p-2.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:scale-110 active:scale-95 transition-all text-slate-600 dark:text-yellow-400 cursor-pointer shadow-sm"
+              title="Alternar modo visual"
             >
-              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+              {isDarkMode ? <Sun size={20} fill="currentColor" /> : <Moon size={20} fill="currentColor" />}
             </button>
 
             {/* Notifications */}

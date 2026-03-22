@@ -67,7 +67,8 @@ const BarberoLayout: React.FC<BarberoLayoutProps> = ({ children, activeView, onV
             {/* Botón de Tema - Estilo Minimalista */}
             <button 
               onClick={toggleTheme}
-              className="p-2.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:scale-110 active:scale-95 transition-all cursor-pointer text-slate-600 dark:text-yellow-400"
+              className="p-2.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:scale-110 active:scale-95 transition-all text-slate-600 dark:text-yellow-400 cursor-pointer shadow-sm"
+              title="Alternar modo visual"
               aria-label="Cambiar Tema"
             >
               {isDarkMode ? <Sun size={20} fill="currentColor" /> : <Moon size={20} fill="currentColor" />}
