@@ -34,6 +34,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
   // Verificamos si alguna sub-opción de citas está activa para resaltar el botón padre
   const isCitasActive = activeView === 'Citas' || activeView === ('Agenda' as any) || activeView === ('Historial' as any);
 
+  const username = localStorage.getItem('username') || 'Barbero';
+  const initial = username.charAt(0).toUpperCase();
+
   return (
     <aside className="w-72 bg-white dark:bg-[#0f172a] border-r border-slate-200 dark:border-slate-800 flex flex-col h-screen sticky top-0 transition-all duration-300 z-50">
       
@@ -97,6 +100,17 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
                 <span>Agenda</span>
               </button>
               <button
+                onClick={() => onViewChange('Pendientes' as any)}
+                className={`w-full flex items-center gap-4 px-9 py-3 rounded-2xl text-sm font-bold transition-all ${
+                  activeView === ('Pendientes' as any) 
+                    ? 'text-primary bg-primary/5 shadow-sm' 
+                    : 'text-slate-400 hover:text-primary dark:hover:text-slate-200'
+                }`}
+              >
+                <CalendarDays size={18} />
+                <span>Servicios Pendientes</span>
+              </button>
+              <button
                 onClick={() => onViewChange('Historial' as any)}
                 className={`w-full flex items-center gap-4 px-9 py-3 rounded-2xl text-sm font-bold transition-all ${
                   activeView === ('Historial' as any) 
@@ -143,13 +157,13 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
         <div className="bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/50 rounded-[24px] p-4 mb-4 transition-all hover:border-primary/30">
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-11 h-11 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center text-primary font-black text-sm">
-                CB
+              <div className="w-11 h-11 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center text-primary font-black text-sm uppercase">
+                {initial}
               </div>
               <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-slate-800 rounded-full"></div>
             </div>
             <div className="overflow-hidden">
-              <p className="text-sm font-bold truncate text-slate-800 dark:text-white leading-tight">Carlos Barbero</p>
+              <p className="text-sm font-bold truncate text-slate-800 dark:text-white leading-tight">{username}</p>
               <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">Master Barber</p>
             </div>
           </div>

@@ -8,6 +8,8 @@ import ViewInicio from '../../components/DashboardBarbero/ViewInicio';
 import ViewCitas from '../../components/DashboardBarbero/ViewCitas';
 import ViewAjustes from '../../components/DashboardBarbero/ViewAjustes';
 import ViewServicios from '../../components/DashboardBarbero/ViewServicios';
+import ViewHistorial from '../../components/DashboardBarbero/ViewHistorial';
+import ViewPendientes from '../../components/DashboardBarbero/ViewPendientes';
 import type { BarberoView } from '../../types';
 
 const DashboardBarbero: React.FC = () => {
@@ -34,7 +36,12 @@ const DashboardBarbero: React.FC = () => {
               case 'Inicio': 
                 return <ViewInicio onViewChange={setActiveView} />;
               case 'Citas': 
+              case 'Agenda':
                 return <ViewCitas />;
+              case 'Pendientes':
+                return <ViewPendientes />;
+              case 'Historial':
+                return <ViewHistorial />;
               case 'Servicios': 
                 return <ViewServicios />;
               case 'Ajustes': 

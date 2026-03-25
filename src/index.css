@@ -7,13 +7,25 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-
 * {
   @apply transition-colors duration-300;
 }
 
 @layer base {
   html {
-    font-size: 19px; /* Sube el estándar de 16px a 17px o 18px */
+    font-size: 18px;
+    /* Restaurado el estándar de 16px para mejor proporción */
+  }
+
+  /* Ocultar el ícono de ojo nativo de Edge/IE y Chrome para la contraseña */
+  input[type="password"]::-ms-reveal,
+  input[type="password"]::-ms-clear {
+    display: none;
+  }
+
+  input[type="password"]::-webkit-reveal,
+  input[type="password"]::-webkit-contacts-auto-fill-button,
+  input[type="password"]::-webkit-credentials-auto-fill-button {
+    display: none !important;
   }
 }

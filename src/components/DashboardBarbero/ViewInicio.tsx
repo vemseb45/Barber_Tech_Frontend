@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
   CalendarDays,
   TrendingUp,
@@ -13,6 +14,9 @@ interface ViewInicioProps {
 }
 
 export default function ViewInicio({ onViewChange }: ViewInicioProps) {
+  const [tiempoActual, setTiempoActual] = useState(new Date());
+  const [proximasCitas, setProximasCitas] = useState<any[]>([]);
+
   const stats = {
     citasHoy: 12,
     citasCrecimiento: 15,
@@ -21,36 +25,6 @@ export default function ViewInicio({ onViewChange }: ViewInicioProps) {
     nuevosClientes: 4,
     clientesCrecimiento: 5
   };
-
-  const proximasCitas = [
-    {
-      id: 1,
-      hora: '09:00 AM',
-      cliente: 'Juan Pérez',
-      avatar: 'https://i.pravatar.cc/150?u=juan',
-      servicio: 'Corte Clásico',
-      estado: 'Confirmado',
-      colorEstado: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-    },
-    {
-      id: 2,
-      hora: '10:30 AM',
-      cliente: 'Ricardo Gómez',
-      avatar: 'https://i.pravatar.cc/150?u=ricardo',
-      servicio: 'Arreglo de Barba',
-      estado: 'Pendiente',
-      colorEstado: 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-    },
-    {
-      id: 3,
-      hora: '11:45 AM',
-      cliente: 'Luis Martínez',
-      avatar: 'https://i.pravatar.cc/150?u=luis',
-      servicio: 'Corte Degradado',
-      estado: 'En Proceso',
-      colorEstado: 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
-    }
-  ];
 
   const tipsDelDia = [
     "Planifica tu semana y revisa el inventario. ¡La preparación es clave!",
@@ -63,6 +37,38 @@ export default function ViewInicio({ onViewChange }: ViewInicioProps) {
   ];
 
   const tipActual = tipsDelDia[new Date().getDay()];
+  const username = localStorage.getItem('username') || 'Barbero';
+
+  // Reloj en tiempo real para hacer disminuir los minutos
+  useEffect(() => {
+    const intervalo = setInterval(() => {
+      setTiempoActual(new Date());
+    }, 60000);
+    return () => clearInterval(intervalo);
+  }, []);
+
+  // Inicializar citas simuladas basándose en la hora actual
+  useEffect(() => {
+    const ahora = new Date();
+    const getRoundTime = (hoursOffset: number, minuteFixed: number = 0) => {
+      const d = new Date(ahora);
+      d.setHours(d.getHours() + hoursOffset, minuteFixed, 0, 0);
+      if (d.getTime() <= ahora.getTime()) {
+        d.setHours(d.getHours() + 1);
+      }
+      return d;
+    };
+
+    setProximasCitas([
+      { cedula: "1723456789", cliente: "Marcos Medina", servicio: "Corte Clásico + Lavado", fecha: getRoundTime(1, 0), estadoBase: 'Confirmado' },
+      { cedula: "0912345678", cliente: "Julian Álvarez", servicio: "Perfilado de Barba", fecha: getRoundTime(2, 30), estadoBase: 'Confirmado' },
+      { cedula: "1109876543", cliente: "Roberto Sánchez", servicio: "Corte Degradado + Tinte", fecha: getRoundTime(3, 0), estadoBase: 'En Espera' }
+    ]);
+  }, []);
+
+  const formatearHora = (fecha: Date) => {
+    return fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  };
 
   return (
     <div className="animate-in fade-in duration-700">
@@ -70,7 +76,7 @@ export default function ViewInicio({ onViewChange }: ViewInicioProps) {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
         <div>
           <h2 className="text-3xl font-bold text-slate-800 dark:text-white">
-            ¡Hola, Carlos! 👋
+            ¡Hola, {username}! 👋
           </h2>
           <p className="text-slate-500 dark:text-slate-400 mt-1">
             Resumen para hoy, <span className="text-primary font-medium">{new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}</span>.
@@ -111,44 +117,82 @@ export default function ViewInicio({ onViewChange }: ViewInicioProps) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* PRÓXIMAS CITAS */}
+        {/* PRÓXIMAS CITAS TIPO PENDIENTES */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex justify-between items-center px-2">
             <h3 className="text-xl font-bold text-slate-800 dark:text-white">Próximas Citas</h3>
-            <button className="text-primary text-sm font-bold hover:underline flex items-center gap-1 cursor-pointer">
+            <button 
+              onClick={() => onViewChange('Pendientes' as any)}
+              className="text-primary text-sm font-bold hover:underline flex items-center gap-1 cursor-pointer"
+            >
               Ver todas <ArrowRight size={14} />
             </button>
           </div>
 
           <div className="bg-white dark:bg-[#1e293b] rounded-[24px] border border-slate-200 dark:border-slate-700/50 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left">
+              <table className="w-full text-left border-collapse min-w-[600px]">
                 <thead>
-                  <tr className="border-b border-slate-100 dark:border-slate-800">
-                    <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Hora</th>
-                    <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Cliente</th>
-                    <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Servicio</th>
-                    <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Estado</th>
+                  <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-700/50">
+                    <th className="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Hora</th>
+                    <th className="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Cliente</th>
+                    <th className="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Servicio</th>
+                    <th className="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center">Estado</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
-                  {proximasCitas.map((cita) => (
-                    <tr key={cita.id} className="group hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-                      <td className="px-6 py-5 text-sm font-bold text-slate-700 dark:text-slate-200">{cita.hora}</td>
-                      <td className="px-6 py-5">
-                        <div className="flex items-center gap-3">
-                          <img src={cita.avatar} alt={cita.cliente} className="w-9 h-9 rounded-full object-cover ring-2 ring-slate-100 dark:ring-slate-700" />
-                          <span className="text-sm font-medium dark:text-white">{cita.cliente}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-5 text-sm text-slate-500 dark:text-slate-400">{cita.servicio}</td>
-                      <td className="px-6 py-5 text-right">
-                        <span className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${cita.colorEstado}`}>
-                          {cita.estado}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+                  {proximasCitas.map((cita) => {
+                    const diferenciaMs = cita.fecha.getTime() - tiempoActual.getTime();
+                    const faltanMinutos = Math.max(0, Math.floor(diferenciaMs / 60000));
+                    const esHoy = cita.fecha.getDate() === tiempoActual.getDate();
+                    const muyProximo = faltanMinutos <= 60 && esHoy && faltanMinutos > 0;
+                    const colorAvatar = muyProximo ? 'bg-rose-500 shadow-rose-500/20' : 'bg-primary shadow-primary/20';
+
+                    return (
+                      <tr key={cita.cedula} className="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group">
+                        <td className="px-6 py-5">
+                          <span className="text-sm font-black text-slate-800 dark:text-white">
+                            {formatearHora(cita.fecha)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-[14px] flex items-center justify-center font-black text-sm text-white shadow-sm shrink-0 ${colorAvatar}`}>
+                              {cita.cliente.charAt(0)}
+                            </div>
+                            <div>
+                              <span className="text-sm font-bold text-slate-800 dark:text-white block">
+                                {cita.cliente}
+                              </span>
+                              <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                                C.C: {cita.cedula}
+                              </span>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-5">
+                          <span className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-300 whitespace-nowrap">
+                            {cita.servicio}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5 text-center">
+                          {muyProximo ? (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400">
+                              <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                              </span>
+                              En {faltanMinutos} min
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                              {cita.estadoBase}
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
