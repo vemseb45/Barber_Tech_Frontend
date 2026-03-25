@@ -119,11 +119,11 @@ export default function AgendaCitasCliente() {
       hora: horaFinal,
       cedula_barbero_id: barberoSeleccionado, // Ajustado a los nombres de tu modelo
       cedula_cliente_id: String(cedulaCliente),
-      id_servicio: 1
+      servicio: 1
     };
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/citas/reservar/", {
+      const response = await fetch("http://127.0.0.1:8000/api/cita/reservar/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
