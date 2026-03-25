@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Login from "./pages/auth/Login";
@@ -5,7 +6,12 @@ import Register from "./pages/auth/Registro";
 import DashboardBarbero from "./pages/barbero/DashboardBarbero";
 import DashboardAdmin from "./pages/administrador/DashboardAdmin";
 import DashboardCliente from "./pages/cliente/DashboardCliente";
+
 function App() {
+  useEffect(() => {
+    document.documentElement.classList.add('dark');
+  }, []);
+
   return (
     <Routes>
       <Route path="/" element={<Landing />} />

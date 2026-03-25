@@ -38,6 +38,9 @@ export default function Login() {
       }
 
       if (data.data?.token) localStorage.setItem('token', data.data.token);
+      
+      const username = data.data?.user?.username || data.data?.user?.nombres || "Usuario";
+      localStorage.setItem('username', username);
 
       const rawRole = data.data?.user?.rol || data.data?.rol || "";
       const userRole = rawRole.toString().toLowerCase().trim();
