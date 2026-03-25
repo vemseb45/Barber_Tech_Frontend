@@ -52,22 +52,29 @@ const ViewInicio = ({ onReservaClick }: { onReservaClick: () => void }) => (
         </div>
       </div>
 
-      {/* LEALTAD */}
-      <div className="p-8 bg-gradient-to-br from-amber-400 to-orange-500 rounded-[32px] text-white flex flex-col items-center justify-center text-center shadow-xl shadow-orange-500/20">
-        <Gift size={40} className="mb-4" />
-        <h4 className="text-4xl font-black">450</h4>
-        <p className="font-bold text-xs uppercase tracking-widest mt-2 opacity-90">Puntos Barber</p>
-        <div className="mt-6 w-full bg-white/20 h-2 rounded-full overflow-hidden">
-          <div className="bg-white h-full w-[75%] shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+      {/* LEALTAD - COLOR ACTUALIZADO A MORADO CLARITO */}
+      <div className="p-8 bg-gradient-to-br from-indigo-100 to-purple-200 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-[32px] border border-purple-200/50 dark:border-purple-700/30 text-slate-800 dark:text-white flex flex-col items-center justify-center text-center shadow-xl shadow-purple-500/5">
+        <Gift size={40} className="mb-4 text-purple-600 dark:text-purple-400" />
+        <h4 className="text-4xl font-black text-slate-900 dark:text-white">450</h4>
+        <p className="font-bold text-xs uppercase tracking-widest mt-2 text-slate-500 dark:text-slate-300 opacity-90">Puntos Barber</p>
+        
+        {/* Barra de progreso en el mismo tono */}
+        <div className="mt-6 w-full bg-white/50 dark:bg-slate-800/50 h-2.5 rounded-full overflow-hidden border border-purple-100 dark:border-slate-700">
+          <div 
+            className="bg-gradient-to-r from-purple-500 to-indigo-500 h-full transition-all duration-1000" 
+            style={{ width: '75%' }}
+          ></div>
         </div>
-        <p className="text-[10px] mt-4 font-black uppercase tracking-tighter">¡Faltan 50 puntos para un corte gratis!</p>
+        
+        <p className="text-[10px] mt-4 font-black text-purple-600 dark:text-purple-300 uppercase tracking-tighter bg-purple-50 dark:bg-purple-900/40 px-3 py-1 rounded-full">
+          ¡Faltan 50 puntos para un corte gratis!
+        </p>
       </div>
     </div>
   </motion.div>
 );
 
 export default function DashboardCliente() {
-  // Estado inicial
   const [activeView, setActiveView] = useState('Inicio');
 
   return (
@@ -83,7 +90,6 @@ export default function DashboardCliente() {
           exit={{ opacity: 0, x: -10 }}
           transition={{ duration: 0.3 }}
         >
-          {/* Mapeo de vistas - Asegúrate de que estos strings coincidan con el Sidebar */}
           {activeView === 'Inicio' && (
             <ViewInicio onReservaClick={() => setActiveView('MisCitas')} />
           )}

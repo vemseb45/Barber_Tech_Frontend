@@ -11,3 +11,9 @@
 * {
   @apply transition-colors duration-300;
 }
+
+@layer base {
+  html {
+    font-size: 19px; /* Sube el estándar de 16px a 17px o 18px */
+  }
+}
