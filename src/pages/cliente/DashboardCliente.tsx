@@ -2,12 +2,12 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CalendarPlus, Clock, MapPin, Gift } from "lucide-react";
 
-// 1. IMPORTACIÓN DEL LAYOUT Y TUS COMPONENTES EXTERNOS
+// IMPORTACIÓN DEL LAYOUT Y COMPONENTES
 import ClienteLayout from '../../layouts/ClienteLayout';
 import ViewAgenda from "../../components/DashboardCliente/Viewagenda";
 import ViewAjustesCliente from "../../components/DashboardCliente/Viewajustes";
 
-// --- SUB-COMPONENTE: INICIO (Tu contenido original) ---
+// --- SUB-COMPONENTE: INICIO ---
 const ViewInicio = ({ onReservaClick }: { onReservaClick: () => void }) => (
   <motion.div 
     initial={{ opacity: 0, y: 20 }} 
@@ -66,9 +66,8 @@ const ViewInicio = ({ onReservaClick }: { onReservaClick: () => void }) => (
   </motion.div>
 );
 
-// --- COMPONENTE PRINCIPAL ---
 export default function DashboardCliente() {
-  // El estado debe usar los IDs definidos en tu Layout: 'Inicio', 'MisCitas', 'Favoritos', 'Perfil'
+  // Estado inicial
   const [activeView, setActiveView] = useState('Inicio');
 
   return (
@@ -84,9 +83,9 @@ export default function DashboardCliente() {
           exit={{ opacity: 0, x: -10 }}
           transition={{ duration: 0.3 }}
         >
-          {/* Sincronización con los IDs de tu Sidebar */}
+          {/* Mapeo de vistas - Asegúrate de que estos strings coincidan con el Sidebar */}
           {activeView === 'Inicio' && (
-            <ViewInicio onReservaClick={() => setActiveView('Inicio')} />
+            <ViewInicio onReservaClick={() => setActiveView('MisCitas')} />
           )}
           
           {activeView === 'MisCitas' && (
