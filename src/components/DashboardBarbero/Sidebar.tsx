@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { 
   Home, 
   CalendarDays, 
-  Scissors, 
   Settings, 
   LogOut, 
   ChevronRight, 
   ChevronDown,
   CalendarCheck,
-  History
+  History,
+  Scissors
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { BarberoView } from '../../types';
@@ -99,17 +99,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
                 <CalendarCheck size={18} />
                 <span>Agenda</span>
               </button>
-              <button
-                onClick={() => onViewChange('Pendientes' as any)}
-                className={`w-full flex items-center gap-4 px-9 py-3 rounded-2xl text-sm font-bold transition-all ${
-                  activeView === ('Pendientes' as any) 
-                    ? 'text-primary bg-primary/5 shadow-sm' 
-                    : 'text-slate-400 hover:text-primary dark:hover:text-slate-200'
-                }`}
-              >
-                <CalendarDays size={18} />
-                <span>Servicios Pendientes</span>
-              </button>
+              
               <button
                 onClick={() => onViewChange('Historial' as any)}
                 className={`w-full flex items-center gap-4 px-9 py-3 rounded-2xl text-sm font-bold transition-all ${
@@ -124,19 +114,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
             </div>
           )}
         </div>
-
-        {/* SERVICIOS */}
-        <button
-          onClick={() => onViewChange('Servicios')}
-          className={`w-full group flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 cursor-pointer ${
-            activeView === 'Servicios' 
-              ? 'bg-primary text-white shadow-lg shadow-primary/25 translate-x-1 font-bold' 
-              : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-primary font-bold'
-          }`}
-        >
-          <Scissors size={20} strokeWidth={activeView === 'Servicios' ? 2.5 : 2} />
-          <span className="text-sm">Servicios</span>
-        </button>
 
         {/* AJUSTES */}
         <button

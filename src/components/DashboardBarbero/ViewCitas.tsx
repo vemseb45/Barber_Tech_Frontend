@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, Clock, User, CheckCircle2, XCircle, Coffee } from "lucide-react";
+import { Calendar, Clock, User, CheckCircle2, XCircle, Coffee, AlertTriangle } from "lucide-react";
+import { jwtDecode } from "jwt-decode";
 
 interface Cita {
   id: number;
@@ -8,32 +9,91 @@ interface Cita {
   fecha: string;
   hora: string;
   id_servicio: number;
+  estado?: string; // puede venir o no
+}
+
+interface JwtPayload {
+  user_id: string;
 }
 
 export default function ViewCitas() {
   const [citasDelDia, setCitasDelDia] = useState<Cita[]>([]);
   const [fechaFiltro, setFechaFiltro] = useState<string>(new Date().toISOString().split('T')[0]);
   const [cargando, setCargando] = useState<boolean>(false);
-
-  // ID del barbero logueado
-  const miIdBarbero = "4";
+  const [miIdBarbero, setMiIdBarbero] = useState<string | null>(null);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const decoded = jwtDecode<JwtPayload>(token);
+      if (decoded.user_id) {
+        setMiIdBarbero(String(decoded.user_id));
+      }
+    } catch (error) {
+      console.error("Error decodificando token");
+    }
+  }, []);
+
+  const handleFinalizar = async (id: number) => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/cita/finalizar/${id}/`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert("Error: " + (data.message || "No se pudo finalizar"));
+        return;
+      }
+
+      setCitasDelDia(prev => prev.filter(c => c.id !== id));
+
+    } catch (error) {
+      alert("Error al conectar con el servidor");
+    }
+  };
+
+  useEffect(() => {
+    if (!miIdBarbero) return;
+
     setCargando(true);
     fetch(`http://127.0.0.1:8000/api/agenda/miAgenda/?barberoId=${miIdBarbero}&fecha=${fechaFiltro}`)
       .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) setCitasDelDia(data);
-        else setCitasDelDia([]);
+      .then(response => {
+        let citas: Cita[] = [];
+
+        if (response.success && Array.isArray(response.data)) {
+          citas = response.data;
+        } else if (Array.isArray(response)) {
+          citas = response;
+        }
+
+        // 🔥 FIX INTELIGENTE
+        const tieneEstado = citas.length > 0 && 'estado' in citas[0];
+
+        const resultado = tieneEstado
+          ? citas.filter(c => c.estado === 'PENT')
+          : citas; // 👈 si no viene estado, NO filtra
+
+        setCitasDelDia(resultado);
       })
       .catch(() => setCitasDelDia([]))
       .finally(() => setCargando(false));
-  }, [fechaFiltro]);
+  }, [fechaFiltro, miIdBarbero]);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
       
-      {/* CABECERA Y FILTRO REFINADO */}
+      {/* CABECERA */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 bg-white dark:bg-[#1e293b] p-8 rounded-[32px] border border-slate-200 dark:border-slate-700/50 shadow-sm">
         <div>
           <h2 className="text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
@@ -56,7 +116,18 @@ export default function ViewCitas() {
         </div>
       </div>
 
-      {/* CONTENIDO PRINCIPAL */}
+      {/* ALERTA */}
+      <div className="bg-blue-50/50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 rounded-2xl p-4 flex items-start sm:items-center gap-4">
+        <div className="p-2 bg-blue-100 dark:bg-blue-500/20 text-blue-500 rounded-xl shrink-0">
+          <AlertTriangle size={20} />
+        </div>
+        <p className="text-sm text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
+          <strong className="text-slate-800 dark:text-blue-400 mr-1">Políticas de Cancelación Activas:</strong> 
+          No podrás anular una cita si falta 1 hora o menos para su hora de inicio.
+        </p>
+      </div>
+
+      {/* CONTENIDO */}
       <div className="min-h-[400px]">
         {cargando ? (
           <div className="flex flex-col items-center justify-center py-32">
@@ -73,62 +144,27 @@ export default function ViewCitas() {
               <Coffee size={40} />
             </div>
             <h3 className="text-xl font-bold text-slate-700 dark:text-slate-200 mb-2">No tienes citas programadas</h3>
-            <p className="text-slate-500 dark:text-slate-400 max-w-xs mx-auto text-sm">
-              Parece que tienes tiempo libre. ¡Aprovecha para descansar o revisar tu inventario!
-            </p>
           </motion.div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <AnimatePresence mode="popLayout">
               {citasDelDia.map((cita, index) => (
-                <motion.div
-                  key={cita.id}
-                  layout
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="group bg-white dark:bg-[#1e293b] p-6 rounded-[28px] border border-slate-200 dark:border-slate-700/50 shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:border-primary/30 transition-all duration-300 relative overflow-hidden"
-                >
-                  {/* Decoración lateral de hora */}
-                  <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-primary/20 group-hover:bg-primary transition-colors"></div>
+                <motion.div key={cita.id} layout className="group bg-white dark:bg-[#1e293b] p-6 rounded-[28px] border">
+                  
+                  <p className="text-xl font-bold">{cita.hora}</p>
 
-                  <div className="flex justify-between items-start mb-6">
-                    <div className="flex items-center gap-3">
-                      <div className="p-3 bg-primary/10 rounded-2xl text-primary">
-                        <Clock size={20} />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-slate-800 dark:text-white leading-none">{cita.hora}</p>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Cita #{cita.id}</p>
-                      </div>
-                    </div>
-                    <div className="px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg">
-                       <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">Servicio {cita.id_servicio}</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4 mb-8">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500">
-                        <User size={20} />
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-tighter">Cédula Cliente</p>
-                        <p className="font-bold text-slate-700 dark:text-slate-200">{cita.cedula_cliente_id}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Acciones de la Cita */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <button className="flex items-center justify-center gap-2 py-3 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-600 hover:text-white rounded-xl font-bold text-xs transition-all cursor-pointer">
-                      <CheckCircle2 size={16} /> Finalizar
+                  <div className="grid grid-cols-2 gap-3 mt-4">
+                    <button
+                      onClick={() => handleFinalizar(cita.id)}
+                      className="flex items-center justify-center gap-2 py-3 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-600 hover:text-white rounded-xl font-bold text-xs"
+                    >
+                      <CheckCircle2 size={16} /> Finalizar  
                     </button>
-                    <button className="flex items-center justify-center gap-2 py-3 bg-red-500/10 hover:bg-red-500 text-red-600 hover:text-white rounded-xl font-bold text-xs transition-all cursor-pointer">
+                    <button className="flex items-center justify-center gap-2 py-3 bg-red-500/10 hover:bg-red-500 text-red-600 hover:text-white rounded-xl font-bold text-xs">
                       <XCircle size={16} /> Cancelar
                     </button>
                   </div>
+
                 </motion.div>
               ))}
             </AnimatePresence>
