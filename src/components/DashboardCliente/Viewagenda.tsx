@@ -1,262 +1,242 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Calendario from "../../components/Calendario";
 import type { Bloque } from "../../components/Calendario";
 import "../../index.css";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from 'jwt-decode';
 
 interface JwtPayload {
-    user_id: string;
-    token_type?: string;
-    exp?: number;
-    iat?: number;
-    jti?: string;
+  user_id: string;
 }
 
 interface Barbero {
-    id: string;
-    username: string; // Cambiado de 'nombre' para coincidir con el Serializer
-    especialidad: string;
+  id: string;
+  username: string; 
+  especialidad: string;
+}
+
+interface Servicio {
+  id_servicio: number; // 🔥 FIX
+  nombre: string;
+  precio: string;
+  duracion_minutos: number;
 }
 
 export default function AgendaCitasCliente() {
-    const [barberos, setBarberos] = useState<Barbero[]>([]);
-    const [barberoSeleccionado, setBarberoSeleccionado] = useState<
-        string | null
-    >(null);
-    const [fechaSeleccionada, setFechaSeleccionada] = useState<string>("");
-    const [horaSeleccionada, setHoraSeleccionada] = useState<string>("");
-    const [horaDbSeleccionada, setHoraDbSeleccionada] = useState<string>("");
-    const [bloquesDisponibles, setBloquesDisponibles] = useState<Bloque[]>([]);
-    const [cedulaCliente, setCedulaCliente] = useState<number | null>(null);
+  const [barberos, setBarberos] = useState<Barbero[]>([]);
+  const [servicios, setServicios] = useState<Servicio[]>([]);
+  const [barberoSeleccionado, setBarberoSeleccionado] = useState<string | null>(null);
+  const [servicioSeleccionado, setServicioSeleccionado] = useState<number | null>(null);
+  const [fechaSeleccionada, setFechaSeleccionada] = useState<string>("");
+  const [horaSeleccionada, setHoraSeleccionada] = useState<string>("");
+  const [horaDbSeleccionada, setHoraDbSeleccionada] = useState<string>("");
+  const [bloquesDisponibles, setBloquesDisponibles] = useState<Bloque[]>([]);
+  const [cedulaCliente, setCedulaCliente] = useState<number | null>(null);
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    // 🔹 1. Decodificar JWT
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            navigate("/login");
-            return;
+  // 1. Decodificar JWT al cargar
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) { navigate("/login"); return; }
+    try {
+      const decoded = jwtDecode<JwtPayload>(token);
+      if (decoded.user_id) setCedulaCliente(Number(decoded.user_id));
+    } catch (err) { navigate("/login"); }
+  }, [navigate]);
+
+  // 2. Cargar datos iniciales (Barberos y Servicios)
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/usuarios/barberos/")
+      .then(res => res.json())
+      .then(response => {
+        if (response.success && Array.isArray(response.data)) setBarberos(response.data);
+      }).catch(err => console.error("Error barberos:", err));
+
+    const token = localStorage.getItem("token");
+    fetch("http://127.0.0.1:8000/api/servicios/", {
+        headers: { "Authorization": `Bearer ${token}` }
+    })
+      .then(res => res.json())
+      .then(response => {
+        if (response.success && Array.isArray(response.data)) {
+          setServicios(response.data);
         }
-        try {
-            const decoded = jwtDecode<JwtPayload>(token);
-            if (decoded.user_id) {
-                setCedulaCliente(Number(decoded.user_id));
-            }
-        } catch (err) {
-            console.error("Error decodificando token:", err);
-            navigate("/login");
-        }
-    }, [navigate]);
+      }).catch(err => console.error("Error servicios:", err));
+  }, []);
 
-    // 🔹 2. Cargar Barberos (Ajustado a respuesta estructurada)
-    useEffect(() => {
-        fetch("http://127.0.0.1:8000/api/usuarios/barberos/")
-            .then((res) => res.json())
-            .then((response) => {
-                // Accedemos a response.data porque el backend envía { success, message, data }
-                if (response.success && Array.isArray(response.data)) {
-                    setBarberos(response.data);
-                } else {
-                    setBarberos([]);
-                }
-            })
-            .catch((err) => {
-                console.error("Error cargando barberos:", err);
-                setBarberos([]);
-            });
-    }, []);
+  // 3. Cargar Disponibilidad cuando cambian los requisitos
+  useEffect(() => {
+    if (!barberoSeleccionado || !fechaSeleccionada || servicioSeleccionado === null) {
+      setBloquesDisponibles([]);
+      return;
+    }
 
-    // 🔹 3. Cargar Disponibilidad (Ajustado a respuesta estructurada)
-    useEffect(() => {
-        if (!barberoSeleccionado || !fechaSeleccionada) {
-            setBloquesDisponibles([]);
-            return;
-        }
+    const fetchDisponibilidad = async () => {
+      try {
+        const res = await fetch(
+          `http://127.0.0.1:8000/api/agenda/disponibilidad/?barberoId=${barberoSeleccionado}&fecha=${fechaSeleccionada}&servicioId=${servicioSeleccionado}&_t=${new Date().getTime()}`
+        );
+        const response = await res.json();
+        let bloquesRaw: Bloque[] = response.success ? response.data : (Array.isArray(response) ? response : []);
 
-        const fetchDisponibilidad = async () => {
-            try {
-                const res = await fetch(
-                    `http://127.0.0.1:8000/api/agenda/disponibilidad/?barberoId=${barberoSeleccionado}&fecha=${fechaSeleccionada}&servicioId=1`,
-                );
-                const response = await res.json();
+        const filtrados = bloquesRaw.filter((b) => {
+          if (!b.estado) return true;
+          return b.estado.toLowerCase() === "disponible";
+        });
+        setBloquesDisponibles(filtrados);
+      } catch (err) {
+        setBloquesDisponibles([]);
+      }
+    };
+    fetchDisponibilidad();
+  }, [barberoSeleccionado, fechaSeleccionada, servicioSeleccionado]);
 
-                console.log("Datos recibidos de disponibilidad:", response); // 🚩 REVISA ESTO EN LA CONSOLA
+  const handleConfirmar = async () => {
+    const horaFinal = horaDbSeleccionada || horaSeleccionada;
+    const token = localStorage.getItem("token");
 
-                let bloquesExtraidos: Bloque[] = [];
+    if (!barberoSeleccionado || !fechaSeleccionada || !horaFinal || !cedulaCliente || servicioSeleccionado === null) {
+      alert("Por favor selecciona todos los campos.");
+      return;
+    }
 
-                // Caso A: Viene envuelto en api_response { success: true, data: [...] }
-                if (response.success && Array.isArray(response.data)) {
-                    bloquesExtraidos = response.data;
-                }
-                // Caso B: Viene el array directo [...]
-                else if (Array.isArray(response)) {
-                    bloquesExtraidos = response;
-                }
-
-                setBloquesDisponibles(bloquesExtraidos);
-            } catch (err) {
-                console.error("Error cargando horas:", err);
-                setBloquesDisponibles([]);
-            }
-        };
-        fetchDisponibilidad();
-    }, [barberoSeleccionado, fechaSeleccionada]);
-
-    // 🔹 4. Reservar Cita
-    const handleConfirmar = async () => {
-        const horaFinal = horaDbSeleccionada || horaSeleccionada;
-        const token = localStorage.getItem("token");
-
-        if (
-            !barberoSeleccionado ||
-            !fechaSeleccionada ||
-            !horaFinal ||
-            !cedulaCliente
-        ) {
-            alert("Por favor selecciona todos los campos.");
-            return;
-        }
-
-        const reservaData = {
-            fecha: fechaSeleccionada,
-            hora: horaFinal,
-            // Cambia 'cedula_barbero_id' por 'cedula_barbero'
-            cedula_barbero: barberoSeleccionado,
-            // Cambia 'cedula_cliente_id' por 'cedula_cliente'
-            cedula_cliente: String(cedulaCliente),
-            servicio: 1,
-        };
-
-        try {
-            const response = await fetch(
-                "http://127.0.0.1:8000/api/cita/reservar/",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(reservaData),
-                },
-            );
-
-            const responseData = await response.json();
-
-            if (!response.ok) {
-                alert(
-                    "Error: " +
-                        (responseData.message || "No se pudo crear la cita"),
-                );
-                return;
-            }
-
-            alert("¡Cita agendada con éxito!");
-            navigate("/DashboardCliente");
-        } catch (error) {
-            alert("Error al conectar con el servidor.");
-        }
+    const reservaData = {
+      fecha: fechaSeleccionada,
+      hora: horaFinal,
+      cedula_barbero: barberoSeleccionado, 
+      cedula_cliente: String(cedulaCliente),
+      servicio: servicioSeleccionado
     };
 
-    return (
-        <div className="landing-page py-12 px-4 sm:px-6 flex flex-col items-center justify-center">
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/cita/reservar/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(reservaData)
+      });
 
-            <div className="w-full max-w-3xl p-8 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10">
-                <h2 className="text-3xl font-extrabold text-center mb-10 text-slate-900 dark:text-white">
-                    Reserva tu cita
-                </h2>
+      const responseData = await response.json();
+      if (!response.ok) {
+        alert("Error: " + (responseData.message || JSON.stringify(responseData)));
+        return;
+      }
 
-                <h3 className="text-lg font-bold mb-4 text-slate-800 dark:text-slate-200">
-                    1. Elige tu Barbero
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-                    {/* ✅ VALIDACIÓN CRÍTICA PARA EVITAR EL CRASH */}
-                    {Array.isArray(barberos) && barberos.length > 0 ? (
-                        barberos.map((barbero) => (
-                            <motion.button
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                key={barbero.id}
-                                onClick={() => {
-                                    setBarberoSeleccionado(barbero.id);
-                                    setFechaSeleccionada("");
-                                    setHoraSeleccionada("");
-                                }}
-                                className={`p-4 rounded-xl border text-left transition-all ${
-                                    barberoSeleccionado === barbero.id
-                                        ? "bg-primary text-white border-primary shadow-lg shadow-primary/30"
-                                        : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
-                                }`}
-                            >
-                                <p className="font-bold">{barbero.username}</p>
-                                <p className="text-sm opacity-80">
-                                    {barbero.especialidad || "Barbero"}
-                                </p>
-                            </motion.button>
-                        ))
-                    ) : (
-                        <p className="col-span-full text-center py-4 text-slate-500">
-                            Cargando barberos disponibles...
-                        </p>
-                    )}
-                </div>
+      alert("¡Cita agendada con éxito!");
+      navigate("/DashboardCliente");
+    } catch (error) {
+      alert("Error al conectar con el servidor.");
+    }
+  };
 
-                {barberoSeleccionado && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="mb-10"
-                    >
-                        <h3 className="text-lg font-bold mb-4 text-slate-800 dark:text-slate-200">
-                            2. Selecciona el Día
-                        </h3>
-                        <input
-                            type="date"
-                            className="w-full sm:w-1/2 p-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white"
-                            value={fechaSeleccionada}
-                            onChange={(e) => {
-                                setFechaSeleccionada(e.target.value);
-                                setHoraSeleccionada("");
-                            }}
-                            min={new Date().toISOString().split("T")[0]}
-                        />
-                    </motion.div>
-                )}
+  return (
+    <div className="landing-page py-12 px-4 sm:px-6 flex flex-col items-center justify-center">
+      <div className="w-full max-w-3xl p-8 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10">
+        <h2 className="text-3xl font-extrabold text-center mb-10 text-slate-900 dark:text-white">
+          Reserva tu cita
+        </h2>
 
-                {fechaSeleccionada && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="mb-10"
-                    >
-                        <h3 className="text-lg font-bold mb-4 text-slate-800 dark:text-slate-200">
-                            3. Selecciona la Hora
-                        </h3>
-                        <Calendario
-                            bloquesDelDia={bloquesDisponibles}
-                            horaSeleccionada={horaSeleccionada}
-                            onSeleccionarHora={(hora, hora_db) => {
-                                setHoraSeleccionada(hora);
-                                setHoraDbSeleccionada(hora_db);
-                            }}
-                        />
-                    </motion.div>
-                )}
-
-                <button
-                    disabled={
-                        !barberoSeleccionado ||
-                        !fechaSeleccionada ||
-                        !horaSeleccionada
-                    }
-                    onClick={handleConfirmar}
-                    className="w-full py-4 bg-primary text-white rounded-xl font-bold text-lg disabled:opacity-50 hover:brightness-110 transition-all shadow-xl shadow-primary/20"
-                >
-                    Confirmar Cita
-                </button>
-            </div>
+        {/* PASO 1: BARBERO */}
+        <h3 className="text-lg font-bold mb-4 text-slate-800 dark:text-slate-200">1. Elige tu Barbero</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+          {barberos.map((barbero) => (
+            <motion.button
+              key={`barber-${barbero.id}`}
+              whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+              onClick={() => {
+                setBarberoSeleccionado(barbero.id);
+                setServicioSeleccionado(null);
+                setFechaSeleccionada("");
+                setHoraSeleccionada("");
+              }}
+              className={`p-4 rounded-xl border text-left transition-all ${
+                barberoSeleccionado === barbero.id
+                  ? "bg-primary text-white border-primary shadow-lg"
+                  : "bg-slate-50 dark:bg-slate-800 border-slate-200"
+              }`}
+            >
+              <p className="font-bold">{barbero.username}</p>
+              <p className="text-sm opacity-80">{barbero.especialidad || "Barbero"}</p>
+            </motion.button>
+          ))}
         </div>
-    );
+
+        {/* PASO 2: SERVICIO */}
+        {barberoSeleccionado && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
+            <h3 className="text-lg font-bold mb-4 text-slate-800 dark:text-slate-200">2. Selecciona un Servicio</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {servicios.map((serv) => (
+                <button
+                  key={`service-${serv.id_servicio}`} // 🔥 FIX
+                  onClick={() => {
+                    setServicioSeleccionado(serv.id_servicio); // 🔥 FIX
+                    setFechaSeleccionada("");
+                    setHoraSeleccionada("");
+                  }}
+                  className={`p-4 rounded-xl border flex justify-between items-center transition-all ${
+                    servicioSeleccionado === serv.id_servicio // 🔥 FIX
+                      ? "bg-slate-800 text-white border-slate-800 shadow-md"
+                      : "bg-white dark:bg-slate-800 border-slate-200 text-slate-700 dark:text-slate-200"
+                  }`}
+                >
+                  <div className="text-left">
+                    <p className="font-bold text-sm">{serv.nombre}</p>
+                    <p className="text-xs opacity-70">{serv.duracion_minutos} min</p>
+                  </div>
+                  <p className="font-black text-primary">
+                    ${Number(serv.precio).toLocaleString()}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {/* PASO 3: DÍA */}
+        {servicioSeleccionado !== null && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
+            <h3 className="text-lg font-bold mb-4 text-slate-800 dark:text-slate-200">3. Selecciona el Día</h3>
+            <input
+              type="date"
+              className="w-full sm:w-1/2 p-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-primary/50"
+              value={fechaSeleccionada}
+              onChange={(e) => {
+                setFechaSeleccionada(e.target.value);
+                setHoraSeleccionada("");
+              }}
+              min={new Date().toISOString().split('T')[0]}
+            />
+          </motion.div>
+        )}
+
+        {/* PASO 4: HORA */}
+        {fechaSeleccionada && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
+            <h3 className="text-lg font-bold mb-4 text-slate-800 dark:text-slate-200">4. Selecciona la Hora</h3>
+            <Calendario
+              bloquesDelDia={bloquesDisponibles}
+              horaSeleccionada={horaSeleccionada}
+              onSeleccionarHora={(hora, hora_db) => {
+                setHoraSeleccionada(hora);
+                setHoraDbSeleccionada(hora_db);
+              }}
+            />
+          </motion.div>
+        )}
+
+        <button
+          disabled={!barberoSeleccionado || servicioSeleccionado === null || !fechaSeleccionada || !horaSeleccionada}
+          onClick={handleConfirmar}
+          className="w-full py-4 bg-primary text-white rounded-xl font-bold text-lg disabled:opacity-50 hover:brightness-110 transition-all shadow-xl shadow-primary/20"
+        >
+          Confirmar Cita
+        </button>
+      </div>
+    </div>
+  );
 }
