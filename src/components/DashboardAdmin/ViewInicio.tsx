@@ -54,10 +54,6 @@ const ViewInicio: React.FC = () => {
             Esto es lo que está pasando en tu barbería hoy.
           </p>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm text-xs font-bold text-slate-600 dark:text-slate-300">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          Servidor Online
-        </div>
       </div>
 
       {/* STATS CARDS */}

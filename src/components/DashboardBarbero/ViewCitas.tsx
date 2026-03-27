@@ -9,7 +9,7 @@ interface Cita {
   fecha: string;
   hora: string;
   id_servicio: number;
-  estado?: string; // puede venir o no
+  estado?: string;
 }
 
 interface JwtPayload {
@@ -36,6 +36,7 @@ export default function ViewCitas() {
     }
   }, []);
 
+  // ✅ FINALIZAR
   const handleFinalizar = async (id: number) => {
     const token = localStorage.getItem("token");
 
@@ -62,6 +63,34 @@ export default function ViewCitas() {
     }
   };
 
+  // ✅ CANCELAR (NUEVO)
+  const handleCancelar = async (id: number) => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/cita/cancelar/${id}/`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert("Error: " + (data.message || "No se pudo cancelar"));
+        return;
+      }
+
+      // 🔥 quitar de la lista
+      setCitasDelDia(prev => prev.filter(c => c.id !== id));
+
+    } catch (error) {
+      alert("Error al conectar con el servidor");
+    }
+  };
+
   useEffect(() => {
     if (!miIdBarbero) return;
 
@@ -77,14 +106,7 @@ export default function ViewCitas() {
           citas = response;
         }
 
-        // 🔥 FIX INTELIGENTE
-        const tieneEstado = citas.length > 0 && 'estado' in citas[0];
-
-        const resultado = tieneEstado
-          ? citas.filter(c => c.estado === 'PENT')
-          : citas; // 👈 si no viene estado, NO filtra
-
-        setCitasDelDia(resultado);
+        setCitasDelDia(citas);
       })
       .catch(() => setCitasDelDia([]))
       .finally(() => setCargando(false));
@@ -93,7 +115,6 @@ export default function ViewCitas() {
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
       
-      {/* CABECERA */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 bg-white dark:bg-[#1e293b] p-8 rounded-[32px] border border-slate-200 dark:border-slate-700/50 shadow-sm">
         <div>
           <h2 className="text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
@@ -116,7 +137,6 @@ export default function ViewCitas() {
         </div>
       </div>
 
-      {/* ALERTA */}
       <div className="bg-blue-50/50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 rounded-2xl p-4 flex items-start sm:items-center gap-4">
         <div className="p-2 bg-blue-100 dark:bg-blue-500/20 text-blue-500 rounded-xl shrink-0">
           <AlertTriangle size={20} />
@@ -127,7 +147,6 @@ export default function ViewCitas() {
         </p>
       </div>
 
-      {/* CONTENIDO */}
       <div className="min-h-[400px]">
         {cargando ? (
           <div className="flex flex-col items-center justify-center py-32">
@@ -148,7 +167,7 @@ export default function ViewCitas() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <AnimatePresence mode="popLayout">
-              {citasDelDia.map((cita, index) => (
+              {citasDelDia.map((cita) => (
                 <motion.div key={cita.id} layout className="group bg-white dark:bg-[#1e293b] p-6 rounded-[28px] border">
                   
                   <p className="text-xl font-bold">{cita.hora}</p>
@@ -160,7 +179,10 @@ export default function ViewCitas() {
                     >
                       <CheckCircle2 size={16} /> Finalizar  
                     </button>
-                    <button className="flex items-center justify-center gap-2 py-3 bg-red-500/10 hover:bg-red-500 text-red-600 hover:text-white rounded-xl font-bold text-xs">
+                    <button
+                      onClick={() => handleCancelar(cita.id)}
+                      className="flex items-center justify-center gap-2 py-3 bg-red-500/10 hover:bg-red-500 text-red-600 hover:text-white rounded-xl font-bold text-xs"
+                    >
                       <XCircle size={16} /> Cancelar
                     </button>
                   </div>

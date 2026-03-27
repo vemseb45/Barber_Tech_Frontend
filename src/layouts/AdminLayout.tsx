@@ -49,7 +49,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, activeView, onViewC
         <header className="h-20 bg-white dark:bg-white/5 border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-8 z-10 transition-all shadow-sm dark:shadow-none">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-black tracking-tighter uppercase italic text-slate-800 dark:text-white">
-              {activeView === 'Inicio' ? 'Dashboard Admin' : activeView}
+              {activeView === 'Inicio' ? 'Panel Admin' : activeView}
             </h1>
           </div>
 

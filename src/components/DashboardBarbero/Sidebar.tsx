@@ -8,7 +8,8 @@ import {
   ChevronDown,
   CalendarCheck,
   History,
-  Scissors
+  Scissors,
+  Ban // 1. Importamos el icono para canceladas
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { BarberoView } from '../../types';
@@ -21,9 +22,12 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
   const navigate = useNavigate();
   
-  // Estado para el acordeón de Citas
+  // 2. Actualizamos la lógica de apertura para incluir 'Canceladas'
   const [isCitasOpen, setIsCitasOpen] = useState(
-    activeView === 'Citas' || activeView === ('Agenda' as any) || activeView === ('Historial' as any)
+    activeView === 'Citas' || 
+    activeView === ('Agenda' as any) || 
+    activeView === ('Historial' as any) || 
+    activeView === ('Canceladas' as any)
   );
 
   const handleLogout = () => {
@@ -31,8 +35,12 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
     navigate('/login');
   };
 
-  // Verificamos si alguna sub-opción de citas está activa para resaltar el botón padre
-  const isCitasActive = activeView === 'Citas' || activeView === ('Agenda' as any) || activeView === ('Historial' as any);
+  // 3. Verificamos si 'Canceladas' está activa para resaltar el botón padre
+  const isCitasActive = 
+    activeView === 'Citas' || 
+    activeView === ('Agenda' as any) || 
+    activeView === ('Historial' as any) || 
+    activeView === ('Canceladas' as any);
 
   const username = localStorage.getItem('username') || 'Barbero';
   const initial = username.charAt(0).toUpperCase();
@@ -106,10 +114,23 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
                   activeView === ('Historial' as any) 
                     ? 'text-primary bg-primary/5 shadow-sm' 
                     : 'text-slate-400 hover:text-primary dark:hover:text-slate-200'
-              }`}
+                }`}
               >
                 <History size={18} />
                 <span>Servicios Realizados</span>
+              </button>
+
+              {/* 4. BOTÓN DE CITAS CANCELADAS */}
+              <button
+                onClick={() => onViewChange('Canceladas' as any)}
+                className={`w-full flex items-center gap-4 px-9 py-3 rounded-2xl text-sm font-bold transition-all ${
+                  activeView === ('Canceladas' as any) 
+                    ? 'text-red-500 bg-red-50 dark:bg-red-500/5 shadow-sm' 
+                    : 'text-slate-400 hover:text-red-500 dark:hover:text-red-400'
+                }`}
+              >
+                <Ban size={18} />
+                <span>Citas Canceladas</span>
               </button>
             </div>
           )}
