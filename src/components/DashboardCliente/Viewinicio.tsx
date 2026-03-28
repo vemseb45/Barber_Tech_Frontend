@@ -1,4 +1,3 @@
-
 import { 
   CalendarDays, 
   TrendingUp, 
@@ -30,7 +29,7 @@ export default function ViewInicioCliente({ onViewChange }: ViewInicioProps) {
           </p>
         </div>
         <button
-          onClick={() => onViewChange('Reservas')}
+          onClick={() => onViewChange('Reservar Cita')} // ✅ FIX AQUÍ
           className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl font-bold text-sm hover:scale-105 transition-all shadow-lg shadow-primary/25"
         >
           <CalendarDays size={18} />
@@ -79,7 +78,9 @@ export default function ViewInicioCliente({ onViewChange }: ViewInicioProps) {
               <div className="space-y-4 flex-1">
                 <div>
                   <h4 className="text-xl font-bold dark:text-white">Corte Degradado + Barba</h4>
-                  <p className="text-slate-500 text-sm font-medium">Con el Master Barber: <span className="text-primary">Carlos B.</span></p>
+                  <p className="text-slate-500 text-sm font-medium">
+                    Con el Master Barber: <span className="text-primary">Carlos B.</span>
+                  </p>
                 </div>
                 
                 <div className="flex flex-wrap gap-4">
@@ -97,7 +98,6 @@ export default function ViewInicioCliente({ onViewChange }: ViewInicioProps) {
               </button>
             </div>
             
-            {/* Decoración sutil de fondo */}
             <CalendarDays size={120} className="absolute -right-8 -bottom-8 text-slate-50 dark:text-slate-800/20 rotate-12" />
           </div>
         </div>
@@ -117,7 +117,8 @@ export default function ViewInicioCliente({ onViewChange }: ViewInicioProps) {
             </div>
             
             <button className="w-full flex items-center justify-center gap-2 text-primary font-bold text-xs uppercase tracking-widest hover:underline group">
-              Ver Catálogo de Premios <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              Ver Catálogo de Premios 
+              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
         </div>

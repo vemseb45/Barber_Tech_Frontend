@@ -1,5 +1,5 @@
-import React from 'react';
-import { LayoutDashboard, Calendar, Star, User, LogOut } from 'lucide-react';
+import React, { useState } from 'react';
+import { LayoutDashboard, Calendar, Star, User, LogOut, ChevronDown, CalendarCheck, History } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface SidebarProps {
@@ -8,12 +8,13 @@ interface SidebarProps {
 }
 
 const SidebarCliente: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
-  
+
   const navigate = useNavigate();
 
-  // ✅ MOVER AQUÍ
   const username = localStorage.getItem('username') || 'Admin';
   const initial = username.charAt(0).toUpperCase();
+
+  const [openCitas, setOpenCitas] = useState(false);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -23,13 +24,12 @@ const SidebarCliente: React.FC<SidebarProps> = ({ activeView, onViewChange }) =>
   const menuItems = [
     { id: 'Inicio', label: 'Inicio', icon: <LayoutDashboard size={20} /> },
     { id: 'MisCitas', label: 'Mis Citas', icon: <Calendar size={20} /> },
-    { id: 'Favoritos', label: 'Favoritos', icon: <Star size={20} /> },
     { id: 'Perfil', label: 'Perfil', icon: <User size={20} /> },
   ];
 
   return (
     <aside className="w-64 bg-white dark:bg-[#0f172a] border-r border-slate-200 dark:border-white/5 flex flex-col shrink-0">
-      
+
       <div className="p-8 flex items-center gap-3">
         <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-black italic">B</div>
         <h1 className="text-xl font-black tracking-tighter">
@@ -38,20 +38,93 @@ const SidebarCliente: React.FC<SidebarProps> = ({ activeView, onViewChange }) =>
       </div>
 
       <nav className="flex-1 px-4 space-y-2">
-        {menuItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => onViewChange(item.id)}
-            className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold text-sm transition-all cursor-pointer ${
-              activeView === item.id
-                ? 'bg-primary text-white shadow-lg shadow-primary/25'
-                : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5'
-            }`}
-          >
-            {item.icon}
-            {item.label}
-          </button>
-        ))}
+        {menuItems.map((item) => {
+
+          if (item.id === 'MisCitas') {
+
+            const isCitasActive =
+              activeView === 'Reservar Cita' ||
+              activeView === 'Citas Pendientes' ||
+              activeView === 'Citas Terminadas';
+
+            return (
+              <div key={item.id} className="space-y-1">
+                <button
+                  onClick={() => setOpenCitas(!openCitas)}
+                  className={`w-full group flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all duration-300 cursor-pointer ${
+                    isCitasActive
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                  }`}
+                >
+                  <div className="flex items-center gap-4 font-bold text-sm">
+                    <Calendar size={20} strokeWidth={isCitasActive ? 2.5 : 2} />
+                    <span>Mis Citas</span>
+                  </div>
+
+                  <ChevronDown size={16} />
+                </button>
+
+                {openCitas && (
+                  <div className="pl-4 space-y-1 animate-in slide-in-from-top-2 duration-200">
+
+                    <button
+                      onClick={() => onViewChange('Reservar Cita')}
+                      className={`w-full flex items-center gap-4 px-9 py-3 rounded-2xl text-sm font-bold transition-all ${
+                        activeView === 'Reservar Cita'
+                          ? 'text-primary bg-primary/5 shadow-sm'
+                          : 'text-slate-400 hover:text-primary dark:hover:text-slate-200'
+                      }`}
+                    >
+                      <CalendarCheck size={18} />
+                      <span>Reservar cita</span>
+                    </button>
+
+                    <button
+                      onClick={() => onViewChange('Citas Pendientes')}
+                      className={`w-full flex items-center gap-4 px-9 py-3 rounded-2xl text-sm font-bold transition-all ${
+                        activeView === 'Citas Pendientes'
+                          ? 'text-primary bg-primary/5 shadow-sm'
+                          : 'text-slate-400 hover:text-primary dark:hover:text-slate-200'
+                      }`}
+                    >
+                      <History size={18} />
+                      <span>Citas pendientes</span>
+                    </button>
+
+                    <button
+                      onClick={() => onViewChange('Citas Terminadas')}
+                      className={`w-full flex items-center gap-4 px-9 py-3 rounded-2xl text-sm font-bold transition-all ${
+                        activeView === 'Citas Terminadas'
+                          ? 'text-primary bg-primary/5 shadow-sm'
+                          : 'text-slate-400 hover:text-primary dark:hover:text-slate-200'
+                      }`}
+                    >
+                      <History size={18} />
+                      <span>Citas terminadas</span>
+                    </button>
+
+                  </div>
+                )}
+              </div>
+            );
+          }
+
+          return (
+            <button
+              key={item.id}
+              onClick={() => onViewChange(item.id)}
+              className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold text-sm transition-all cursor-pointer ${
+                activeView === item.id
+                  ? 'bg-primary text-white shadow-lg shadow-primary/25'
+                  : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5'
+              }`}
+            >
+              {item.icon}
+              {item.label}
+            </button>
+          );
+        })}
       </nav>
 
       {/* USER PROFILE */}
