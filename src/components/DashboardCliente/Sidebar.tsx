@@ -22,14 +22,13 @@ const SidebarCliente: React.FC<SidebarProps> = ({ activeView, onViewChange }) =>
   };
 
   const menuItems = [
-    { id: 'Inicio', label: 'Inicio', icon: <Home size={20} /> },
+    { id: 'Inicio', label: 'Inicio', icon: <LayoutDashboard size={20} /> },
     { id: 'MisCitas', label: 'Mis Citas', icon: <Calendar size={20} /> },
     { id: 'Perfil', label: 'Perfil', icon: <User size={20} /> },
   ];
 
   return (
-    <aside className="w-64 bg-white dark:bg-[#0f172a] border-r border-slate-200 dark:border-white/5 flex flex-col shrink-0">
-
+<aside className="w-64 h-screen bg-white dark:bg-[#0f172a] border-r border-slate-200 dark:border-white/5 flex flex-col shrink-0 sticky top-0">
       <div className="p-8 flex items-center gap-3">
         <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-black italic">B</div>
         <h1 className="text-xl font-black tracking-tighter">
@@ -127,29 +126,33 @@ const SidebarCliente: React.FC<SidebarProps> = ({ activeView, onViewChange }) =>
         })}
       </nav>
 
-      {/* USER PROFILE & FOOTER */}
+      {/* USER PROFILE */}
       <div className="p-6 mt-auto">
-        <div className="bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/50 rounded-2xl p-3 mb-4 transition-all hover:border-primary/30 flex items-center gap-3">
-          <div className="relative shrink-0">
-            <div className="w-10 h-10 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center text-primary font-black uppercase">
-              {initial}
+        <div className="bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/50 rounded-[24px] p-4 mb-4 transition-all hover:border-primary/30">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="w-11 h-11 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center text-primary font-black text-sm uppercase">
+                {initial}
+              </div>
+              <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-slate-800 rounded-full"></div>
             </div>
-            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white dark:border-slate-800 rounded-full"></div>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-slate-800 dark:text-white leading-tight truncate">{username}</p>
-            <p className="text-[10px] font-bold text-primary uppercase tracking-widest mt-0.5">Cliente</p>
+            <div className="overflow-hidden">
+              <p className="text-sm font-bold truncate text-slate-800 dark:text-white leading-tight">{username}</p>
+              <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">Cliente</p>
+            </div>
           </div>
         </div>
 
         {/* LOGOUT */}
-        <button
-          className="w-full flex items-center justify-center gap-3 px-4 py-3 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-2xl transition-all duration-300 border border-transparent hover:border-red-200 dark:hover:border-red-900/30 cursor-pointer"
-          onClick={handleLogout}
-        >
-          <LogOut size={18} strokeWidth={2.5} />
-          <span className="font-black tracking-tighter uppercase text-sm">CERRAR SESIÓN</span>
-        </button>
+        <div className="p-4 mt-auto">
+          <button
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-2xl transition-all duration-300 font-bold text-sm border border-transparent hover:border-red-200 dark:hover:border-red-900/30 cursor-pointer"
+            onClick={handleLogout}
+          >
+            <LogOut size={18} />
+            <span>Cerrar Sesión</span>
+          </button>
+        </div>
       </div>
     </aside>
   );
