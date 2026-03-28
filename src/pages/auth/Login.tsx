@@ -8,8 +8,8 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  // Inicializamos basado en la clase del documento para mantener consistencia con la Landing
-  const [darkMode, setDarkMode] = useState(document.documentElement.classList.contains('dark'));
+  // Inicializamos en true porque el App.tsx fuerza el theme 'dark' por defecto.
+  const [darkMode, setDarkMode] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -60,26 +60,26 @@ export default function Login() {
       
       {/* Header */}
       <header className="flex justify-between items-center py-6 max-w-7xl mx-auto w-full">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-primary text-white rounded-xl flex items-center justify-center font-black shadow-lg shadow-primary/30 text-lg">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 bg-primary text-white rounded-xl flex items-center justify-center font-black shadow-lg shadow-primary/30 text-base sm:text-lg shrink-0">
             B
           </div>
-          <h1 className="text-lg font-black tracking-tighter uppercase">
-            Barber <span className="text-primary">Tech</span>
+          <h1 className="text-base sm:text-lg font-black tracking-tighter uppercase leading-none mt-1 sm:mt-0">
+            Barber<br className="sm:hidden" /> <span className="text-primary">Tech</span>
           </h1>
         </div>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-2 sm:gap-6 shrink-0">
           <button
             onClick={toggleTheme}
-            className="p-2.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:scale-110 active:scale-95 transition-all text-slate-600 dark:text-yellow-400 cursor-pointer shadow-sm"
+            className="p-1.5 sm:p-2.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:scale-110 active:scale-95 transition-all text-slate-600 dark:text-yellow-400 cursor-pointer shadow-sm shrink-0"
             title="Alternar modo visual"
             aria-label="Cambiar tema"
           >
-            {darkMode ? <Sun size={20} fill="currentColor" /> : <Moon size={20} fill="currentColor" />}
+            {darkMode ? <Sun size={18} className="sm:w-5 sm:h-5" fill="currentColor" /> : <Moon size={18} className="sm:w-5 sm:h-5" fill="currentColor" />}
           </button>
           <Link 
             to="/" 
-            className="bg-primary hover:bg-[#7112b3] border border-transparent hover:border-[#7112b3] px-6 py-2 rounded-full text-white font-bold text-xs shadow-md shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_0.5em_0_#7112b3]"
+            className="bg-primary hover:bg-[#7112b3] border border-transparent hover:border-[#7112b3] px-3 py-1.5 sm:px-6 sm:py-2 rounded-full text-white font-bold text-[10px] sm:text-xs shadow-md shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_0.5em_0_#7112b3] whitespace-nowrap shrink-0"
           >
             ← Volver
           </Link>

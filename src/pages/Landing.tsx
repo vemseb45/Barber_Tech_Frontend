@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, type Variants } from 'framer-motion';
 import "../index.css";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, Menu, X } from "lucide-react";
 
 export default function Landing() {
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const hasSession = false;
 
@@ -54,17 +55,17 @@ export default function Landing() {
       <header className="sticky top-0 z-50 w-full border-b border-primary/10 bg-white/80 backdrop-blur-md dark:bg-[#0a0a0f]/80 transition-colors duration-300">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
           
-          <motion.div variants={dropDownVariant} initial="hidden" animate="visible" className="flex items-center gap-3">
+          <motion.div variants={dropDownVariant} initial="hidden" animate="visible" className="flex items-center gap-2 sm:gap-3 shrink-0">
             <motion.img 
               src="/Imagenes/Recurso 1.png" 
               alt="BarberTech Logo" 
-              className="w-16 h-16 object-contain drop-shadow-lg" 
+              className="w-10 h-10 sm:w-16 sm:h-16 object-contain drop-shadow-lg" 
               animate={{ y: [0, -6, 0] }} 
               transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }} 
               whileHover={{ rotate: 180, scale: 1.15 }} 
             />
             <motion.h1 
-              className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 ml-2" 
+              className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 ml-2" 
               animate={{ scale: [1, 1.02, 1], textShadow: ["0px 0px 4px transparent", "0px 0px 8px rgba(133, 25, 210, 0.4)", "0px 0px 4px transparent"] }} 
               transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }} 
             >
@@ -99,10 +100,17 @@ export default function Landing() {
             ))}
           </motion.nav>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 sm:p-2.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:scale-110 active:scale-95 transition-all text-slate-600 dark:text-slate-300 cursor-pointer shadow-sm"
+              aria-label="Menu"
+            >
+              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
             <button
               onClick={toggleTheme}
-              className="p-2.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:scale-110 active:scale-95 transition-all text-slate-600 dark:text-yellow-400 cursor-pointer shadow-sm"
+              className="p-2 sm:p-2.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:scale-110 active:scale-95 transition-all text-slate-600 dark:text-yellow-400 cursor-pointer shadow-sm"
               title="Alternar modo visual"
               aria-label="Alternar tema"
             >
@@ -118,11 +126,43 @@ export default function Landing() {
               whileHover={{ scale: 1.1, y: -4, backgroundColor: "#5213fc" }}
               whileTap={{ scale: 0.9 }}
               onClick={handleReservation}
-              className="rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-white shadow-lg transition-all">
+              className="hidden md:block rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-white shadow-lg transition-all">
               Reservar Cita
             </motion.button>
           </div>
         </div>
+
+        {/* Mobile Navbar Menu */}
+        <motion.div 
+          initial={false}
+          animate={{ height: isMobileMenuOpen ? 'auto' : 0, opacity: isMobileMenuOpen ? 1 : 0 }}
+          className="md:hidden overflow-hidden bg-white/95 backdrop-blur-2xl dark:bg-[#0a0a0f]/95 shadow-2xl border-t border-primary/5"
+        >
+          <nav className="flex flex-col px-6 py-2 pb-6">
+            {[
+              { href: "#inicio", name: "Inicio" },
+              { href: "#servicios", name: "Servicios" },
+              { href: "#galeria", name: "Galería" },
+              { href: "#testimonios", name: "Testimonios" },
+              { href: "#contacto", name: "Contacto" }
+            ].map((link, idx) => (
+              <a 
+                key={idx} 
+                href={link.href}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-sm font-bold text-slate-900 dark:text-slate-100 hover:text-primary transition-colors py-4 border-b border-slate-100 dark:border-white/5 last:border-0" 
+              >
+                {link.name}
+              </a>
+            ))}
+            <button 
+              onClick={() => { setIsMobileMenuOpen(false); handleReservation(); }}
+              className="mt-6 w-full rounded-2xl bg-primary px-6 py-4 text-sm font-black uppercase text-white shadow-lg transition-all text-center hover:bg-[#5213fc] active:scale-95 tracking-widest"
+            >
+              Reservar Cita
+            </button>
+          </nav>
+        </motion.div>
       </header>
 
       <main className="flex-grow">
@@ -131,20 +171,20 @@ export default function Landing() {
           <div className="mx-auto max-w-7xl">
             <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
               <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="flex flex-col gap-8">
-                <motion.div variants={fadeUpVariant} className="inline-flex w-fit items-center gap-2 rounded-full bg-primary/10 px-4 py-1 text-primary text-xs font-bold uppercase tracking-wider border border-primary/20">
+                <motion.div variants={fadeUpVariant} className="inline-flex w-fit items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-primary text-[10px] sm:text-xs font-bold uppercase tracking-wider border border-primary/20">
                   <span>La mejor experiencia en barbería</span>
                 </motion.div>
-                <motion.h1 variants={fadeUpVariant} className="text-5xl font-extrabold leading-tight tracking-tight text-slate-900 dark:text-slate-100 md:text-7xl">
-                  Corte y Estilo con <span className="text-primary">Personalidad</span>
+                <motion.h1 variants={fadeUpVariant} className="text-4xl sm:text-5xl font-extrabold leading-tight tracking-tight text-slate-900 dark:text-slate-100 lg:text-7xl">
+                  Corte y Estilo con <span className="text-primary block sm:inline">Personalidad</span>
                 </motion.h1>
-                <motion.p variants={fadeUpVariant} className="text-lg text-slate-600 dark:text-slate-400">
+                <motion.p variants={fadeUpVariant} className="text-base sm:text-lg text-slate-600 dark:text-slate-400">
                   Tu mejor versión comienza aquí. Experiencia de barbería clásica apoyada con tecnología para hacer tu visita más rápida y cómoda.
                 </motion.p>
-                <motion.div variants={fadeUpVariant} className="flex flex-wrap gap-4">
-                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleReservation} className="rounded-2xl bg-primary px-8 py-4 text-base font-bold text-white shadow-xl shadow-primary/30 transition-all">
+                <motion.div variants={fadeUpVariant} className="flex flex-col sm:flex-row gap-4">
+                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleReservation} className="w-full sm:w-auto rounded-2xl bg-primary px-8 py-4 text-sm sm:text-base font-bold text-white shadow-xl shadow-primary/30 transition-all text-center">
                     Reservar Cita Ahora
                   </motion.button>
-                  <motion.a whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} href="#servicios" className="rounded-2xl border border-primary/20 bg-white dark:bg-white/5 px-8 py-4 text-base font-bold text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-white/10 transition-colors inline-flex items-center justify-center">
+                  <motion.a whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} href="#servicios" className="w-full sm:w-auto rounded-2xl border border-primary/20 bg-white dark:bg-white/5 px-8 py-4 text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-white/10 transition-colors inline-flex items-center justify-center text-center">
                     Ver Servicios
                   </motion.a>
                 </motion.div>
@@ -301,7 +341,7 @@ export default function Landing() {
 
       {/* Footer */}
       <footer className="border-t border-black/5 dark:border-white/5 bg-slate-100 px-6 py-12 dark:bg-[#0a0a0f] transition-colors mt-auto">
-        <div className="mx-auto max-w-7xl grid gap-10 md:grid-cols-3">
+        <div className="mx-auto max-w-7xl grid gap-10 md:grid-cols-3 text-center md:text-left">
           <div>
             <h1 className="text-xl font-black tracking-tighter uppercase text-slate-900 dark:text-white">Barber<span className="text-primary">Tech</span></h1>
             <p className="text-xs text-slate-500 mt-4">Definiendo el estilo masculino.</p>
@@ -315,7 +355,7 @@ export default function Landing() {
           </div>
           <div>
             <h4 className="mb-6 font-bold uppercase tracking-wider text-[10px] opacity-50">Síguenos</h4>
-            <div className="flex gap-4">
+            <div className="flex justify-center md:justify-start gap-4">
               {["facebook", "instagram", "twitter"].map((social) => (
                 <motion.a key={social} whileHover={{ y: -5 }} className="flex h-10 w-10 items-center justify-center rounded-xl bg-white dark:bg-white/5 shadow-sm border border-black/5 dark:border-white/10" href="#">
                   <img src={`/Imagenes/${social}.${social === 'twitter' ? 'webp' : 'png'}`} alt={social} className="w-5 h-5 object-contain" />

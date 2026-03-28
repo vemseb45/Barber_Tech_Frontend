@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { History, XCircle, Ban, CalendarX } from 'lucide-react';
+import { XCircle, CalendarX } from 'lucide-react';
 import { jwtDecode } from "jwt-decode";
 
 interface CitaCancelada {
@@ -56,7 +56,7 @@ export default function ViewCanceladas() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
           <h2 className="text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
-            <Ban className="text-red-500" size={28} />
+            <CalendarX className="text-red-400" size={28} />
             Citas Canceladas
           </h2>
           <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">
@@ -70,11 +70,11 @@ export default function ViewCanceladas() {
         <div className="bg-white dark:bg-[#1e293b] p-6 rounded-[24px] border shadow-sm col-span-1 lg:col-span-2 flex justify-between">
           <div>
             <p className="text-xs font-bold text-slate-400 uppercase">Monto No Percibido</p>
-            <h3 className="text-3xl font-black text-red-500">
+            <h3 className="text-3xl font-black text-red-400">
               ${citasCanceladas.reduce((acc, s) => acc + s.precio, 0).toFixed(2)}
             </h3>
           </div>
-          <div className="p-4 bg-red-500/10 rounded-2xl text-red-500">
+          <div className="p-4 bg-red-400/10 rounded-2xl text-red-400">
             <CalendarX size={28} />
           </div>
         </div>
@@ -115,7 +115,7 @@ export default function ViewCanceladas() {
                       ${item.precio.toFixed(2)}
                     </td>
                     <td className="px-6 py-5 text-center">
-                      <span className="px-3 py-1 bg-red-100 text-red-600 dark:bg-red-500/10 dark:text-red-400 rounded-full text-xs font-bold inline-flex items-center gap-1">
+                      <span className="px-3 py-1 bg-red-50 text-red-500 dark:bg-red-400/10 dark:text-red-400 rounded-full text-xs font-bold inline-flex items-center gap-1">
                         <XCircle size={12} />
                         Cancelado
                       </span>

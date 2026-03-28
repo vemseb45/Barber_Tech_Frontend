@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Bell, Search } from 'lucide-react';
+import { Sun, Moon, Bell, Search, Menu } from 'lucide-react';
 import Sidebar from '../components/DashboardAdmin/Sidebar';
 import type { AdminView } from '../types';
 
@@ -37,18 +37,36 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, activeView, onViewC
     }
   }, []);
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-[#0a0a0f] text-slate-900 dark:text-slate-100 transition-colors duration-500 font-sans antialiased">
+    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-[#0a0a0f] text-slate-900 dark:text-slate-100 transition-colors duration-500 font-sans antialiased relative">
       
+      {/* MOBILE OVERLAY */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* SIDEBAR ADMIN */}
-      <Sidebar activeView={activeView} onViewChange={onViewChange} />
+      <div className={`fixed inset-y-0 left-0 z-50 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:relative lg:translate-x-0 transition-transform duration-300`}>
+        <Sidebar activeView={activeView} onViewChange={(v) => { onViewChange(v); setIsSidebarOpen(false); }} />
+      </div>
 
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
         
         {/* HEADER DE ADMINISTRACIÓN */}
-        <header className="h-20 bg-white dark:bg-white/5 border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-8 z-10 transition-all shadow-sm dark:shadow-none">
-          <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-black tracking-tighter uppercase italic text-slate-800 dark:text-white">
+        <header className="h-20 bg-white dark:bg-white/5 border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-4 lg:px-8 z-10 transition-all shadow-sm dark:shadow-none">
+          <div className="flex items-center gap-3 lg:gap-4">
+            <button 
+              className="lg:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-colors cursor-pointer"
+              onClick={() => setIsSidebarOpen(true)}
+            >
+              <Menu size={24} />
+            </button>
+            <h1 className="text-xl lg:text-2xl font-black tracking-tighter uppercase italic text-slate-800 dark:text-white truncate">
               {activeView === 'Inicio' ? 'Panel Admin' : activeView}
             </h1>
           </div>
