@@ -71,14 +71,14 @@ export default function ViewInicio({ onViewChange }: ViewInicioProps) {
   };
 
   return (
-    <div className="animate-in fade-in duration-700">
+    <div className="space-y-8 animate-in fade-in duration-700">
       {/* HEADER */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-slate-800 dark:text-white">
-            ¡Hola, {username}! 👋
+          <h2 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight">
+            ¡Hola, {username}!
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">
             Resumen para hoy, <span className="text-primary font-medium">{new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}</span>.
           </p>
         </div>
@@ -92,7 +92,7 @@ export default function ViewInicio({ onViewChange }: ViewInicioProps) {
       </div>
 
       {/* ESTADÍSTICAS REFINADAS */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
           { label: 'Citas hoy', val: stats.citasHoy, inc: stats.citasCrecimiento, icon: CalendarDays, color: 'text-blue-500', bg: 'bg-blue-500/10' },
           { label: 'Calificación', val: '4.9', inc: '+0.2', icon: Star, color: 'text-amber-500', bg: 'bg-amber-500/10' },

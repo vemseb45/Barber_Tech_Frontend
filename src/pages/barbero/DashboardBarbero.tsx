@@ -56,9 +56,7 @@ const DashboardBarbero: React.FC = () => {
 
   return (
     <BarberoLayout activeView={activeView} onViewChange={setActiveView}>
-      <div className="p-4 md:p-8 min-h-screen bg-slate-50 dark:bg-[#0a0a0f] text-slate-900 dark:text-slate-100 transition-colors duration-500">
-        {renderContent()}
-      </div>
+      {renderContent()}
     </BarberoLayout>
   );
 };

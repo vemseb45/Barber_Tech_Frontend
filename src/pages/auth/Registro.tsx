@@ -16,13 +16,13 @@ export default function Register() {
     password: "",
     confirmPassword: ""
   });
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Sincronización inicial con el tema del documento
-  const [darkMode, setDarkMode] = useState(document.documentElement.classList.contains('dark'));
-  const navigate = useNavigate(); 
+  // Inicializamos en true porque el App.tsx fuerza el theme 'dark' por defecto.
+  const [darkMode, setDarkMode] = useState(true);
+  const navigate = useNavigate();
 
   // Efecto para aplicar el tema al cambiar el estado
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function Register() {
       }
 
       alert("Usuario registrado correctamente");
-      navigate("/login"); 
+      navigate("/login");
 
     } catch (error) {
       console.error("Error:", error);
@@ -98,29 +98,29 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex flex-col px-6 md:px-10 transition-colors duration-500 bg-slate-50 dark:bg-[#0a0a0f] text-slate-900 dark:text-slate-100 font-sans antialiased">
-      
+
       {/* Header */}
       <header className="flex justify-between items-center py-6 max-w-7xl mx-auto w-full">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-primary text-white rounded-xl flex items-center justify-center font-black shadow-lg shadow-primary/30 text-lg">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 bg-primary text-white rounded-xl flex items-center justify-center font-black shadow-lg shadow-primary/30 text-base sm:text-lg shrink-0">
             B
           </div>
-          <h1 className="text-lg font-black tracking-tighter uppercase">
-            Barber <span className="text-primary">Tech</span>
+          <h1 className="text-base sm:text-lg font-black tracking-tighter uppercase leading-none mt-1 sm:mt-0">
+            Barber<br className="sm:hidden" /> <span className="text-primary">Tech</span>
           </h1>
         </div>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-2 sm:gap-6 shrink-0">
           <button
             onClick={toggleTheme}
-            className="p-2.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:scale-110 active:scale-95 transition-all text-slate-600 dark:text-yellow-400 cursor-pointer shadow-sm"
+            className="p-1.5 sm:p-2.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:scale-110 active:scale-95 transition-all text-slate-600 dark:text-yellow-400 cursor-pointer shadow-sm shrink-0"
             title="Alternar modo visual"
             aria-label="Cambiar tema"
           >
-            {darkMode ? <Sun size={20} fill="currentColor" /> : <Moon size={20} fill="currentColor" />}
+            {darkMode ? <Sun size={18} className="sm:w-5 sm:h-5" fill="currentColor" /> : <Moon size={18} className="sm:w-5 sm:h-5" fill="currentColor" />}
           </button>
-          <Link 
-            to="/login" 
-            className="bg-primary hover:bg-[#7112b3] border border-transparent hover:border-[#7112b3] px-6 py-2 rounded-full text-white font-bold text-xs shadow-md shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_0.5em_0_#7112b3]"
+          <Link
+            to="/login"
+            className="bg-primary hover:bg-[#7112b3] border border-transparent hover:border-[#7112b3] px-3 py-1.5 sm:px-6 sm:py-2 rounded-full text-white font-bold text-[10px] sm:text-xs shadow-md shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_0.5em_0_#7112b3] whitespace-nowrap shrink-0"
           >
             ← Volver
           </Link>
@@ -129,7 +129,7 @@ export default function Register() {
 
       {/* Contenido Principal */}
       <main className="flex-grow flex justify-center items-center py-10">
-        <motion.form 
+        <motion.form
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           onSubmit={handleSubmit}
@@ -149,10 +149,10 @@ export default function Register() {
 
           {/* Grid de Inputs */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-            
+
             <div className="text-left">
-              <label className="text-xs font-bold mb-2 block ml-1 text-slate-700 dark:text-slate-300">Username</label>
-              <input type="text" name="username" value={formData.username} onChange={handleChange} placeholder="Ej: Pipe01" className={inputClass} required />
+              <label className="text-xs font-bold mb-2 block ml-1 text-slate-700 dark:text-slate-300">Usuario</label>
+              <input type="text" name="username" value={formData.username} onChange={handleChange} placeholder="Ej: Pepito01" className={inputClass} required />
             </div>
 
             <div className="text-left">
@@ -183,14 +183,14 @@ export default function Register() {
             <div className="text-left relative">
               <label className="text-xs font-bold mb-2 block ml-1 text-slate-700 dark:text-slate-300">Contraseña</label>
               <div className="relative">
-                <input 
-                  type={showPassword ? "text" : "password"} 
-                  name="password" 
-                  value={formData.password} 
-                  onChange={handleChange} 
-                  placeholder="********" 
-                  className={`${inputClass} pr-12`} 
-                  required 
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="********"
+                  className={`${inputClass} pr-12`}
+                  required
                 />
                 <button
                   type="button"
@@ -206,14 +206,14 @@ export default function Register() {
             <div className="text-left relative">
               <label className="text-xs font-bold mb-2 block ml-1 text-slate-700 dark:text-slate-300">Confirmar Contraseña</label>
               <div className="relative">
-                <input 
-                  type={showConfirmPassword ? "text" : "password"} 
-                  name="confirmPassword" 
-                  value={formData.confirmPassword} 
-                  onChange={handleChange} 
-                  placeholder="********" 
-                  className={`${inputClass} pr-12`} 
-                  required 
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="********"
+                  className={`${inputClass} pr-12`}
+                  required
                 />
                 <button
                   type="button"
@@ -228,8 +228,8 @@ export default function Register() {
           </div>
 
           <div className="flex flex-col items-center gap-4">
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="w-full max-w-xs bg-primary hover:bg-[#7112b3] text-white font-black py-4 rounded-2xl shadow-xl shadow-primary/30 transition-all active:scale-95 cursor-pointer"
             >
               Registrarse ahora

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CalendarPlus, Clock, MapPin, Gift } from "lucide-react";
+import { CalendarPlus, Clock, MapPin, Gift, Scissors, Star } from "lucide-react";
 
 // IMPORTACIÓN DEL LAYOUT Y COMPONENTES
 import ClienteLayout from '../../layouts/ClienteLayout';
@@ -14,19 +14,64 @@ const ViewInicio = ({ onReservaClick }: { onReservaClick: () => void }) => (
     animate={{ opacity: 1, y: 0 }}
     className="space-y-8"
   >
+    {/* ENCABEZADO TIPO DASHBOARD */}
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div>
+        <h2 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight">
+          ¡Hola, {localStorage.getItem('username') || 'Cliente'}!
+        </h2>
+        <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">
+          Aquí tienes un resumen de tu actividad y próximas citas.
+        </p>
+      </div>
+    </div>
+
     {/* BANNER DINÁMICO */}
-    <div className="relative overflow-hidden bg-primary rounded-[40px] p-10 text-white shadow-2xl shadow-primary/20">
-      <div className="relative z-10 max-w-lg">
-        <h2 className="text-4xl font-black leading-tight">¿Listo para tu próximo gran cambio?</h2>
-        <p className="mt-4 text-white/80 font-medium">Reserva hoy y mantén tu estilo impecable con nuestros barberos expertos.</p>
+    <div className="relative overflow-hidden bg-[#9c51e0] rounded-[40px] p-8 md:p-12 text-white shadow-2xl flex flex-col md:flex-row items-center justify-between gap-10">
+      
+      {/* TEXTO IZQUIERDO */}
+      <div className="relative z-10 max-w-lg w-full">
+        <h2 className="text-3xl md:text-[2.75rem] font-black leading-[1.1] tracking-tight">
+          ¿Listo para tu próximo gran cambio?
+        </h2>
+        <p className="mt-4 text-white/90 font-medium md:text-lg">
+          Reserva hoy y mantén tu estilo impecable con nuestros barberos expertos.
+        </p>
         <button 
           onClick={onReservaClick}
-          className="mt-8 bg-white text-primary px-8 py-4 rounded-[20px] font-black text-sm uppercase tracking-widest flex items-center gap-3 hover:scale-105 transition-transform cursor-pointer"
+          className="mt-8 bg-white text-[#9c51e0] px-8 py-4 rounded-[20px] font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 hover:scale-105 transition-transform cursor-pointer w-full md:w-auto shadow-xl"
         >
           Reservar Ahora <CalendarPlus size={18} />
         </button>
       </div>
-      <div className="absolute top-[-20%] right-[-10%] w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+
+      {/* ARTE DERECHO - MINIMALISTA Y ELEGANTE */}
+      <div className="relative z-10 hidden lg:flex items-center justify-center w-full max-w-sm mr-8">
+        {/* Círculos concéntricos suaves */}
+        <div className="relative w-64 h-64 flex items-center justify-center group">
+           <div className="absolute inset-0 border-[1.5px] border-white/20 rounded-full group-hover:scale-105 transition-transform duration-700"></div>
+           <div className="absolute inset-6 border border-white/10 rounded-full group-hover:scale-95 transition-transform duration-700"></div>
+           
+           {/* Ícono central */}
+           <div className="relative w-36 h-36 bg-white/10 backdrop-blur-md rounded-full border border-white/20 flex items-center justify-center shadow-2xl group-hover:bg-white/20 transition-colors duration-500">
+              <Scissors size={56} strokeWidth={1.5} className="text-white drop-shadow-lg" />
+           </div>
+
+           {/* Pequeñas etiquetas flotantes (monocromáticas) */}
+           <div className="absolute top-2 -right-8 bg-white/20 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-white/30 shadow-xl transform rotate-6 hover:rotate-0 transition-transform">
+              <span className="text-xs font-black uppercase tracking-widest text-white">Premium</span>
+           </div>
+           
+           <div className="absolute bottom-4 -left-12 bg-white/20 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-white/30 shadow-xl transform -rotate-6 hover:rotate-0 transition-transform">
+              <span className="text-xs font-black uppercase tracking-widest flex items-center gap-2 text-white">
+                 <Star size={14} className="fill-white" /> Top Quality
+              </span>
+           </div>
+        </div>
+      </div>
+      
+      {/* BACKGROUND DECORATIONS */}
+      <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
     </div>
 
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
