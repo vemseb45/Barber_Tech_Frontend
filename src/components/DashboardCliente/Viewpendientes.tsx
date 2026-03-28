@@ -6,9 +6,8 @@ interface Cita {
   id: number;
   fecha: string;
   hora: string;
-  servicio: string;
-  barbero: string;
-  estado: string;
+  servicio: any;
+  cedula_barbero: any;
 }
 
 const ViewPendientes = () => {
@@ -20,10 +19,9 @@ const ViewPendientes = () => {
     const fetchCitas = async () => {
       try {
         const token = localStorage.getItem("token");
-        const clienteId = localStorage.getItem("clienteId"); // ✅ obtener id
 
         const res = await fetch(
-          `http://127.0.0.1:8000/api/cita/historial/?clienteId=${clienteId}`,
+          "http://127.0.0.1:8000/api/cita/pendientes/cliente/",
           {
             headers: {
               "Content-Type": "application/json",
@@ -38,12 +36,9 @@ const ViewPendientes = () => {
 
         const data = await res.json();
 
-        // ✅ FILTRAR SOLO PENDIENTES
-        const pendientes = data.filter(
-          (cita: Cita) => cita.estado === "pendiente"
-        );
+        // ✅ CORRECTO
+        setCitas(data.data);
 
-        setCitas(pendientes);
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -93,6 +88,7 @@ const ViewPendientes = () => {
           >
             <div className="flex justify-between items-center">
               <div className="space-y-2">
+
                 <div className="flex items-center gap-2 text-sm text-slate-500">
                   <CalendarDays size={16} />
                   {cita.fecha}
@@ -105,13 +101,14 @@ const ViewPendientes = () => {
 
                 <div className="flex items-center gap-2 text-sm text-slate-500">
                   <Scissors size={16} />
-                  {cita.servicio}
+                  {cita.servicio?.nombre || "Servicio"}
                 </div>
 
                 <div className="flex items-center gap-2 text-sm text-slate-500">
                   <User size={16} />
-                  {cita.barbero}
+                  {cita.cedula_barbero?.username || "Barbero"}
                 </div>
+
               </div>
 
               <div className="px-4 py-2 rounded-full text-xs font-bold bg-yellow-100 text-yellow-600">
