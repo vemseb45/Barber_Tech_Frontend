@@ -32,7 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
     activeView === 'Clientes' || activeView === 'Barberos';
 
   return (
-    <aside className="w-72 bg-white dark:bg-[#0f172a] border-r border-slate-200 dark:border-slate-800 flex flex-col h-screen sticky top-0 z-50">
+    <aside className="w-72 bg-white dark:bg-[#0f172a] border-r border-slate-200 dark:border-slate-800 flex flex-col h-screen sticky top-0 transition-all duration-300 z-50">
 
       {/* BRANDING */}
       <div className="px-6 py-8 flex items-center gap-3">

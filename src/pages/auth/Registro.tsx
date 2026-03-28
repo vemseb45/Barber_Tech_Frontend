@@ -102,10 +102,10 @@ export default function Register() {
       {/* Header */}
       <header className="flex justify-between items-center py-6 max-w-7xl mx-auto w-full">
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <div className="w-8 h-8 sm:w-9 sm:h-9 bg-primary text-white rounded-xl flex items-center justify-center font-black shadow-lg shadow-primary/30 text-base sm:text-lg shrink-0">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 bg-primary text-white rounded-xl flex items-center justify-center font-black shadow-lg shadow-primary/30 text-base sm:text-lg shrink-0 pb-0.5">
             B
           </div>
-          <h1 className="text-base sm:text-lg font-black tracking-tighter uppercase leading-none mt-1 sm:mt-0">
+          <h1 className="text-base sm:text-lg font-black tracking-tighter uppercase leading-none">
             Barber<br className="sm:hidden" /> <span className="text-primary">Tech</span>
           </h1>
         </div>

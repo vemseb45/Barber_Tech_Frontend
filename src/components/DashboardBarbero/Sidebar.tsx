@@ -54,7 +54,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
           <h1 className="text-xl font-black tracking-tighter dark:text-white leading-none mb-0.5">
             BARBER<span className="text-primary text-2xl leading-none">.</span>TECH
           </h1>
-          <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em]">Professional</span>
+          <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Professional</span>
         </div>
       </div>
 

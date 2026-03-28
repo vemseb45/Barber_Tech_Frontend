@@ -1,4 +1,4 @@
-import { useState } from "react";
+
 
 export interface Bloque {
   hora: string;
@@ -48,11 +48,11 @@ export default function Calendario({
               disabled={isOccupied}
               onClick={() => onSeleccionarHora(bloque.hora, bloque.hora_db)}
               className={`
-                relative group p-4 rounded-2xl text-sm font-black transition-all duration-300 overflow-hidden cursor-pointer
+                relative group px-1 py-4 sm:p-4 rounded-2xl text-sm sm:text-base font-black transition-all duration-300 overflow-hidden cursor-pointer flex flex-col items-center justify-center min-h-[4.5rem]
                 ${isOccupied 
                   ? "bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-transparent opacity-50" 
                   : isSelected
-                    ? "bg-primary text-white border-primary shadow-lg shadow-primary/30 scale-105 z-10"
+                    ? "bg-primary text-white border-primary shadow-lg shadow-primary/30 scale-105 z-10 ring-2 ring-primary/20"
                     : "bg-slate-50 dark:bg-white/5 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-white/10 hover:border-primary hover:text-primary hover:bg-white dark:hover:bg-primary/10"
                 }
               `}
@@ -62,19 +62,19 @@ export default function Calendario({
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
               )}
               
-              <span className="relative z-10">
+              <span className="relative z-10 text-center leading-tight whitespace-pre-wrap">
                 {isOccupied ? (
                   <span className="flex items-center justify-center gap-1">
-                    <span className="text-[10px] uppercase opacity-60 italic">Ocupado</span>
+                    <span className="text-[10px] uppercase opacity-60 italic whitespace-nowrap">Ocupado</span>
                   </span>
                 ) : (
-                  bloque.hora
+                  bloque.hora.replace(' ', '\n')
                 )}
               </span>
 
               {/* Indicador de selección lateral */}
               {isSelected && (
-                <div className="absolute right-2 top-2 w-1.5 h-1.5 bg-white rounded-full" />
+                <div className="absolute right-2 top-2 w-2 h-2 bg-white/90 rounded-full shadow-sm" />
               )}
             </button>
           );

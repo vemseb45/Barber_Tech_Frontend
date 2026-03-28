@@ -31,11 +31,12 @@ const ViewInicio: React.FC = () => {
     {
       label: 'Citas Hoy',
       value: '42',
-      change: '5 pendientes',
-      trend: 'neutral',
+      pendientes: 5,
+      change: '+15%',
+      trend: 'up',
       icon: Calendar,
-      color: 'text-[#BE7AD6]',
-      bg: 'bg-[#BE7AD6]/10'
+      color: 'text-primary',
+      bg: 'bg-primary/10'
     },
   ];
 
@@ -68,12 +69,28 @@ const ViewInicio: React.FC = () => {
                 <p className="font-bold text-xs uppercase tracking-widest text-slate-400 dark:text-slate-500">
                   {stat.label}
                 </p>
-                <h3 className="text-3xl font-black mt-2 text-slate-800 dark:text-white">
-                  {stat.value}
-                </h3>
+                <div className="flex items-center gap-2 mt-2">
+                  <h3 className="text-3xl font-black text-slate-800 dark:text-white leading-none">
+                    {stat.value}
+                  </h3>
+                </div>
               </div>
-              <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} transition-transform group-hover:scale-110 duration-300`}>
-                <stat.icon size={24} strokeWidth={2.5} />
+              <div className="relative group/icon cursor-help">
+                <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} transition-transform group-hover:scale-110 duration-300`}>
+                  <stat.icon size={24} strokeWidth={2.5} />
+                </div>
+                {stat.pendientes !== undefined && (
+                  <>
+                    <div className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-rose-500 rounded-full flex items-center justify-center border-2 border-white dark:border-[#1e293b] text-[10px] font-black text-white shadow-sm ring-2 ring-rose-500/20 z-20">
+                      {stat.pendientes}
+                    </div>
+                    {/* Tooltip on hover */}
+                    <div className="absolute top-16 right-0 translate-x-2 w-max px-3 py-1.5 bg-slate-800 dark:bg-slate-700 text-white text-[10px] font-bold rounded-lg opacity-0 invisible group-hover/icon:opacity-100 group-hover/icon:visible transition-all shadow-xl z-50 pointer-events-none">
+                      {stat.pendientes} Citas pendientes
+                      <div className="absolute -top-1 right-5 w-2 h-2 bg-slate-800 dark:bg-slate-700 rotate-45"></div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
             <div className="mt-6 flex items-center gap-2 relative z-10">
@@ -95,7 +112,7 @@ const ViewInicio: React.FC = () => {
               <h4 className="font-black text-xl text-slate-800 dark:text-white tracking-tight">Rendimiento Semanal</h4>
               <p className="text-xs text-slate-400 font-medium">Volumen de citas completadas</p>
             </div>
-            <select className="bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-2 text-xs font-bold text-slate-500 outline-none focus:ring-2 focus:ring-[#BE7AD6]/20">
+            <select className="bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-2 text-xs font-bold text-slate-500 outline-none focus:ring-2 focus:ring-primary/20">
               <option>Últimos 7 días</option>
               <option>Este mes</option>
             </select>
@@ -106,11 +123,11 @@ const ViewInicio: React.FC = () => {
               <div key={i} className="flex-1 flex flex-col items-center gap-4 group">
                 <div className="w-full relative">
                   {/* DEGRADADO DINÁMICO:
-                      Modo Claro: from-slate-400 (gris) a #BE7AD6
-                      Modo Oscuro: from-white/20 (blanco suave) a #BE7AD6
+                      Modo Claro: from-slate-400 (gris) a primary
+                      Modo Oscuro: from-white/20 (blanco suave) a primary
                   */}
                   <div
-                    className="w-full rounded-t-2xl transition-all duration-1000 ease-out relative bg-gradient-to-t from-slate-400 dark:from-white/20 to-[#BE7AD6] shadow-sm border-t border-white/10"
+                    className="w-full rounded-t-2xl transition-all duration-1000 ease-out relative bg-gradient-to-t from-slate-400 dark:from-white/20 to-primary shadow-sm border-t border-white/10"
                     style={{ height: loaded ? `${height * 2.2}px` : '0px' }}
                   >
                     <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold py-1.5 px-2.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-1 shadow-xl z-20">
@@ -130,13 +147,13 @@ const ViewInicio: React.FC = () => {
         <div className="lg:col-span-2 p-8 rounded-[32px] bg-white dark:bg-[#1e293b] border border-slate-100 dark:border-slate-700/50 shadow-sm">
           <div className="flex justify-between items-center mb-8">
             <h4 className="font-black text-xl text-slate-800 dark:text-white">Próximas Citas</h4>
-            <CheckCircle2 className="text-[#BE7AD6] opacity-40" size={20} />
+            <CheckCircle2 className="text-primary opacity-40" size={20} />
           </div>
 
           <div className="space-y-3">
             {[
               { name: 'Juan Pérez', service: 'Fade + Barba', time: '10:30', color: 'bg-blue-500' },
-              { name: 'Mario Gómez', service: 'Facial', time: '11:15', color: 'bg-[#BE7AD6]' },
+              { name: 'Mario Gómez', service: 'Facial', time: '11:15', color: 'bg-primary' },
               { name: 'Luis Rivas', service: 'Corte', time: '12:00', color: 'bg-orange-500' },
               { name: 'Ana Torres', service: 'Tratamiento', time: '13:30', color: 'bg-emerald-500' },
               { name: 'Roberto S.', service: 'Afeitado', time: '14:15', color: 'bg-red-500' },
@@ -152,7 +169,7 @@ const ViewInicio: React.FC = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs font-black text-[#BE7AD6] bg-[#BE7AD6]/10 px-3 py-1.5 rounded-lg border border-[#BE7AD6]/10">
+                  <span className="text-xs font-black text-primary bg-primary/10 px-3 py-1.5 rounded-lg border border-primary/10">
                     {cita.time}
                   </span>
                 </div>
@@ -160,7 +177,7 @@ const ViewInicio: React.FC = () => {
             ))}
           </div>
           
-          <button className="w-full mt-8 py-4 text-xs font-black text-slate-400 uppercase tracking-[0.2em] border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-2xl hover:border-[#BE7AD6] hover:text-[#BE7AD6] transition-all">
+          <button className="w-full mt-8 py-4 text-xs font-black text-slate-400 uppercase tracking-[0.2em] border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-2xl hover:border-primary hover:text-primary transition-all">
             Ver Agenda Completa
           </button>
         </div>

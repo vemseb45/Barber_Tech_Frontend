@@ -8,9 +8,18 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   // Inicializamos en true porque el App.tsx fuerza el theme 'dark' por defecto.
   const [darkMode, setDarkMode] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('remember_email');
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (darkMode) {
@@ -39,6 +48,12 @@ export default function Login() {
 
       if (data.data?.token) localStorage.setItem('token', data.data.token);
       
+      if (rememberMe) {
+        localStorage.setItem('remember_email', email);
+      } else {
+        localStorage.removeItem('remember_email');
+      }
+      
       const username = data.data?.user?.username || data.data?.user?.nombres || "Usuario";
       localStorage.setItem('username', username);
 
@@ -55,16 +70,24 @@ export default function Login() {
     }
   };
 
+  const handleForgotPassword = () => {
+    if (!email) {
+      alert("Por favor escribe tu usuario en el campo superior para enviarte el enlace de recuperación.");
+      return;
+    }
+    alert(`Se ha enviado un enlace de recuperación a: ${email}\nPor favor revisa tu correo electrónico.`);
+  };
+
   return (
     <div className="min-h-screen flex flex-col px-6 md:px-10 transition-colors duration-500 bg-slate-50 dark:bg-[#0a0a0f] text-slate-900 dark:text-slate-100 font-sans antialiased">
       
       {/* Header */}
       <header className="flex justify-between items-center py-6 max-w-7xl mx-auto w-full">
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <div className="w-8 h-8 sm:w-9 sm:h-9 bg-primary text-white rounded-xl flex items-center justify-center font-black shadow-lg shadow-primary/30 text-base sm:text-lg shrink-0">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 bg-primary text-white rounded-xl flex items-center justify-center font-black shadow-lg shadow-primary/30 text-base sm:text-lg shrink-0 pb-0.5">
             B
           </div>
-          <h1 className="text-base sm:text-lg font-black tracking-tighter uppercase leading-none mt-1 sm:mt-0">
+          <h1 className="text-base sm:text-lg font-black tracking-tighter uppercase leading-none">
             Barber<br className="sm:hidden" /> <span className="text-primary">Tech</span>
           </h1>
         </div>
@@ -140,6 +163,33 @@ export default function Login() {
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
+            </div>
+
+            {/* Remember Me & Forgot Password */}
+            <div className="flex items-center justify-between mt-4">
+              <label className="flex items-center gap-2 cursor-pointer group">
+                <div className="relative flex items-center justify-center">
+                  <input
+                    type="checkbox"
+                    className="peer sr-only"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                  />
+                  <div className="w-4 h-4 rounded-md border-2 border-slate-300 dark:border-slate-600 peer-checked:bg-primary peer-checked:border-primary transition-all"></div>
+                  <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors">Recordarme</span>
+              </label>
+
+              <button 
+                type="button" 
+                onClick={handleForgotPassword}
+                className="text-xs font-bold text-primary hover:text-[#7112b3] hover:underline transition-colors focus:outline-none"
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
             </div>
           </div>
 

@@ -201,20 +201,22 @@ export default function ViewServicios() {
       </div>
 
       {/* FILTROS TABS */}
-      <div className="flex gap-2 p-1 bg-slate-100 dark:bg-white/5 rounded-2xl w-fit overflow-x-auto scrollbar-hide">
-        {tabs.map(tab => (
-          <button 
-            key={tab} 
-            onClick={() => setActiveTab(tab)}
-            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap cursor-pointer ${
-              tab === activeTab 
-                ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-sm' 
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
+      <div className="w-full overflow-hidden">
+        <div className="flex gap-2 p-1 bg-slate-100 dark:bg-white/5 rounded-2xl w-full md:w-fit overflow-x-auto scrollbar-hide snap-x">
+          {tabs.map(tab => (
+            <button 
+              key={tab} 
+              onClick={() => setActiveTab(tab)}
+              className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap flex-shrink-0 snap-start cursor-pointer ${
+                tab === activeTab 
+                  ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-sm' 
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* GRID DE SERVICIOS */}

@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import {
   CalendarDays,
-  TrendingUp,
   Star,
   UserPlus,
   Lightbulb,
-  ArrowRight
+  ArrowRight,
+  ArrowUpRight
 } from 'lucide-react';
 import type { BarberoView } from '../../types';
 
@@ -71,7 +71,7 @@ export default function ViewInicio({ onViewChange }: ViewInicioProps) {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
@@ -84,9 +84,9 @@ export default function ViewInicio({ onViewChange }: ViewInicioProps) {
         </div>
         <button
           onClick={() => onViewChange('Citas')}
-          className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl font-bold text-sm hover:border-primary dark:hover:border-primary transition-all text-slate-700 dark:text-slate-200 shadow-sm"
+          className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl font-bold text-sm hover:scale-105 transition-all shadow-lg shadow-primary/25"
         >
-          <CalendarDays size={18} className="text-primary" />
+          <CalendarDays size={18} />
           Ir a la Agenda
         </button>
       </div>
@@ -94,33 +94,42 @@ export default function ViewInicio({ onViewChange }: ViewInicioProps) {
       {/* ESTADÍSTICAS REFINADAS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { label: 'Citas hoy', val: stats.citasHoy, inc: stats.citasCrecimiento, icon: CalendarDays, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-          { label: 'Calificación', val: '4.9', inc: '+0.2', icon: Star, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-          { label: 'Nuevos clientes', val: stats.nuevosClientes, inc: stats.clientesCrecimiento, icon: UserPlus, color: 'text-purple-500', bg: 'bg-purple-500/10' },
+          { label: 'Citas hoy', val: stats.citasHoy, inc: stats.citasCrecimiento, sub: 'Respecto a ayer', icon: CalendarDays, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+          { label: 'Calificación', val: '4.9', inc: '+0.2', sub: 'Puntaje general', icon: Star, color: 'text-amber-500', bg: 'bg-amber-500/10' },
+          { label: 'Nuevos clientes', val: stats.nuevosClientes, inc: stats.clientesCrecimiento, sub: 'Mes actual', icon: UserPlus, color: 'text-purple-500', bg: 'bg-purple-500/10' },
         ].map((item, i) => (
-          <div key={i} className="bg-white dark:bg-[#1e293b] p-6 rounded-[24px] border border-slate-200 dark:border-slate-700/50 shadow-sm">
-            <div className="flex justify-between items-start mb-4">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{item.label}</p>
-              <span className={`p-2 rounded-xl ${item.bg} ${item.color}`}>
-                <item.icon size={20} />
-              </span>
+          <div key={i} className="group p-8 rounded-[32px] bg-white dark:bg-[#1e293b] border border-slate-100 dark:border-slate-700/50 shadow-sm hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300 relative overflow-hidden">
+            <div className="flex justify-between items-start relative z-10">
+              <div>
+                <p className="font-bold text-xs uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                  {item.label}
+                </p>
+                <div className="flex items-center gap-2 mt-2">
+                  <h3 className="text-3xl font-black text-slate-800 dark:text-white leading-none">
+                    {item.val}
+                  </h3>
+                </div>
+              </div>
+              <div className={`p-4 rounded-2xl ${item.bg} ${item.color} transition-transform group-hover:scale-110 duration-300`}>
+                <item.icon size={24} strokeWidth={2.5} />
+              </div>
             </div>
-            <div className="flex items-baseline gap-2">
-              <h3 className="text-3xl font-bold dark:text-white">{item.val}</h3>
-              <span className="text-emerald-500 text-sm font-bold flex items-center">
-                <TrendingUp size={14} className="mr-1" />
-                {typeof item.inc === 'number' ? `${item.inc}%` : item.inc}
-              </span>
+            <div className="mt-6 flex items-center gap-2 relative z-10">
+              <div className="flex items-center px-2 py-1 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                <ArrowUpRight size={14} className="mr-1" />
+                {typeof item.inc === 'number' ? `+${item.inc}%` : item.inc}
+              </div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{item.sub}</span>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
         {/* PRÓXIMAS CITAS TIPO PENDIENTES */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="flex justify-between items-center px-2">
-            <h3 className="text-xl font-bold text-slate-800 dark:text-white">Próximas Citas</h3>
+        <div className="lg:col-span-3 p-8 rounded-[32px] bg-white dark:bg-[#1e293b] border border-slate-100 dark:border-slate-700/50 shadow-sm flex flex-col">
+          <div className="flex justify-between items-center mb-8">
+            <h4 className="font-black text-xl text-slate-800 dark:text-white">Próximas Citas</h4>
             <button 
               onClick={() => onViewChange('Pendientes' as any)}
               className="text-primary text-sm font-bold hover:underline flex items-center gap-1 cursor-pointer"
@@ -129,8 +138,7 @@ export default function ViewInicio({ onViewChange }: ViewInicioProps) {
             </button>
           </div>
 
-          <div className="bg-white dark:bg-[#1e293b] rounded-[24px] border border-slate-200 dark:border-slate-700/50 shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
+          <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse min-w-[600px]">
                 <thead>
                   <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-700/50">
@@ -196,14 +204,12 @@ export default function ViewInicio({ onViewChange }: ViewInicioProps) {
                 </tbody>
               </table>
             </div>
-          </div>
         </div>
 
         {/* MÉTRICAS DE SERVICIOS */}
-        <div className="space-y-4">
-          <h3 className="text-xl font-bold text-slate-800 dark:text-white">Populares</h3>
-          <div className="bg-white dark:bg-[#1e293b] rounded-[24px] border border-slate-200 dark:border-slate-700/50 p-8 shadow-sm">
-            <div className="space-y-6">
+        <div className="lg:col-span-2 p-8 rounded-[32px] bg-white dark:bg-[#1e293b] border border-slate-100 dark:border-slate-700/50 shadow-sm flex flex-col">
+          <h4 className="font-black text-xl text-slate-800 dark:text-white mb-8">Populares</h4>
+          <div className="space-y-6">
               {[
                 { name: 'Corte Cabello', pct: 45 },
                 { name: 'Recorte Barba', pct: 30 },
@@ -238,7 +244,6 @@ export default function ViewInicio({ onViewChange }: ViewInicioProps) {
                 <Lightbulb size={80} />
               </div>
             </div>
-          </div>
         </div>
       </div>
     </div>
