@@ -91,11 +91,11 @@ export default function Landing() {
       <header className="sticky top-0 z-50 w-full border-b border-primary/10 bg-white/80 backdrop-blur-md dark:bg-[#0a0a0f]/80 transition-colors duration-300">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-10">
           
-          <motion.div variants={dropDownVariant} initial="hidden" animate="visible" className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <motion.div variants={dropDownVariant} initial="hidden" animate="visible" className="flex items-center shrink-0">
             <img 
               src="/Imagenes/Recurso 1.png" 
               alt="BarberTech Logo" 
-              className="w-12 h-12 sm:w-20 sm:h-20 object-contain drop-shadow-lg" 
+              className="w-14 h-14 sm:w-24 sm:h-18 object-contain drop-shadow-lg" 
             />
             <h1 
               className="text-lg sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 ml-1 sm:ml-2" 
@@ -155,7 +155,7 @@ export default function Landing() {
           </div>
         </div>
 
-        {/* Mobile Navbar Menu - Mejorado para ocupar pantalla completa si es necesario */}
+        {/* Responsive Navbar */}
         <motion.div 
           initial={false}
           animate={{ height: isMobileMenuOpen ? 'auto' : 0, opacity: isMobileMenuOpen ? 1 : 0 }}
@@ -183,7 +183,7 @@ export default function Landing() {
       </header>
 
       <main className="flex-grow">
-        {/* Inicio / Hero */}
+        {/* Inicio */}
         <section className="relative overflow-hidden px-6 py-12 lg:px-10 lg:py-24" id="inicio">
           <div className="mx-auto max-w-7xl">
             <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
@@ -207,7 +207,7 @@ export default function Landing() {
                 </motion.div>
               </motion.div>
 
-              {/* Imagen principal - Adaptada para móvil */}
+              {/* Imagen principal - Con responsive */}
               <motion.div initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="relative mx-auto w-full max-w-md lg:max-w-none">
                 <div className="aspect-[4/5] w-full rounded-[32px] sm:rounded-[40px] bg-slate-200 bg-cover bg-center shadow-2xl transition-transform hover:scale-[1.02] duration-700 border-4 border-white dark:border-white/10" style={{ backgroundImage: 'url("/Imagenes/barbero1.avif")' }}></div>
                 
@@ -240,7 +240,7 @@ export default function Landing() {
               </motion.div>
             </div>
 
-            {/* Slider en Movil */}
+            {/* Slider para responsive */}
             <div className="block md:hidden relative pt-2 pb-8">
               <div className="overflow-hidden">
                 <motion.div 
@@ -292,7 +292,7 @@ export default function Landing() {
               </button>
             </div>
 
-            {/* Grid en Desktop */}
+            {/* Grid */}
             <div className="hidden md:grid gap-6 md:grid-cols-3">
               {servicesData.map((s, i) => (
                 <motion.div key={i} variants={fadeUpVariant} whileHover={{ y: -10 }} className="flex flex-col rounded-[32px] border border-black/5 dark:border-white/5 bg-slate-50 dark:bg-white/5 p-8 transition-all hover:shadow-2xl hover:border-primary/50 group">
@@ -311,7 +311,7 @@ export default function Landing() {
           </motion.div>
         </section>
 
-        {/* Galeria - Grid 2 columnas en movil */}
+        {/* Galeria - Grid 2 columnas responsive */}
         <section className="px-6 py-20 lg:px-10" id="galeria">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer} className="mx-auto max-w-7xl">
             <div className="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
@@ -330,13 +330,14 @@ export default function Landing() {
           </motion.div>
         </section>
 
-        {/* Testimonios - 1 columna movil */}
+        {/* Testimonios - 1 columna responsive */}
         <section className="bg-primary/5 px-6 py-20 lg:px-10" id="testimonios">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer} className="mx-auto max-w-7xl">
             <motion.h2 variants={fadeUpVariant} className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 md:text-4xl mb-12 text-center">
               Lo que dicen nuestros clientes
             </motion.h2>
-            {/* Slider en Movil */}
+
+            {/* Slider para celulaar */}
             <div className="block md:hidden relative pt-2 pb-8">
               <div className="overflow-hidden">
                 <motion.div 
@@ -388,7 +389,7 @@ export default function Landing() {
               </button>
             </div>
 
-            {/* Grid en Desktop */}
+            {/* Grid 2 */}
             <div className="hidden md:grid gap-6 md:grid-cols-3">
               {testimonialsData.map((t, idx) => (
                 <motion.div key={idx} variants={fadeUpVariant} whileHover={{ y: -5 }} className="rounded-3xl bg-white dark:bg-[#1a1a24] p-8 shadow-xl border border-black/5 dark:border-white/10 text-left">
@@ -407,7 +408,7 @@ export default function Landing() {
           </motion.div>
         </section>
 
-        {/* Contacto - Stacked en móvil */}
+        {/* Contacto - Responsive */}
         <section className="px-6 py-20 lg:px-10" id="contacto">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer} className="mx-auto max-w-7xl">
             <div className="grid gap-12 lg:grid-cols-2">
