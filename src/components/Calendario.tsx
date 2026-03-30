@@ -31,7 +31,7 @@ export default function Calendario({
   }
 
   return (
-    <div className="bg-white dark:bg-white/5 p-8 rounded-[32px] border border-slate-200 dark:border-white/10 shadow-2xl shadow-black/[0.02] transition-colors">
+    <div className="bg-white dark:bg-white/5 p-5 sm:p-8 rounded-[32px] border border-slate-200 dark:border-white/10 shadow-2xl shadow-black/[0.02] transition-colors">
       <div className="flex items-center gap-2 mb-6 ml-1">
         <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
         <h3 className="text-xs font-black uppercase tracking-[2px] text-slate-400">Selecciona tu turno</h3>
@@ -82,14 +82,14 @@ export default function Calendario({
       </div>
 
       {/* Leyenda rápida */}
-      <div className="mt-8 flex gap-6 px-2">
+      <div className="mt-8 flex flex-wrap justify-center sm:justify-start gap-3 sm:gap-6 px-1 sm:px-2">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-md bg-primary"></div>
-          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Seleccionado</span>
+          <div className="w-3 h-3 rounded-md bg-primary shrink-0"></div>
+          <span className="text-[9px] sm:text-[10px] font-bold text-slate-500 uppercase tracking-widest">Seleccionado</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-md bg-slate-200 dark:bg-white/10"></div>
-          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Disponible</span>
+          <div className="w-3 h-3 rounded-md bg-slate-200 dark:bg-white/10 shrink-0"></div>
+          <span className="text-[9px] sm:text-[10px] font-bold text-slate-500 uppercase tracking-widest">Disponible</span>
         </div>
       </div>
     </div>

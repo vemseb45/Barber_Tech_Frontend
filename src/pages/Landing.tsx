@@ -2,11 +2,39 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, type Variants } from 'framer-motion';
 import "../index.css";
-import { Sun, Moon, Menu, X } from "lucide-react";
+import { Sun, Moon, Menu, X, ChevronLeft, ChevronRight } from "lucide-react";
+
+const servicesData = [
+  { img: "/Imagenes/cortecabello.png", title: "Corte de Cabello", desc: "Cortes clasicos y de tendencia.", price: "$25", time: "45 min" },
+  { img: "/Imagenes/barba.png", title: "Arreglo de Barba", desc: "Perfilado preciso e hidratacion.", price: "$15", time: "30 min" },
+  { img: "/Imagenes/tratamiento.png", title: "Tratamiento Facial", desc: "Limpieza profunda y masaje.", price: "$20", time: "40 min" }
+];
+
+const testimonialsData = [
+  { init: "CM", name: "Carlos Mendez", date: "Cliente desde 2022", text: "La mejor barberia de la ciudad." },
+  { init: "RG", name: "Roberto Garcia", date: "Cliente frecuente", text: "El servicio de arreglo de barba es otro nivel." },
+  { init: "JP", name: "Juan Perez", date: "Cliente nuevo", text: "Moderno, limpio y muy profesional." }
+];
 
 export default function Landing() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeService, setActiveService] = useState(0);
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
+
+  useEffect(() => {
+    const serviceInterval = setInterval(() => {
+      setActiveService(prev => (prev + 1) % servicesData.length);
+    }, 5000);
+    const testimonialInterval = setInterval(() => {
+      setActiveTestimonial(prev => (prev + 1) % testimonialsData.length);
+    }, 5000);
+    return () => {
+      clearInterval(serviceInterval);
+      clearInterval(testimonialInterval);
+    };
+  }, []);
+
   const navigate = useNavigate();
   const hasSession = false;
 
@@ -64,21 +92,16 @@ export default function Landing() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-10">
           
           <motion.div variants={dropDownVariant} initial="hidden" animate="visible" className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <motion.img 
+            <img 
               src="/Imagenes/Recurso 1.png" 
               alt="BarberTech Logo" 
-              className="w-10 h-10 sm:w-16 sm:h-16 object-contain drop-shadow-lg" 
-              animate={{ y: [0, -6, 0] }} 
-              transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }} 
-              whileHover={{ rotate: 180, scale: 1.15 }} 
+              className="w-12 h-12 sm:w-20 sm:h-20 object-contain drop-shadow-lg" 
             />
-            <motion.h1 
-              className="text-base sm:text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 ml-1 sm:ml-2" 
-              animate={{ scale: [1, 1.02, 1], textShadow: ["0px 0px 4px transparent", "0px 0px 8px rgba(133, 25, 210, 0.4)", "0px 0px 4px transparent"] }} 
-              transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }} 
+            <h1 
+              className="text-lg sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 ml-1 sm:ml-2" 
             >
               BarberTech
-            </motion.h1>
+            </h1>
           </motion.div>
 
           <motion.nav
@@ -217,12 +240,61 @@ export default function Landing() {
               </motion.div>
             </div>
 
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {[
-                { img: "/Imagenes/cortecabello.png", title: "Corte de Cabello", desc: "Cortes clásicos y de tendencia.", price: "$25", time: "45 min" },
-                { img: "/Imagenes/barba.png", title: "Arreglo de Barba", desc: "Perfilado preciso e hidratación.", price: "$15", time: "30 min" },
-                { img: "/Imagenes/tratamiento.png", title: "Tratamiento Facial", desc: "Limpieza profunda y masaje.", price: "$20", time: "40 min" }
-              ].map((s, i) => (
+            {/* Slider en Movil */}
+            <div className="block md:hidden relative pt-2 pb-8">
+              <div className="overflow-hidden">
+                <motion.div 
+                  className="flex"
+                  animate={{ x: `-${activeService * 100}%` }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                >
+                  {servicesData.map((s, i) => (
+                    <div className="w-full shrink-0 px-2 flex justify-center" key={i}>
+                      <div className="flex flex-col w-full h-full rounded-[32px] border border-black/5 dark:border-white/5 bg-slate-50 dark:bg-white/5 p-8 shadow-lg">
+                        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
+                          <img src={s.img} alt={s.title} className="w-8 h-8 object-contain" />
+                        </div>
+                        <h3 className="mb-3 text-xl font-bold">{s.title}</h3>
+                        <p className="mb-6 text-slate-600 dark:text-slate-400 text-sm">{s.desc}</p>
+                        <div className="mt-auto flex items-center justify-between border-t border-black/5 dark:border-white/10 pt-6">
+                          <span className="font-black text-primary text-xl">{s.price}</span>
+                          <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">{s.time}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </motion.div>
+              </div>
+
+              {/* Controles del Slider */}
+              <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-2 mt-4">
+                {servicesData.map((_, i) => (
+                  <button 
+                    key={i} 
+                    onClick={() => setActiveService(i)}
+                    className={`nav-dot w-2 h-2 rounded-full transition-all tracking-widest ${activeService === i ? 'bg-primary w-6' : 'bg-slate-300 dark:bg-white/20'}`}
+                    aria-label={`Ir al servicio ${i + 1}`}
+                  />
+                ))}
+              </div>
+              
+              <button 
+                onClick={() => setActiveService(prev => prev === 0 ? servicesData.length - 1 : prev - 1)}
+                className="absolute top-1/2 -left-2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-[#1a1a24] shadow-lg border border-black/5 dark:border-white/10 text-primary z-10 hover:scale-110 active:scale-95 transition-all"
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <button 
+                onClick={() => setActiveService(prev => (prev + 1) % servicesData.length)}
+                className="absolute top-1/2 -right-2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-[#1a1a24] shadow-lg border border-black/5 dark:border-white/10 text-primary z-10 hover:scale-110 active:scale-95 transition-all"
+              >
+                <ChevronRight size={20} />
+              </button>
+            </div>
+
+            {/* Grid en Desktop */}
+            <div className="hidden md:grid gap-6 md:grid-cols-3">
+              {servicesData.map((s, i) => (
                 <motion.div key={i} variants={fadeUpVariant} whileHover={{ y: -10 }} className="flex flex-col rounded-[32px] border border-black/5 dark:border-white/5 bg-slate-50 dark:bg-white/5 p-8 transition-all hover:shadow-2xl hover:border-primary/50 group">
                   <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 transition-transform group-hover:scale-110">
                     <img src={s.img} alt={s.title} className="w-8 h-8 object-contain" />
@@ -264,14 +336,63 @@ export default function Landing() {
             <motion.h2 variants={fadeUpVariant} className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 md:text-4xl mb-12 text-center">
               Lo que dicen nuestros clientes
             </motion.h2>
-            <div className="grid gap-6 md:grid-cols-3">
-              {[
-                { init: "CM", name: "Carlos Méndez", date: "Cliente desde 2022", text: "La mejor barbería de la ciudad." },
-                { init: "RG", name: "Roberto García", date: "Cliente frecuente", text: "El servicio de arreglo de barba es otro nivel." },
-                { init: "JP", name: "Juan Pérez", date: "Cliente nuevo", text: "Moderno, limpio y muy profesional." }
-              ].map((t, idx) => (
+            {/* Slider en Movil */}
+            <div className="block md:hidden relative pt-2 pb-8">
+              <div className="overflow-hidden">
+                <motion.div 
+                  className="flex"
+                  animate={{ x: `-${activeTestimonial * 100}%` }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                >
+                  {testimonialsData.map((t, idx) => (
+                    <div className="w-full shrink-0 px-2 flex justify-center" key={idx}>
+                      <div className="w-full rounded-3xl bg-white dark:bg-[#1a1a24] p-8 shadow-lg border border-black/5 dark:border-white/10 text-left">
+                        <div className="mb-4 text-primary font-bold tracking-widest text-lg">★★★★★</div>
+                        <p className="mb-6 italic text-slate-600 dark:text-slate-400 text-sm">"{t.text}"</p>
+                        <div className="flex items-center gap-4 border-t border-black/5 dark:border-white/10 pt-4">
+                          <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black shrink-0">{t.init}</div>
+                          <div>
+                            <h4 className="font-bold text-sm">{t.name}</h4>
+                            <p className="text-xs text-slate-500">{t.date}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </motion.div>
+              </div>
+
+              {/* Controles del Slider */}
+              <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-2 mt-4">
+                {testimonialsData.map((_, i) => (
+                  <button 
+                    key={i} 
+                    onClick={() => setActiveTestimonial(i)}
+                    className={`w-2 h-2 rounded-full transition-all tracking-widest ${activeTestimonial === i ? 'bg-primary w-6' : 'bg-slate-300 dark:bg-white/20'}`}
+                    aria-label={`Ir al testimonio ${i + 1}`}
+                  />
+                ))}
+              </div>
+              
+              <button 
+                onClick={() => setActiveTestimonial(prev => prev === 0 ? testimonialsData.length - 1 : prev - 1)}
+                className="absolute top-1/2 -left-2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-[#1a1a24] shadow-lg border border-black/5 dark:border-white/10 text-primary z-10 hover:scale-110 active:scale-95 transition-all"
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <button 
+                onClick={() => setActiveTestimonial(prev => (prev + 1) % testimonialsData.length)}
+                className="absolute top-1/2 -right-2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-[#1a1a24] shadow-lg border border-black/5 dark:border-white/10 text-primary z-10 hover:scale-110 active:scale-95 transition-all"
+              >
+                <ChevronRight size={20} />
+              </button>
+            </div>
+
+            {/* Grid en Desktop */}
+            <div className="hidden md:grid gap-6 md:grid-cols-3">
+              {testimonialsData.map((t, idx) => (
                 <motion.div key={idx} variants={fadeUpVariant} whileHover={{ y: -5 }} className="rounded-3xl bg-white dark:bg-[#1a1a24] p-8 shadow-xl border border-black/5 dark:border-white/10 text-left">
-                  <div className="mb-4 text-primary font-bold">★★★★★</div>
+                  <div className="mb-4 text-primary font-bold tracking-widest text-lg">★★★★★</div>
                   <p className="mb-6 italic text-slate-600 dark:text-slate-400 text-sm">"{t.text}"</p>
                   <div className="flex items-center gap-4 border-t border-black/5 dark:border-white/10 pt-4">
                     <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black shrink-0">{t.init}</div>

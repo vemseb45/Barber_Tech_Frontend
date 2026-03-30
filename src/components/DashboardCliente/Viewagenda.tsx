@@ -135,7 +135,7 @@ export default function AgendaCitasCliente() {
 
   return (
     <div className="landing-page py-12 px-4 sm:px-6 flex flex-col items-center justify-center">
-      <div className="w-full max-w-3xl p-8 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10">
+      <div className="w-full max-w-3xl p-5 sm:p-8 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10">
         <h2 className="text-3xl font-extrabold text-center mb-10 text-slate-900 dark:text-white">
           Reserva tu cita
         </h2>
