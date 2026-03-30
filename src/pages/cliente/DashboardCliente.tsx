@@ -7,6 +7,7 @@ import ViewAgenda from "../../components/DashboardCliente/Viewagenda";
 import ViewAjustesCliente from "../../components/DashboardCliente/Viewajustes";
 import ViewPendientes from "../../components/DashboardCliente/Viewpendientes";
 import ViewInicioCliente from "../../components/DashboardCliente/Viewinicio"; 
+import ViewTerminadas from "../../components/DashboardCliente/Viewterminadas";
 
 export default function DashboardCliente() {
   const [activeView, setActiveView] = useState('Inicio');
@@ -47,9 +48,7 @@ export default function DashboardCliente() {
 
           {/* TERMINADAS */}
           {activeView === 'Citas Terminadas' && (
-            <div className="p-6 text-slate-500">
-              Aquí irán las citas terminadas
-            </div>
+            <ViewTerminadas />
           )}
 
           {/* PERFIL */}
