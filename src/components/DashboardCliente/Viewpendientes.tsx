@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { CalendarDays, Clock, User, Scissors } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { CalendarDays, Clock, User, Scissors, MapPin, MoreVertical } from "lucide-react";
 
 interface Cita {
   id: number;
   fecha: string;
   hora: string;
-  servicio: any;
-  cedula_barbero: any;
+  servicio: { nombre: string; precio: string; duracion_minutos: number };
+  cedula_barbero: { username: string };
 }
 
 const ViewPendientes = () => {
@@ -19,104 +19,141 @@ const ViewPendientes = () => {
     const fetchCitas = async () => {
       try {
         const token = localStorage.getItem("token");
-
-        const res = await fetch(
-          "http://127.0.0.1:8000/api/cita/pendientes/cliente/",
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!res.ok) {
-          throw new Error("Error al obtener citas");
-        }
-
+        const res = await fetch("http://127.0.0.1:8000/api/cita/pendientes/cliente/", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!res.ok) throw new Error("No se pudieron cargar las citas");
         const data = await res.json();
-
-        // ✅ CORRECTO
         setCitas(data.data);
-
       } catch (err: any) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-
     fetchCitas();
   }, []);
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-black tracking-tight dark:text-white">
-          Citas Pendientes
-        </h2>
-        <p className="text-slate-500 text-sm">
-          Aquí puedes ver tus próximas citas reservadas
-        </p>
-      </div>
+    <div className="max-w-4xl mx-auto p-4 sm:p-6">
+      <header className="mb-8 flex justify-between items-end">
+        <div>
+          <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+            Mis Citas
+          </h2>
+          <p className="text-slate-500 font-medium">Gestiona tus próximos encuentros</p>
+        </div>
+        <div className="hidden sm:block text-right">
+          <span className="text-xs font-bold uppercase tracking-widest text-primary opacity-60">
+            Total: {citas.length}
+          </span>
+        </div>
+      </header>
 
       {loading && (
-        <div className="text-center py-10 text-slate-500">
-          Cargando citas...
+        <div className="flex flex-col items-center justify-center py-20 gap-4">
+          <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+          <p className="text-slate-400 font-medium animate-pulse">Buscando tu agenda...</p>
         </div>
       )}
 
       {error && (
-        <div className="text-center py-10 text-red-500">
+        <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-2xl text-center font-medium border border-red-100 dark:border-red-800">
           {error}
         </div>
       )}
 
       {!loading && citas.length === 0 && (
-        <div className="text-center py-10 text-slate-400">
-          No tienes citas pendientes
-        </div>
+        <motion.div 
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          className="text-center py-20 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[2rem]"
+        >
+          <div className="bg-slate-100 dark:bg-slate-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CalendarDays className="text-slate-400" size={32} />
+          </div>
+          <p className="text-slate-500 font-bold text-lg">No hay citas en el horizonte</p>
+          <p className="text-slate-400 text-sm">¿Qué tal un nuevo corte hoy?</p>
+        </motion.div>
       )}
 
-      <div className="grid gap-4">
-        {citas.map((cita) => (
-          <motion.div
-            key={cita.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border border-slate-100 dark:border-slate-700"
-          >
-            <div className="flex justify-between items-center">
-              <div className="space-y-2">
-
-                <div className="flex items-center gap-2 text-sm text-slate-500">
-                  <CalendarDays size={16} />
-                  {cita.fecha}
+      <div className="grid gap-6">
+        <AnimatePresence>
+          {citas.map((cita, index) => (
+            <motion.div
+              key={cita.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className="group relative bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 dark:border-slate-800"
+            >
+              <div className="flex flex-col md:flex-row">
+                {/* Columna de Fecha/Hora (Estilo Ticket) */}
+                <div className="md:w-40 bg-slate-50 dark:bg-slate-800/50 p-6 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-100 dark:border-slate-800">
+                  <span className="text-xs font-black uppercase tracking-tighter text-slate-400 mb-1">
+                    {new Date(cita.fecha).toLocaleDateString('es-ES', { weekday: 'short' })}
+                  </span>
+                  <span className="text-3xl font-black text-primary leading-none">
+                    {new Date(cita.fecha).getDate()}
+                  </span>
+                  <span className="text-sm font-bold text-slate-600 dark:text-slate-300 capitalize">
+                    {new Date(cita.fecha).toLocaleDateString('es-ES', { month: 'short' })}
+                  </span>
+                  <div className="mt-3 flex items-center gap-1 bg-white dark:bg-slate-700 px-3 py-1 rounded-full shadow-sm">
+                    <Clock size={12} className="text-primary" />
+                    <span className="text-xs font-bold tracking-tight">{cita.hora}</span>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-sm text-slate-500">
-                  <Clock size={16} />
-                  {cita.hora}
-                </div>
+                {/* Contenido Principal */}
+                <div className="flex-1 p-6 relative">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-yellow-100 text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-500 mb-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse" />
+                        Próximamente
+                      </span>
+                      <h4 className="text-xl font-bold text-slate-800 dark:text-white group-hover:text-primary transition-colors">
+                        {cita.servicio?.nombre || "Corte de Cabello"}
+                      </h4>
+                    </div>
+                    <button className="text-slate-300 hover:text-slate-600 dark:hover:text-slate-100 transition-colors">
+                      <MoreVertical size={20} />
+                    </button>
+                  </div>
 
-                <div className="flex items-center gap-2 text-sm text-slate-500">
-                  <Scissors size={16} />
-                  {cita.servicio?.nombre || "Servicio"}
-                </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500">
+                        <User size={18} />
+                      </div>
+                      <div>
+                        <p className="text-[10px] uppercase font-bold text-slate-400 leading-none mb-1">Barbero</p>
+                        <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                          {cita.cedula_barbero?.username || "Especialista"}
+                        </p>
+                      </div>
+                    </div>
 
-                <div className="flex items-center gap-2 text-sm text-slate-500">
-                  <User size={16} />
-                  {cita.cedula_barbero?.username || "Barbero"}
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500">
+                        <Scissors size={18} />
+                      </div>
+                      <div>
+                        <p className="text-[10px] uppercase font-bold text-slate-400 leading-none mb-1">Inversión</p>
+                        <p className="text-sm font-bold text-primary">
+                          ${Number(cita.servicio?.precio).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-
               </div>
-
-              <div className="px-4 py-2 rounded-full text-xs font-bold bg-yellow-100 text-yellow-600">
-                Pendiente
-              </div>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   );

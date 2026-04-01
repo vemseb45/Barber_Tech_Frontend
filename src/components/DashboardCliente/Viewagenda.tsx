@@ -5,6 +5,7 @@ import Calendario from "../../components/Calendario";
 import type { Bloque } from "../../components/Calendario";
 import "../../index.css";
 import { jwtDecode } from 'jwt-decode';
+import { CalendarDays } from "lucide-react";
 
 interface JwtPayload {
   user_id: string;
@@ -12,7 +13,7 @@ interface JwtPayload {
 
 interface Barbero {
   id: string;
-  username: string; 
+  username: string;
   especialidad: string;
 }
 
@@ -56,7 +57,7 @@ export default function AgendaCitasCliente() {
 
     const token = localStorage.getItem("token");
     fetch("http://127.0.0.1:8000/api/servicios/", {
-        headers: { "Authorization": `Bearer ${token}` }
+      headers: { "Authorization": `Bearer ${token}` }
     })
       .then(res => res.json())
       .then(response => {
@@ -105,7 +106,7 @@ export default function AgendaCitasCliente() {
     const reservaData = {
       fecha: fechaSeleccionada,
       hora: horaFinal,
-      cedula_barbero: barberoSeleccionado, 
+      cedula_barbero: barberoSeleccionado,
       cedula_cliente: String(cedulaCliente),
       servicio: servicioSeleccionado
     };
@@ -132,6 +133,26 @@ export default function AgendaCitasCliente() {
       alert("Error al conectar con el servidor.");
     }
   };
+  const generarDias = (cantidad = 14) => {
+    const hoy = new Date();
+    const dias = [];
+
+    for (let i = 0; i < cantidad; i++) {
+      const fecha = new Date();
+      fecha.setDate(hoy.getDate() + i);
+
+      dias.push({
+        fecha,
+        label: fecha.toLocaleDateString("es-CO", {
+          weekday: "short",
+        }),
+        dia: fecha.getDate(),
+        iso: fecha.toISOString().split("T")[0],
+      });
+    }
+
+    return dias;
+  };
 
   return (
     <div className="landing-page py-12 px-4 sm:px-6 flex flex-col items-center justify-center">
@@ -153,11 +174,10 @@ export default function AgendaCitasCliente() {
                 setFechaSeleccionada("");
                 setHoraSeleccionada("");
               }}
-              className={`p-4 rounded-xl border text-left transition-all ${
-                barberoSeleccionado === barbero.id
-                  ? "bg-primary text-white border-primary shadow-lg"
-                  : "bg-slate-50 dark:bg-slate-800 border-slate-200"
-              }`}
+              className={`p-4 rounded-xl border text-left transition-all ${barberoSeleccionado === barbero.id
+                ? "bg-primary text-white border-primary shadow-lg"
+                : "bg-slate-50 dark:bg-slate-800 border-slate-200"
+                }`}
             >
               <p className="font-bold">{barbero.username}</p>
               <p className="text-sm opacity-80">{barbero.especialidad || "Barbero"}</p>
@@ -178,11 +198,10 @@ export default function AgendaCitasCliente() {
                     setFechaSeleccionada("");
                     setHoraSeleccionada("");
                   }}
-                  className={`p-4 rounded-xl border flex justify-between items-center transition-all ${
-                    servicioSeleccionado === serv.id_servicio // 🔥 FIX
-                      ? "bg-slate-800 text-white border-slate-800 shadow-md"
-                      : "bg-white dark:bg-slate-800 border-slate-200 text-slate-700 dark:text-slate-200"
-                  }`}
+                  className={`p-4 rounded-xl border flex justify-between items-center transition-all ${servicioSeleccionado === serv.id_servicio // 🔥 FIX
+                    ? "bg-slate-800 text-white border-slate-800 shadow-md"
+                    : "bg-white dark:bg-slate-800 border-slate-200 text-slate-700 dark:text-slate-200"
+                    }`}
                 >
                   <div className="text-left">
                     <p className="font-bold text-sm">{serv.nombre}</p>
@@ -196,21 +215,52 @@ export default function AgendaCitasCliente() {
             </div>
           </motion.div>
         )}
-
         {/* PASO 3: DÍA */}
         {servicioSeleccionado !== null && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
-            <h3 className="text-lg font-bold mb-4 text-slate-800 dark:text-slate-200">3. Selecciona el Día</h3>
-            <input
-              type="date"
-              className="w-full sm:w-1/2 p-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-primary/50"
-              value={fechaSeleccionada}
-              onChange={(e) => {
-                setFechaSeleccionada(e.target.value);
-                setHoraSeleccionada("");
-              }}
-              min={new Date().toISOString().split('T')[0]}
-            />
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="mb-10"
+          >
+            <h3 className="text-lg font-bold mb-4 text-slate-800 dark:text-slate-200 flex items-center gap-2">
+              <CalendarDays className="w-5 h-5 text-primary" />
+              3. Selecciona el Día
+            </h3>
+
+            <div className="flex gap-3 overflow-x-auto pb-2">
+              {generarDias(14).map((diaObj, index) => {
+                const isSelected = fechaSeleccionada === diaObj.iso;
+
+                return (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      setFechaSeleccionada(diaObj.iso);
+                      setHoraSeleccionada("");
+                    }}
+                    className={`min-w-[80px] flex flex-col items-center justify-center p-3 rounded-xl border transition-all
+              ${isSelected
+                        ? "bg-primary text-white border-primary shadow-md scale-105"
+                        : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:bg-primary/10"
+                      }
+            `}
+                  >
+                    <span className="text-xs uppercase">
+                      {index === 0
+                        ? "Hoy"
+                        : index === 1
+                          ? "Mañana"
+                          : diaObj.label}
+                    </span>
+
+                    <span className="text-lg font-bold">
+                      {diaObj.dia}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </motion.div>
         )}
 
