@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { UserPlus, Search, Scissors, Calendar, Trash2, MoreVertical } from 'lucide-react';
 import api from '../../api/axios';
 import type { Usuario } from '../../types';
-import ModalAsignarHorario from './asignarHorario'; 
+import ModalAsignarHorario from './asignarHorario';
+import CargaMasivaHorarios from './CargaMasivaHorarios';
 
 const ViewBarberos: React.FC = () => {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
@@ -10,6 +11,7 @@ const ViewBarberos: React.FC = () => {
   const [cargando, setCargando] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [barberoSeleccionado, setBarberoSeleccionado] = useState<{ id: number; nombre: string } | null>(null);
+  const [mostrarCargaMasiva, setMostrarCargaMasiva] = useState(false);
 
   useEffect(() => {
     const cargarUsuarios = async () => {
@@ -17,7 +19,6 @@ const ViewBarberos: React.FC = () => {
       try {
         const res = await api.get('usuarios/');
         const data = res.data.data || res.data;
-        // Filtramos para que esta vista solo maneje Barberos
         const soloBarberos = (Array.isArray(data) ? data : []).filter(u => u.rol === 'Barbero');
         setUsuarios(soloBarberos);
       } catch (err: any) {
@@ -30,7 +31,7 @@ const ViewBarberos: React.FC = () => {
   }, []);
 
   const handleCambiarRol = async (id: number, nuevoRol: string) => {
-    if(!window.confirm("¿Quitar este usuario del equipo de barberos?")) return;
+    if (!window.confirm("¿Quitar este usuario del equipo de barberos?")) return;
     try {
       await api.patch(`usuarios/${id}/cambiar_rol/`, { rol: nuevoRol });
       setUsuarios((prev) => prev.filter((u) => u.id !== id));
@@ -44,7 +45,7 @@ const ViewBarberos: React.FC = () => {
     setModalOpen(true);
   };
 
-  const barberosFiltrados = usuarios.filter(u => 
+  const barberosFiltrados = usuarios.filter(u =>
     u.username?.toLowerCase().includes(busqueda.toLowerCase())
   );
 
@@ -55,9 +56,18 @@ const ViewBarberos: React.FC = () => {
           <h2 className="text-3xl font-bold text-slate-800 dark:text-white">Equipo de Barberos</h2>
           <p className="text-slate-500 dark:text-slate-400 mt-1">Configura el personal y sus horarios de atención.</p>
         </div>
-        <button className="bg-primary text-white px-6 py-3 rounded-2xl flex items-center gap-3 font-bold text-sm shadow-xl shadow-primary/25 active:scale-95 transition-all">
-          <UserPlus size={20} /> Registrar Barbero
-        </button>
+        <div className="flex gap-3 flex-wrap">
+          <button className="bg-primary text-white px-6 py-3 rounded-2xl flex items-center gap-3 font-bold text-sm shadow-xl shadow-primary/25 active:scale-95 transition-all">
+            <UserPlus size={20} /> Registrar Barbero
+          </button>
+
+          <button
+            onClick={() => setMostrarCargaMasiva(!mostrarCargaMasiva)}
+            className="bg-blue-600 text-white px-6 py-3 rounded-2xl flex items-center gap-3 font-bold text-sm shadow-xl shadow-blue-500/25 active:scale-95 transition-all hover:bg-blue-700"
+          >
+            <Calendar size={20} />
+          </button>
+        </div>
       </div>
 
       <div className="bg-white dark:bg-[#1e293b] p-4 rounded-[24px] border border-slate-200 dark:border-slate-700/50 shadow-sm">
@@ -93,7 +103,7 @@ const ViewBarberos: React.FC = () => {
                   <tr key={user.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition-all">
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-lg bg-orange-500/10 text-orange-600">
+                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-lg bg-blue-500/10 text-blue-600">
                           {user.username?.substring(0, 1).toUpperCase()}
                         </div>
                         <div>
@@ -103,19 +113,19 @@ const ViewBarberos: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-8 py-6">
-                      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[11px] font-bold bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[11px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
                         <Scissors size={14} /> BARBERO ACTIVO
                       </div>
                     </td>
                     <td className="px-8 py-6">
                       <div className="flex justify-center gap-3">
-                        <button 
+                        <button
                           onClick={() => abrirModalHorario(user.id, user.username)}
-                          className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-xl text-[11px] font-black shadow-md hover:bg-orange-700 transition-all"
+                          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-[11px] font-black shadow-md hover:bg-blue-700 transition-all"
                         >
                           <Calendar size={14} /> HORARIOS
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleCambiarRol(user.id, 'Cliente')}
                           className="p-2.5 bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-red-500 rounded-xl transition-all"
                           title="Quitar de equipo"
@@ -133,15 +143,20 @@ const ViewBarberos: React.FC = () => {
       </div>
 
       {barberoSeleccionado && (
-        <ModalAsignarHorario 
+        <ModalAsignarHorario
           isOpen={modalOpen}
           onClose={() => { setModalOpen(false); setBarberoSeleccionado(null); }}
           barberoId={barberoSeleccionado.id}
           nombreBarbero={barberoSeleccionado.nombre}
         />
       )}
+
+      <CargaMasivaHorarios
+        isOpen={mostrarCargaMasiva}
+        onClose={() => setMostrarCargaMasiva(false)}
+      />
     </div>
   );
 };
 
-export default ViewBarberos;    
+export default ViewBarberos;

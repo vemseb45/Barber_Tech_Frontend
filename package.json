@@ -16,6 +16,7 @@
     "@fortawesome/react-fontawesome": "^3.2.0",
     "@tailwindcss/vite": "^4.2.1",
     "axios": "^1.13.6",
+    "file-saver": "^2.0.5",
     "framer-motion": "^12.36.0",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.577.0",
@@ -23,13 +24,15 @@
     "react-calendar": "^6.0.0",
     "react-datepicker": "^9.1.0",
     "react-dom": "^19.2.0",
-    "react-router-dom": "^7.13.1"
+    "react-router-dom": "^7.13.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@tailwindcss/container-queries": "^0.1.1",
     "@tailwindcss/forms": "^0.5.11",
     "@tailwindcss/postcss": "^4.2.2",
+    "@types/file-saver": "^2.0.7",
     "@types/jwt-decode": "^2.2.1",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.7",

@@ -71,23 +71,41 @@ const ModalAsignarHorario: React.FC<ModalProps> = ({ isOpen, onClose, barberoId,
             <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
               <Calendar size={14} /> Día de la semana
             </label>
+
             <div className="grid grid-cols-4 gap-3">
-              {["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"].map((d, index) => (
+              {/* FILA 1 */}
+              {["Lunes", "Martes", "Miercoles", "Jueves"].map((d) => (
                 <button
                   key={d}
                   type="button"
                   onClick={() => setDia(d)}
-                  className={`px-4 py-2 rounded-xl whitespace-nowrap font-bold text-sm transition-all border
-        ${dia === d
+                  className={`px-4 py-2 rounded-xl font-bold text-sm transition-all border
+          ${dia === d
                       ? "bg-primary text-white border-primary shadow-lg scale-105"
                       : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700"
-                    }
-        ${index >= 4 ? "col-span-1" : ""}
-      `}
+                    }`}
                 >
                   {d}
                 </button>
               ))}
+
+              {/* FILA 2 (centrada) */}
+              <div className="col-span-4 flex justify-center gap-3">
+                {["Viernes", "Sabado", "Domingo"].map((d) => (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => setDia(d)}
+                    className={`px-4 py-2 rounded-xl font-bold text-sm transition-all border
+            ${dia === d
+                        ? "bg-primary text-white border-primary shadow-lg scale-105"
+                        : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700"
+                      }`}
+                  >
+                    {d}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 

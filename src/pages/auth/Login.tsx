@@ -174,12 +174,7 @@ export default function Login() {
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
                     />
-                    <div className="w-4 h-4 rounded-md border-2 border-slate-300 dark:border-slate-600 peer-checked:bg-primary peer-checked:border-primary transition-all"></div>
-                    <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
                   </div>
-                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400 group-hover:text-primary transition-colors">Recordarme</span>
                 </label>
 
                 <button 
