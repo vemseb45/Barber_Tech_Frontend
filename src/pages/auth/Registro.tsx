@@ -8,8 +8,8 @@ import { Sun, Moon, Eye, EyeOff, ArrowLeft } from "lucide-react";
 export default function Register() {
   const [formData, setFormData] = useState({
     username: "",
-    nombres: "",
-    apellidos: "",
+    first_name: "",
+    last_name: "",
     cedula: "",
     telefono: "",
     email: "",
@@ -34,7 +34,7 @@ export default function Register() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (name === "nombres" || name === "apellidos") {
+    if (name === "first_name" || name === "last_name") {
       if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(value)) return;
     }
     if (name === "cedula" || name === "telefono") {
@@ -135,8 +135,8 @@ export default function Register() {
               {[
                 { label: "Usuario", name: "username", type: "text", placeholder: "Ej: Pepito01" },
                 { label: "Correo", name: "email", type: "email", placeholder: "ejemplo@gmail.com" },
-                { label: "Nombres", name: "nombres", type: "text", placeholder: "Tus nombres" },
-                { label: "Apellidos", name: "apellidos", type: "text", placeholder: "Tus apellidos" },
+                { label: "Nombres", name: "first_name", type: "text", placeholder: "Tus nombres" },
+                { label: "Apellidos", name: "last_name", type: "text", placeholder: "Tus apellidos" },
                 { label: "Cédula", name: "cedula", type: "text", placeholder: "12345678", max: 10 },
                 { label: "Teléfono", name: "telefono", type: "text", placeholder: "300...", max: 10 },
               ].map((field) => (
