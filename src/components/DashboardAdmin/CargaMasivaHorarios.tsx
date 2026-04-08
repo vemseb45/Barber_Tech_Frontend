@@ -58,11 +58,32 @@ const CargaMasivaHorarios: React.FC<Props> = ({ isOpen, onClose }) => {
             const workbook = XLSX.read(data, { type: "array" });
 
             const sheet = workbook.Sheets[workbook.SheetNames[0]];
-            const jsonData: any[] = XLSX.utils.sheet_to_json(sheet);
+            const jsonData: any[] = XLSX.utils.sheet_to_json(sheet, { raw: false });
+
+            const convertirHora = (valor: any) => {
+                // Si viene como número (formato Excel)
+                if (typeof valor === "number") {
+                    const totalSegundos = Math.round(valor * 24 * 60 * 60);
+                    const horas = Math.floor(totalSegundos / 3600);
+                    const minutos = Math.floor((totalSegundos % 3600) / 60);
+
+                    return `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}`;
+                }
+
+                // Si ya viene bien (string)
+                return valor;
+            };
+
+            // 🔥 MAPEAR Y CORREGIR HORAS
+            const jsonDataFormateado = jsonData.map((row) => ({
+                ...row,
+                hora_inicio: convertirHora(row.hora_inicio),
+                hora_fin: convertirHora(row.hora_fin),
+            }));
 
             const erroresTemp: any[] = [];
 
-            jsonData.forEach((row, index) => {
+            jsonDataFormateado.forEach((row, index) => {
                 if (!row.cedula_barbero) {
                     erroresTemp.push({ fila: index + 2, error: "Falta cédula" });
                 }
@@ -77,7 +98,7 @@ const CargaMasivaHorarios: React.FC<Props> = ({ isOpen, onClose }) => {
                 }
             });
 
-            setPreview(jsonData);
+            setPreview(jsonDataFormateado);
             setErrores(erroresTemp);
         };
 
