@@ -29,6 +29,8 @@ const ModalAsignarHorario: React.FC<ModalProps> = ({ isOpen, onClose, barberoId,
   const [mensaje, setMensaje] = useState<any>(null);
   const [enviando, setEnviando] = useState(false);
 
+  const diasSemana = ["Lunes","Martes","Miercoles","Jueves","Viernes","Sabado","Domingo"];
+
   if (!isOpen) return null;
 
   // 🔥 CARGAR HORARIOS
@@ -37,7 +39,6 @@ const ModalAsignarHorario: React.FC<ModalProps> = ({ isOpen, onClose, barberoId,
     try {
       const res = await api.get(`agenda/configurar/?barberoId=${barberoId}`);
 
-      // 🚫 ELIMINAR DUPLICADOS POR DIA
       const unicos = Object.values(
         (res.data.data || []).reduce((acc: any, curr: Horario) => {
           acc[curr.dia] = curr;
@@ -57,6 +58,31 @@ const ModalAsignarHorario: React.FC<ModalProps> = ({ isOpen, onClose, barberoId,
     if (isOpen) cargarHorarios();
   }, [isOpen]);
 
+  // 🔥 CREAR DIRECTO (Asignar)
+  const handleAsignarDirecto = async (diaSeleccionado: string) => {
+    setEnviando(true);
+    setMensaje(null);
+
+    try {
+      await api.post('agenda/configurar/', {
+        cedula_barbero: barberoId,
+        dia: diaSeleccionado,
+        hora_inicio: `${horaInicio}:00`,
+        hora_fin: `${horaFin}:00`
+      });
+
+      setMensaje({ type: 'success', text: `Horario asignado a ${diaSeleccionado}` });
+      cargarHorarios();
+    } catch (err: any) {
+      setMensaje({
+        type: 'error',
+        text: err.response?.data?.message || 'Error al asignar'
+      });
+    } finally {
+      setEnviando(false);
+    }
+  };
+
   // 🔥 GUARDAR / ACTUALIZAR
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,7 +91,7 @@ const ModalAsignarHorario: React.FC<ModalProps> = ({ isOpen, onClose, barberoId,
 
     try {
       if (editando) {
-        await api.put(`agenda/delet/${editando.id}/`, {
+        await api.put(`agenda/configurar/${editando.id}/`, {
           cedula_barbero: barberoId,
           dia,
           hora_inicio: `${horaInicio}:00`,
@@ -118,126 +144,128 @@ const ModalAsignarHorario: React.FC<ModalProps> = ({ isOpen, onClose, barberoId,
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+  // 🔥 MAPA POR DIA
+  const mapaHorarios: any = {};
+  horarios.forEach(h => {
+    mapaHorarios[h.dia] = h;
+  });
 
-      <div className="bg-white dark:bg-[#1e293b] w-full max-w-4xl rounded-[32px] shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+  return (
+    <div className="fixed inset-0 z-[999] flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm">
+
+      <div className="bg-white dark:bg-[#1e293b] w-full max-w-4xl max-h-[90vh] rounded-[28px] shadow-2xl border overflow-hidden flex flex-col">
 
         {/* HEADER */}
-        <div className="p-6 border-b flex justify-between items-center bg-slate-50 dark:bg-slate-800/40">
+        <div className="p-4 sm:p-6 border-b flex justify-between items-center">
           <div>
-            <h3 className="text-xl font-bold text-slate-800 dark:text-white">
+            <h3 className="text-lg font-bold">
               Horarios de {nombreBarbero}
             </h3>
-            <p className="text-xs text-slate-500">Gestiona disponibilidad</p>
           </div>
 
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700">
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-200">
             <X />
           </button>
         </div>
 
-        <div className="grid grid-cols-2 gap-6 p-6">
+        {/* CONTENIDO */}
+        <div className="overflow-y-auto p-4 sm:p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-          {/* 🔥 LISTADO */}
-          <div className="space-y-4">
-            <h4 className="font-bold text-sm text-slate-500">Horarios actuales</h4>
+            {/* LISTADO */}
+            <div className="space-y-3">
 
-            {cargando ? (
-              <p className="text-slate-400 text-sm">Cargando...</p>
-            ) : horarios.length === 0 ? (
-              <div className="p-6 text-center bg-slate-50 dark:bg-slate-800 rounded-2xl border border-dashed">
-                <p className="text-sm font-semibold text-slate-500">
-                  No hay horarios configurados
-                </p>
-                <p className="text-xs text-slate-400 mt-1">
-                  👉 Carga horarios o crea uno manualmente
-                </p>
-              </div>
-            ) : (
-              horarios.map((h) => (
-                <div
-                  key={h.id}
-                  className="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 flex justify-between items-center hover:shadow-md transition"
-                >
-                  <div>
-                    <p className="font-bold text-slate-800 dark:text-white">{h.dia}</p>
-                    <p className="text-xs text-slate-500 flex items-center gap-1">
-                      <Clock size={12} />
-                      {h.hora_inicio.slice(0, 5)} - {h.hora_fin.slice(0, 5)}
-                    </p>
+              {diasSemana.map((d) => {
+                const h = mapaHorarios[d];
+
+                return (
+                  <div key={d} className="p-4 rounded-2xl border flex justify-between items-center">
+
+                    <div>
+                      <p className="font-bold">{d}</p>
+
+                      {h ? (
+                        <p className="text-xs flex items-center gap-1 text-slate-500">
+                          <Clock size={12} />
+                          {h.hora_inicio.slice(0, 5)} - {h.hora_fin.slice(0, 5)}
+                        </p>
+                      ) : (
+                        <p className="text-xs text-slate-400">Sin horario</p>
+                      )}
+                    </div>
+
+                    <div className="flex gap-2">
+                      {h ? (
+                        <>
+                          <button
+                            onClick={() => handleEditar(h)}
+                            className="p-2 bg-blue-100 text-blue-600 rounded-xl"
+                          >
+                            <Pencil size={14} />
+                          </button>
+
+                          <button
+                            onClick={() => handleEliminar(h.id)}
+                            className="p-2 bg-red-100 text-red-600 rounded-xl"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          disabled={enviando}
+                          onClick={() => handleAsignarDirecto(d)}
+                          className="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-xl font-bold"
+                        >
+                          Asignar
+                        </button>
+                      )}
+                    </div>
+
                   </div>
+                );
+              })}
 
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleEditar(h)}
-                      className="p-2 bg-blue-100 text-blue-600 rounded-xl hover:scale-105 transition"
-                    >
-                      <Pencil size={14} />
-                    </button>
-
-                    <button
-                      onClick={() => handleEliminar(h.id)}
-                      className="p-2 bg-red-100 text-red-600 rounded-xl hover:scale-105 transition"
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-
-          {/* 🔥 FORM */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-
-            <h4 className="font-bold text-sm text-slate-500">
-              {editando ? 'Editar horario' : 'Nuevo horario'}
-            </h4>
-
-            
-            {/* HORAS */}
-            <div className="grid grid-cols-2 gap-3">
-              <input
-                type="time"
-                value={horaInicio}
-                onChange={e => setHoraInicio(e.target.value)}
-                className="p-3 rounded-xl border focus:ring-2 focus:ring-primary"
-              />
-              <input
-                type="time"
-                value={horaFin}
-                onChange={e => setHoraFin(e.target.value)}
-                className="p-3 rounded-xl border focus:ring-2 focus:ring-primary"
-              />
             </div>
 
-            {/* MENSAJE */}
-            {mensaje && (
-              <div className={`p-3 rounded-xl flex items-center gap-2 text-sm font-bold ${
-                mensaje.type === 'success'
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-red-100 text-red-700'
-              }`}>
-                {mensaje.type === 'success'
-                  ? <CheckCircle2 size={16} />
-                  : <AlertCircle size={16} />}
-                {mensaje.text}
+            {/* FORM */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+
+              <h4 className="font-bold text-sm">
+                {editando ? 'Editar horario' : 'Nuevo horario'}
+              </h4>
+
+              <select value={dia} onChange={e => setDia(e.target.value)} className="w-full p-3 border rounded-xl">
+                {diasSemana.map(d => (
+                  <option key={d}>{d}</option>
+                ))}
+              </select>
+
+              <div className="grid grid-cols-2 gap-3">
+                <input type="time" value={horaInicio} onChange={e => setHoraInicio(e.target.value)} className="p-3 border rounded-xl" />
+                <input type="time" value={horaFin} onChange={e => setHoraFin(e.target.value)} className="p-3 border rounded-xl" />
               </div>
-            )}
 
-            <button
-              disabled={enviando}
-              className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-xl font-bold transition"
-            >
-              {enviando
-                ? "Guardando..."
-                : editando
-                ? "Actualizar horario"
-                : "Guardar horario"}
-            </button>
+              {mensaje && (
+                <div className={`p-3 rounded-xl flex items-center gap-2 text-sm font-bold ${
+                  mensaje.type === 'success'
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-red-100 text-red-700'
+                }`}>
+                  {mensaje.type === 'success'
+                    ? <CheckCircle2 size={16} />
+                    : <AlertCircle size={16} />}
+                  {mensaje.text}
+                </div>
+              )}
 
-          </form>
+              <button disabled={enviando} className="w-full bg-primary text-white py-3 rounded-xl font-bold">
+                {enviando ? "Guardando..." : "Guardar horario"}
+              </button>
+
+            </form>
+
+          </div>
         </div>
       </div>
     </div>
