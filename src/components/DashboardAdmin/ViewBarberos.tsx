@@ -4,6 +4,7 @@ import api from '../../api/axios';
 import type { Usuario } from '../../types';
 import ModalAsignarHorario from './asignarHorario';
 import CargaMasivaHorarios from './CargaMasivaHorarios';
+import CrearBarbero from './CrearBarbero';
 
 const ViewBarberos: React.FC = () => {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
@@ -39,6 +40,17 @@ const ViewBarberos: React.FC = () => {
       alert("Error al actualizar el rol");
     }
   };
+  const [mostrarCrear, setMostrarCrear] = useState(false);
+  const recargarBarberos = async () => {
+    try {
+      const res = await api.get('usuarios/');
+      const data = res.data.data || res.data;
+      const soloBarberos = (Array.isArray(data) ? data : []).filter(u => u.rol === 'Barbero');
+      setUsuarios(soloBarberos);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const abrirModalHorario = (id: number, nombre: string) => {
     setBarberoSeleccionado({ id, nombre });
@@ -57,7 +69,10 @@ const ViewBarberos: React.FC = () => {
           <p className="text-slate-500 dark:text-slate-400 mt-1">Configura el personal y sus horarios de atención.</p>
         </div>
         <div className="flex gap-3 flex-wrap">
-          <button className="bg-primary text-white px-6 py-3 rounded-2xl flex items-center gap-3 font-bold text-sm shadow-xl shadow-primary/25 active:scale-95 transition-all">
+          <button
+            onClick={() => setMostrarCrear(true)}
+            className="bg-primary text-white px-6 py-3 rounded-2xl flex items-center gap-3 font-bold text-sm shadow-xl shadow-primary/25 active:scale-95 transition-all"
+          >
             <UserPlus size={20} /> Registrar Barbero
           </button>
 
@@ -154,6 +169,11 @@ const ViewBarberos: React.FC = () => {
       <CargaMasivaHorarios
         isOpen={mostrarCargaMasiva}
         onClose={() => setMostrarCargaMasiva(false)}
+      />
+      <CrearBarbero
+        isOpen={mostrarCrear}
+        onClose={() => setMostrarCrear(false)}
+        onSuccess={recargarBarberos}
       />
     </div>
   );

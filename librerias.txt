@@ -1,2 +1,0 @@
-npm install react-calendar framer-motion
-npm install -D @tailwindcss/postcss
