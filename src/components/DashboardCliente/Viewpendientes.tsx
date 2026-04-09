@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CalendarDays, Clock, User, Scissors, MapPin, MoreVertical } from "lucide-react";
+import { CheckCircle2, AlertCircle } from "lucide-react";
 
 interface Cita {
   id: number;
@@ -14,6 +15,7 @@ const ViewPendientes = () => {
   const [citas, setCitas] = useState<Cita[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [mensajeAccion, setMensajeAccion] = useState<any>(null);
 
   useEffect(() => {
     const fetchCitas = async () => {
@@ -37,6 +39,73 @@ const ViewPendientes = () => {
     fetchCitas();
   }, []);
 
+  const formatearFechaLocal = (fechaStr: string) => {
+    const [year, month, day] = fechaStr.split("-");
+    return new Date(Number(year), Number(month) - 1, Number(day));
+  };
+
+  const handleCancelar = async (cita: Cita) => {
+    const token = localStorage.getItem("token");
+
+    // 🔥 convertir a fecha real
+    const [year, month, day] = cita.fecha.split("-");
+    const [hora, minuto] = cita.hora.split(":");
+
+    const fechaCita = new Date(
+      Number(year),
+      Number(month) - 1,
+      Number(day),
+      Number(hora),
+      Number(minuto)
+    );
+
+    const ahora = new Date();
+    const diferenciaHoras = (fechaCita.getTime() - ahora.getTime()) / (1000 * 60 * 60);
+
+    // ❌ VALIDACIÓN
+    if (diferenciaHoras < 2) {
+      setMensajeAccion({
+        type: "error",
+        text: "Solo puedes cancelar con mínimo 2 horas de anticipación"
+      });
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/cita/cancelar/${cita.id}/`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMensajeAccion({
+          type: "error",
+          text: data.message || "No se pudo cancelar"
+        });
+        return;
+      }
+
+      // ✅ eliminar de UI
+      setCitas(prev => prev.filter(c => c.id !== cita.id));
+
+      setMensajeAccion({
+        type: "success",
+        text: "Cita cancelada correctamente"
+      });
+
+    } catch (error) {
+      setMensajeAccion({
+        type: "error",
+        text: "Error al conectar con el servidor"
+      });
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6">
       <header className="mb-8 flex justify-between items-end">
@@ -52,6 +121,17 @@ const ViewPendientes = () => {
           </span>
         </div>
       </header>
+      {mensajeAccion && (
+        <div className={`mb-6 p-4 rounded-2xl font-bold text-sm flex items-center gap-2 ${mensajeAccion.type === "success"
+          ? "bg-green-50 text-green-600"
+          : "bg-red-50 text-red-600"
+          }`}>
+          {mensajeAccion.type === "success"
+            ? <CheckCircle2 size={18} />
+            : <AlertCircle size={18} />}
+          {mensajeAccion.text}
+        </div>
+      )}
 
       {loading && (
         <div className="flex flex-col items-center justify-center py-20 gap-4">
@@ -67,7 +147,7 @@ const ViewPendientes = () => {
       )}
 
       {!loading && citas.length === 0 && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           className="text-center py-20 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[2rem]"
         >
@@ -93,13 +173,13 @@ const ViewPendientes = () => {
                 {/* Columna de Fecha/Hora (Estilo Ticket) */}
                 <div className="md:w-40 bg-slate-50 dark:bg-slate-800/50 p-6 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-100 dark:border-slate-800">
                   <span className="text-xs font-black uppercase tracking-tighter text-slate-400 mb-1">
-                    {new Date(cita.fecha).toLocaleDateString('es-ES', { weekday: 'short' })}
+                    {formatearFechaLocal(cita.fecha).toLocaleDateString('es-ES', { weekday: 'short' })}
                   </span>
                   <span className="text-3xl font-black text-primary leading-none">
-                    {new Date(cita.fecha).getDate()}
+                    {formatearFechaLocal(cita.fecha).getDate()}
                   </span>
                   <span className="text-sm font-bold text-slate-600 dark:text-slate-300 capitalize">
-                    {new Date(cita.fecha).toLocaleDateString('es-ES', { month: 'short' })}
+                    {formatearFechaLocal(cita.fecha).toLocaleDateString('es-ES', { month: 'short' })}
                   </span>
                   <div className="mt-3 flex items-center gap-1 bg-white dark:bg-slate-700 px-3 py-1 rounded-full shadow-sm">
                     <Clock size={12} className="text-primary" />
@@ -119,9 +199,19 @@ const ViewPendientes = () => {
                         {cita.servicio?.nombre || "Corte de Cabello"}
                       </h4>
                     </div>
-                    <button className="text-slate-300 hover:text-slate-600 dark:hover:text-slate-100 transition-colors">
-                      <MoreVertical size={20} />
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleCancelar(cita)}
+                        className="text-xs font-bold px-3 py-1 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition"
+                      >
+                        Cancelar
+                      </button>
+
+                      <button className="text-slate-300 hover:text-slate-600 dark:hover:text-slate-100 transition-colors">
+                        <MoreVertical size={20} />
+                      </button>
+                    </div>
+
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

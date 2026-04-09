@@ -5,7 +5,9 @@ import {
   UserPlus,
   Lightbulb,
   ArrowRight,
-  ArrowUpRight
+  ArrowUpRight,
+  Clock,
+  Briefcase
 } from 'lucide-react';
 import type { BarberoView } from '../../types';
 import { jwtDecode } from "jwt-decode";
@@ -14,9 +16,14 @@ interface ViewInicioProps {
   onViewChange: (view: BarberoView) => void;
 }
 
+interface JwtPayload {
+  user_id: string;
+}
+
 export default function ViewInicio({ onViewChange }: ViewInicioProps) {
   const [tiempoActual, setTiempoActual] = useState(new Date());
   const [proximasCitas, setProximasCitas] = useState<any[]>([]);
+  const [miIdBarbero, setMiIdBarbero] = useState<string | null>(null);
 
   const stats = {
     citasHoy: 12,
@@ -39,61 +46,48 @@ export default function ViewInicio({ onViewChange }: ViewInicioProps) {
 
   const tipActual = tipsDelDia[new Date().getDay()];
   const username = localStorage.getItem('username') || 'Barbero';
-  const [miIdBarbero, setMiIdBarbero] = useState<string | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
-
     try {
       const decoded = jwtDecode<JwtPayload>(token);
-      if (decoded.user_id) {
-        setMiIdBarbero(String(decoded.user_id));
-      }
+      if (decoded.user_id) setMiIdBarbero(String(decoded.user_id));
     } catch (error) {
       console.error("Error decodificando token");
     }
   }, []);
 
-  // Reloj en tiempo real para hacer disminuir los minutos
   useEffect(() => {
-    const intervalo = setInterval(() => {
-      setTiempoActual(new Date());
-    }, 60000);
+    const intervalo = setInterval(() => setTiempoActual(new Date()), 60000);
     return () => clearInterval(intervalo);
   }, []);
 
-  // Inicializar citas simuladas basándose en la hora actual
   useEffect(() => {
     const fetchCitas = async () => {
       try {
         if (!miIdBarbero) return;
+        const hoy = new Date();
+        const fechaInicio = hoy.toISOString().split("T")[0];
+        const futura = new Date();
+        futura.setDate(futura.getDate() + 7);
+        const fechaFin = futura.toISOString().split("T")[0];
 
         const res = await fetch(
-          `http://127.0.0.1:8000/api/agenda/miAgenda/?barberoId=${miIdBarbero}`
+          `http://127.0.0.1:8000/api/agenda/miAgenda/?barberoId=${miIdBarbero}&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`
         );
-
         const data = await res.json();
-
-        const lista = Array.isArray(data)
-          ? data
-          : data.results || data.data || [];
-
+        const lista = data.data || [];
         const ahora = new Date();
 
         const citas = lista
-          .map((cita: any) => {
-            const fecha = new Date(`${cita.fecha}T${cita.hora}`);
-
-            return {
-              cedula: cita.cedula_cliente,
-              cliente: cita.nombre_cliente,
-              servicio: cita.servicio?.nombre || 'Servicio',
-              fecha,
-              estadoBase: cita.estado || 'Pendiente'
-            };
-          })
-          // 🔥 CLAVE: futuras (incluye hoy y días siguientes)
+          .map((cita: any) => ({
+            cedula: cita.cedula_cliente_id,
+            cliente: `Cliente ${cita.cedula_cliente_id}`,
+            servicio: cita.id_servicio || 'Servicio',
+            fecha: new Date(`${cita.fecha}T${cita.hora}`),
+            estadoBase: cita.estado || 'Pendiente'
+          }))
           .filter((cita: any) => cita.fecha.getTime() > ahora.getTime())
           .sort((a: any, b: any) => a.fecha.getTime() - b.fecha.getTime())
           .slice(0, 3);
@@ -103,7 +97,6 @@ export default function ViewInicio({ onViewChange }: ViewInicioProps) {
         console.error("Error cargando citas:", error);
       }
     };
-
     fetchCitas();
   }, [miIdBarbero]);
 
@@ -112,177 +105,154 @@ export default function ViewInicio({ onViewChange }: ViewInicioProps) {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* HEADER */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight">
-            ¡Hola, {username}!
+    <div className="max-w-7xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      
+      {/* WELCOME SECTION */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-gradient-to-r from-slate-900 to-slate-800 dark:from-slate-800 dark:to-slate-900 p-8 rounded-[40px] shadow-2xl shadow-slate-200 dark:shadow-none relative overflow-hidden">
+        <div className="relative z-10">
+          <h2 className="text-4xl font-black text-white tracking-tight">
+            ¡Buen día, {username.split(' ')[0]}!
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">
-            Resumen para hoy, <span className="text-primary font-medium">{new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}</span>.
+          <p className="text-slate-300 mt-2 font-medium flex items-center gap-2">
+            <Clock size={16} className="text-primary" />
+            Tienes <span className="text-white font-bold">{stats.citasHoy} citas</span> programadas para hoy.
           </p>
         </div>
         <button
           onClick={() => onViewChange('Citas')}
-          className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl font-bold text-sm hover:scale-105 transition-all shadow-lg shadow-primary/25"
+          className="relative z-10 flex items-center gap-3 px-8 py-4 bg-primary text-white rounded-2xl font-black text-sm hover:bg-primary/90 transition-all hover:shadow-xl hover:shadow-primary/40 group"
         >
-          <CalendarDays size={18} />
-          Ir a la Agenda
+          <CalendarDays size={20} />
+          GESTIONAR AGENDA
+          <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
         </button>
+        {/* Decorative elements */}
+        <div className="absolute right-[-20px] top-[-20px] w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
       </div>
 
-      {/* ESTADÍSTICAS REFINADAS */}
+      {/* KEY METRICS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { label: 'Citas hoy', val: stats.citasHoy, inc: stats.citasCrecimiento, sub: 'Respecto a ayer', icon: CalendarDays, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-          { label: 'Calificación', val: '4.9', inc: '+0.2', sub: 'Puntaje general', icon: Star, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-          { label: 'Nuevos clientes', val: stats.nuevosClientes, inc: stats.clientesCrecimiento, sub: 'Mes actual', icon: UserPlus, color: 'text-purple-500', bg: 'bg-purple-500/10' },
+          { label: 'Citas Hoy', val: stats.citasHoy, inc: stats.citasCrecimiento, icon: CalendarDays, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+          { label: 'Rating Global', val: '4.9', inc: '+0.2', icon: Star, color: 'text-amber-500', bg: 'bg-amber-500/10' },
+          { label: 'Nuevos Clientes', val: stats.nuevosClientes, inc: stats.clientesCrecimiento, icon: UserPlus, color: 'text-purple-500', bg: 'bg-purple-500/10' },
         ].map((item, i) => (
-          <div key={i} className="group p-8 rounded-[32px] bg-white dark:bg-[#1e293b] border border-slate-100 dark:border-slate-700/50 shadow-sm hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300 relative overflow-hidden">
-            <div className="flex justify-between items-start relative z-10">
+          <div key={i} className="group p-8 rounded-[35px] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-primary/20 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-none">
+            <div className="flex justify-between items-start">
               <div>
-                <p className="font-bold text-xs uppercase tracking-widest text-slate-400 dark:text-slate-500">
-                  {item.label}
-                </p>
-                <div className="flex items-center gap-2 mt-2">
-                  <h3 className="text-3xl font-black text-slate-800 dark:text-white leading-none">
-                    {item.val}
-                  </h3>
-                </div>
+                <p className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mb-3">{item.label}</p>
+                <h3 className="text-4xl font-black text-slate-800 dark:text-white">{item.val}</h3>
               </div>
-              <div className={`p-4 rounded-2xl ${item.bg} ${item.color} transition-transform group-hover:scale-110 duration-300`}>
-                <item.icon size={24} strokeWidth={2.5} />
+              <div className={`p-4 rounded-2xl ${item.bg} ${item.color} group-hover:scale-110 transition-transform duration-500`}>
+                <item.icon size={28} />
               </div>
             </div>
-            <div className="mt-6 flex items-center gap-2 relative z-10">
-              <div className="flex items-center px-2 py-1 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                <ArrowUpRight size={14} className="mr-1" />
-                {typeof item.inc === 'number' ? `+${item.inc}%` : item.inc}
-              </div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{item.sub}</span>
+            <div className="mt-6 flex items-center gap-2">
+              <span className="flex items-center px-2 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-lg text-xs font-black">
+                <ArrowUpRight size={14} className="mr-0.5" />
+                {typeof item.inc === 'number' ? `${item.inc}%` : item.inc}
+              </span>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">vs. periodo anterior</span>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
-        {/* PRÓXIMAS CITAS TIPO PENDIENTES */}
-        <div className="lg:col-span-3 p-8 rounded-[32px] bg-white dark:bg-[#1e293b] border border-slate-100 dark:border-slate-700/50 shadow-sm flex flex-col">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+        {/* UPCOMING APPOINTMENTS TABLE */}
+        <div className="lg:col-span-3 bg-white dark:bg-slate-900 p-8 rounded-[35px] border border-slate-100 dark:border-slate-800 shadow-sm">
           <div className="flex justify-between items-center mb-8">
-            <h4 className="font-black text-xl text-slate-800 dark:text-white">Próximas Citas</h4>
+            <h4 className="font-black text-xl text-slate-800 dark:text-white flex items-center gap-3">
+              Próximas en Agenda
+              <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] rounded-md font-black uppercase tracking-widest">Top 3</span>
+            </h4>
             <button
               onClick={() => onViewChange('Pendientes' as any)}
-              className="text-primary text-sm font-bold hover:underline flex items-center gap-1 cursor-pointer"
+              className="text-primary text-xs font-black uppercase tracking-widest hover:opacity-70 flex items-center gap-2 transition-all"
             >
-              Ver todas <ArrowRight size={14} />
+              Ver Todas <ArrowRight size={14} />
             </button>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[600px]">
-              <thead>
-                <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-700/50">
-                  <th className="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Hora</th>
-                  <th className="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Cliente</th>
-                  <th className="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Servicio</th>
-                  <th className="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center">Estado</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-                {proximasCitas.map((cita) => {
-                  const diferenciaMs = cita.fecha.getTime() - tiempoActual.getTime();
-                  const faltanMinutos = Math.max(0, Math.floor(diferenciaMs / 60000));
-                  const esHoy = cita.fecha.getDate() === tiempoActual.getDate();
-                  const muyProximo = faltanMinutos <= 60 && esHoy && faltanMinutos > 0;
-                  const colorAvatar = muyProximo ? 'bg-rose-500 shadow-rose-500/20' : 'bg-primary shadow-primary/20';
+          <div className="space-y-4">
+            {proximasCitas.map((cita) => {
+              const diferenciaMs = cita.fecha.getTime() - tiempoActual.getTime();
+              const faltanMinutos = Math.max(0, Math.floor(diferenciaMs / 60000));
+              const esHoy = cita.fecha.getDate() === tiempoActual.getDate();
+              const muyProximo = faltanMinutos <= 60 && esHoy && faltanMinutos > 0;
 
-                  return (
-                    <tr key={cita.cedula} className="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group">
-                      <td className="px-6 py-5">
-                        <span className="text-sm font-black text-slate-800 dark:text-white">
-                          {formatearHora(cita.fecha)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-5">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-[14px] flex items-center justify-center font-black text-sm text-white shadow-sm shrink-0 ${colorAvatar}`}>
-                            {cita.cliente.charAt(0)}
-                          </div>
-                          <div>
-                            <span className="text-sm font-bold text-slate-800 dark:text-white block">
-                              {cita.cliente}
-                            </span>
-                            <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">
-                              C.C: {cita.cedula}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-5">
-                        <span className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-300 whitespace-nowrap">
-                          {cita.servicio}
-                        </span>
-                      </td>
-                      <td className="px-6 py-5 text-center">
-                        {muyProximo ? (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400">
-                            <span className="relative flex h-2 w-2">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
-                            </span>
-                            En {faltanMinutos} min
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
-                            {cita.estadoBase}
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+              return (
+                <div key={cita.cedula} className="flex items-center justify-between p-5 rounded-[24px] bg-slate-50/50 dark:bg-slate-800/30 border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition-all group">
+                  <div className="flex items-center gap-5">
+                    <div className="flex flex-col items-center justify-center min-w-[60px] p-2 bg-white dark:bg-slate-800 rounded-2xl shadow-sm">
+                      <span className="text-lg font-black text-slate-800 dark:text-white">{formatearHora(cita.fecha)}</span>
+                      <span className="text-[9px] font-black text-primary uppercase">HORA</span>
+                    </div>
+                    <div>
+                      <h5 className="font-black text-slate-800 dark:text-white text-sm uppercase tracking-tight group-hover:text-primary transition-colors">
+                        {cita.cliente}
+                      </h5>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Briefcase size={12} className="text-slate-400" />
+                        <span className="text-xs font-bold text-slate-500">{cita.servicio}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    {muyProximo ? (
+                      <div className="flex items-center gap-2 px-4 py-2 bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-xl font-black text-[10px] uppercase animate-pulse">
+                         <div className="w-2 h-2 rounded-full bg-rose-500" />
+                         En {faltanMinutos} min
+                      </div>
+                    ) : (
+                      <span className="px-4 py-2 bg-white dark:bg-slate-800 text-slate-400 rounded-xl font-black text-[10px] uppercase tracking-widest border border-slate-100 dark:border-slate-700">
+                        {cita.estadoBase}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* MÉTRICAS DE SERVICIOS */}
-        <div className="lg:col-span-2 p-8 rounded-[32px] bg-white dark:bg-[#1e293b] border border-slate-100 dark:border-slate-700/50 shadow-sm flex flex-col">
-          <h4 className="font-black text-xl text-slate-800 dark:text-white mb-8">Populares</h4>
-          <div className="space-y-6">
-            {[
-              { name: 'Corte Cabello', pct: 45 },
-              { name: 'Recorte Barba', pct: 30 },
-              { name: 'Combo Imperial', pct: 20 },
-              { name: 'Facial', pct: 5 },
-            ].map((s, i) => (
-              <div key={i} className="space-y-2">
-                <div className="flex justify-between items-center text-xs font-bold dark:text-white uppercase tracking-tighter">
-                  <span>{s.name}</span>
-                  <span className="text-primary">{s.pct}%</span>
+        {/* PERFORMANCE & TIPS */}
+        <div className="lg:col-span-2 space-y-8">
+          <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] border border-slate-100 dark:border-slate-800 shadow-sm">
+            <h4 className="font-black text-xl text-slate-800 dark:text-white mb-6">Demanda de Servicios</h4>
+            <div className="space-y-5">
+              {[
+                { name: 'Corte Cabello', pct: 45, color: 'bg-blue-500' },
+                { name: 'Recorte Barba', pct: 30, color: 'bg-purple-500' },
+                { name: 'Combo Imperial', pct: 20, color: 'bg-amber-500' },
+              ].map((s, i) => (
+                <div key={i} className="group">
+                  <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest mb-2">
+                    <span className="text-slate-500 group-hover:text-slate-800 dark:group-hover:text-white transition-colors">{s.name}</span>
+                    <span className="text-primary">{s.pct}%</span>
+                  </div>
+                  <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div 
+                      className={`${s.color} h-full rounded-full transition-all duration-1000 group-hover:brightness-110`} 
+                      style={{ width: `${s.pct}%` }} 
+                    />
+                  </div>
                 </div>
-                <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                  <div className="bg-primary h-full rounded-full transition-all duration-1000" style={{ width: `${s.pct}%` }}></div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* TIP BOX */}
-          <div className="mt-10 p-5 rounded-2xl bg-primary/5 dark:bg-primary/10 border border-primary/20 relative overflow-hidden group">
-            <div className="flex items-center gap-3 mb-3 relative z-10">
-              <div className="p-1.5 bg-primary rounded-lg text-white">
-                <Lightbulb size={16} />
-              </div>
-              <span className="text-sm font-bold text-primary">Tip del día</span>
+              ))}
             </div>
-            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed relative z-10 font-medium">
-              "{tipActual}"
-            </p>
-            {/* Decoración sutil */}
-            <div className="absolute -right-4 -bottom-4 text-primary/10 rotate-12 group-hover:rotate-0 transition-transform duration-500">
-              <Lightbulb size={80} />
+
+            <div className="mt-8 p-6 rounded-[28px] bg-primary/5 dark:bg-primary/10 border border-primary/10 relative overflow-hidden group">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 bg-primary text-white rounded-xl shadow-lg shadow-primary/30">
+                  <Lightbulb size={18} />
+                </div>
+                <span className="text-xs font-black uppercase tracking-[0.15em] text-primary">Consejo del Día</span>
+              </div>
+              <p className="text-sm text-slate-600 dark:text-slate-300 font-medium italic leading-relaxed leading-snug">
+                "{tipActual}"
+              </p>
+              <Lightbulb size={90} className="absolute -right-6 -bottom-6 text-primary/5 rotate-12 group-hover:rotate-0 transition-transform duration-700" />
             </div>
           </div>
         </div>

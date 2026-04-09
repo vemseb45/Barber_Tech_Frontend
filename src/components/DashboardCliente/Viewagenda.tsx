@@ -128,7 +128,9 @@ export default function AgendaCitasCliente() {
       }
 
       alert("¡Cita agendada con éxito!");
-      navigate("/DashboardCliente");
+
+      // 🔥 RECARGA COMPLETA
+      window.location.reload();
     } catch (error) {
       alert("Error al conectar con el servidor.");
     }

@@ -81,17 +81,6 @@ export default function Calendario({
         })}
       </div>
 
-      {/* Leyenda rápida */}
-      <div className="mt-8 flex flex-wrap justify-center sm:justify-start gap-3 sm:gap-6 px-1 sm:px-2">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-md bg-primary shrink-0"></div>
-          <span className="text-[9px] sm:text-[10px] font-bold text-slate-500 uppercase tracking-widest">Seleccionado</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-md bg-slate-200 dark:bg-white/10 shrink-0"></div>
-          <span className="text-[9px] sm:text-[10px] font-bold text-slate-500 uppercase tracking-widest">Disponible</span>
-        </div>
-      </div>
     </div>
   );
 }
