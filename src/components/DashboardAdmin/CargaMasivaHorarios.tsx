@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
+
 import { Upload, Download, CheckCircle2, AlertCircle, X } from "lucide-react";
 import api from "../../api/axios";
 
