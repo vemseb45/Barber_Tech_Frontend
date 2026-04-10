@@ -74,11 +74,7 @@ export default function Login() {
   };
 
   const handleForgotPassword = () => {
-    if (!email) {
-      alert("Por favor escribe tu usuario en el campo superior para enviarte el enlace de recuperación.");
-      return;
-    }
-    alert(`Se ha enviado un enlace de recuperación a: ${email}\nPor favor revisa tu correo electrónico.`);
+    navigate("/forgot-password");
   };
 
   return (

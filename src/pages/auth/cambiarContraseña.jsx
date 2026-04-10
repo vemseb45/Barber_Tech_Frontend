@@ -5,7 +5,7 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState("");
 
   const handleSubmit = async () => {
-    await api.post("http://localhost:8000/api/usuarios//forgot-password/", { email });
+    await api.post("http://localhost:8000/api/usuarios/forgot-password/", { email });
     alert("Correo enviado");
   };
 
