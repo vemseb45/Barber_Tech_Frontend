@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, UserPlus } from 'lucide-react';
+import { X, UserPlus, Eye, EyeOff } from 'lucide-react';
 import api from '../../api/axios';
 
 interface Props {
@@ -13,6 +13,7 @@ const CrearBarbero: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
   const [form, setForm] = useState({
     username: '',
     password: '',
+    confirmPassword: '',
     first_name: '',
     last_name: '',
     email: '',
@@ -22,42 +23,86 @@ const CrearBarbero: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
     especialidad_id: 1
   });
 
+  const [errors, setErrors] = useState<any>({});
+  const [generalError, setGeneralError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   if (!isOpen) return null;
 
+  // 🔹 INPUT CONTROLADO
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
+    let { name, value } = e.target;
+
+    if (name === "cedula" || name === "telefono") {
+      value = value.replace(/\D/g, '').slice(0, 10);
+    }
+
+    setForm({ ...form, [name]: value });
+
+    setErrors({ ...errors, [name]: "" });
+    setGeneralError('');
   };
 
-  // 🔴 VALIDACIÓN FRONTEND
+  //  VALIDADOR PRO
   const validar = () => {
-    if (!form.username.trim()) return "Username obligatorio";
-    if (!form.password.trim()) return "Contraseña obligatoria";
-    if (!form.cedula.trim()) return "Cédula obligatoria";
-    if (!form.first_name.trim()) return "Nombre obligatorio";
-    if (!form.last_name.trim()) return "Apellido obligatorio";
-    if (!form.email.trim()) return "Email obligatorio";
-    return null;
+    let newErrors: any = {};
+
+    if (!form.username.trim()) newErrors.username = "Requerido";
+    if (!form.first_name.trim()) newErrors.first_name = "Requerido";
+    if (!form.last_name.trim()) newErrors.last_name = "Requerido";
+
+    if (!form.email.trim()) {
+      newErrors.email = "Requerido";
+    } else if (!/^[^\s@]+@[^\s@]+\.com$/.test(form.email)) {
+      newErrors.email = "Email inválido";
+    }
+
+    if (!form.cedula.trim()) {
+      newErrors.cedula = "Requerido";
+    } else if (form.cedula.length !== 10) {
+      newErrors.cedula = "Debe tener 10 dígitos";
+    }
+
+    if (!form.telefono.trim()) {
+      newErrors.telefono = "Requerido";
+    } else if (form.telefono.length !== 10) {
+      newErrors.telefono = "Debe tener 10 dígitos";
+    }
+
+    if (!form.password) {
+      newErrors.password = "Requerido";
+    } else if (form.password.length < 6) {
+      newErrors.password = "Mínimo 6 caracteres";
+    }
+
+    if (!form.confirmPassword) {
+      newErrors.confirmPassword = "Requerido";
+    } else if (form.password !== form.confirmPassword) {
+      newErrors.confirmPassword = "No coinciden";
+    }
+
+    return newErrors;
   };
 
   const handleSubmit = async () => {
 
-    const error = validar();
-    if (error) {
-      alert(error);
+    const validationErrors = validar();
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      setGeneralError("Debes completar correctamente todos los campos");
       return;
     }
 
     try {
       setLoading(true);
 
-      await api.post("barberos/crear-barbero/", form);
+      const { confirmPassword, ...data } = form;
 
-      alert("Barbero creado correctamente");
+      await api.post("barberos/crear-barbero/", data);
 
       onSuccess();
       onClose();
@@ -65,6 +110,7 @@ const CrearBarbero: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
       setForm({
         username: '',
         password: '',
+        confirmPassword: '',
         first_name: '',
         last_name: '',
         email: '',
@@ -74,45 +120,121 @@ const CrearBarbero: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
         especialidad_id: 1
       });
 
+      setErrors({});
+      setGeneralError('');
+
     } catch (error: any) {
-      console.error(error.response?.data);
-      alert(error.response?.data?.message || "Error al crear barbero");
+      setGeneralError(
+        error.response?.data?.message || "Error al crear barbero"
+      );
     } finally {
       setLoading(false);
     }
   };
+
+  const inputClass = (field: string) =>
+    `input ${errors[field] ? 'border-red-500 focus:ring-red-300' : ''}`;
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
 
       <div className="w-full max-w-2xl bg-white dark:bg-[#1e293b] rounded-[32px] p-8 shadow-2xl border border-slate-200 dark:border-slate-700">
 
+        {/* HEADER */}
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-black text-slate-800 dark:text-white">
             Crear Barbero
           </h3>
-
           <button onClick={onClose}>
             <X className="text-slate-400 hover:text-red-500" />
           </button>
         </div>
 
+        {/* ERROR GENERAL */}
+        {generalError && (
+          <div className="mb-4 p-4 rounded-xl bg-red-100 text-red-700 text-sm font-semibold text-center">
+            {generalError}
+          </div>
+        )}
+
+        {/* FORM */}
         <div className="grid grid-cols-2 gap-4">
 
-          <input name="username" placeholder="Username" onChange={handleChange} className="input" />
-          <input name="password" type="password" placeholder="Contraseña" onChange={handleChange} className="input" />
-          <input name="first_name" placeholder="Nombre" onChange={handleChange} className="input" />
-          <input name="last_name" placeholder="Apellido" onChange={handleChange} className="input" />
-          <input name="email" placeholder="Email" onChange={handleChange} className="input col-span-2" />
-          <input name="cedula" placeholder="Cédula" onChange={handleChange} className="input" />
-          <input name="telefono" placeholder="Teléfono" onChange={handleChange} className="input" />
+          {[
+            { label: "Username", name: "username" },
+            { label: "Email", name: "email" },
+            { label: "Nombre", name: "first_name" },
+            { label: "Apellido", name: "last_name" },
+            { label: "Cédula", name: "cedula", max: 10 },
+            { label: "Teléfono", name: "telefono", max: 10 }
+          ].map((field) => (
+            <div key={field.name}>
+              <label className="text-xs font-bold mb-1 block">
+                {field.label}
+              </label>
+
+              <input
+                name={field.name}
+                maxLength={field.max}
+                onChange={handleChange}
+                className={inputClass(field.name)}
+              />
+
+              {errors[field.name] && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors[field.name]}
+                </p>
+              )}
+            </div>
+          ))}
+
+          {/* PASSWORD */}
+          <div className="relative">
+            <label className="text-xs font-bold mb-1 block">Contraseña</label>
+
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              onChange={handleChange}
+              className={`${inputClass("password")} pr-10`}
+            />
+
+            <button type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-9 text-slate-400">
+              {showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}
+            </button>
+
+            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+          </div>
+
+          {/* CONFIRM PASSWORD */}
+          <div className="relative">
+            <label className="text-xs font-bold mb-1 block">Confirmar Contraseña</label>
+
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              name="confirmPassword"
+              onChange={handleChange}
+              className={`${inputClass("confirmPassword")} pr-10`}
+            />
+
+            <button type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-3 top-9 text-slate-400">
+              {showConfirmPassword ? <EyeOff size={18}/> : <Eye size={18}/>}
+            </button>
+
+            {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
+          </div>
 
         </div>
 
+        {/* BUTTON */}
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="mt-6 w-full bg-primary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:scale-105 transition-all"
+          className="mt-6 w-full bg-primary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:scale-105 transition-all disabled:opacity-50"
         >
           <UserPlus size={18} />
           {loading ? "Creando..." : "Crear Barbero"}
