@@ -64,3 +64,22 @@
 .scroll-pro:hover::-webkit-scrollbar {
   width: 6px;
 }
+
+@layer components {
+  .input {
+    @apply w-full px-4 py-3 rounded-xl 
+    bg-slate-50 dark:bg-slate-900/50 
+    border border-slate-200 dark:border-slate-700 
+    outline-none 
+    focus:ring-4 focus:ring-primary/10 
+    focus:border-primary
+    transition-all 
+    font-medium 
+    text-slate-700 dark:text-white
+    placeholder:text-slate-400 dark:placeholder:text-slate-500;
+  }
+
+  .input:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+}

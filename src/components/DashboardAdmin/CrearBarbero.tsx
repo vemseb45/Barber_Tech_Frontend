@@ -5,10 +5,11 @@ import api from '../../api/axios';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void; // 🔥 para refrescar lista
+  onSuccess: () => void;
 }
 
 const CrearBarbero: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
+
   const [form, setForm] = useState({
     username: '',
     password: '',
@@ -32,7 +33,25 @@ const CrearBarbero: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
     });
   };
 
+  // 🔴 VALIDACIÓN FRONTEND
+  const validar = () => {
+    if (!form.username.trim()) return "Username obligatorio";
+    if (!form.password.trim()) return "Contraseña obligatoria";
+    if (!form.cedula.trim()) return "Cédula obligatoria";
+    if (!form.first_name.trim()) return "Nombre obligatorio";
+    if (!form.last_name.trim()) return "Apellido obligatorio";
+    if (!form.email.trim()) return "Email obligatorio";
+    return null;
+  };
+
   const handleSubmit = async () => {
+
+    const error = validar();
+    if (error) {
+      alert(error);
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -40,8 +59,8 @@ const CrearBarbero: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
       alert("Barbero creado correctamente");
 
-      onSuccess(); // 🔥 recarga lista
-      onClose();   // 🔥 cierra modal
+      onSuccess();
+      onClose();
 
       setForm({
         username: '',
@@ -56,7 +75,7 @@ const CrearBarbero: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
       });
 
     } catch (error: any) {
-      console.error("ERROR:", error.response?.data);
+      console.error(error.response?.data);
       alert(error.response?.data?.message || "Error al crear barbero");
     } finally {
       setLoading(false);
@@ -68,7 +87,6 @@ const CrearBarbero: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
       <div className="w-full max-w-2xl bg-white dark:bg-[#1e293b] rounded-[32px] p-8 shadow-2xl border border-slate-200 dark:border-slate-700">
 
-        {/* HEADER */}
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-black text-slate-800 dark:text-white">
             Crear Barbero
@@ -79,39 +97,18 @@ const CrearBarbero: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
           </button>
         </div>
 
-        {/* FORM */}
         <div className="grid grid-cols-2 gap-4">
 
-          <input name="username" placeholder="Username"
-            onChange={handleChange}
-            className="input" />
+          <input name="username" placeholder="Username" onChange={handleChange} className="input" />
+          <input name="password" type="password" placeholder="Contraseña" onChange={handleChange} className="input" />
+          <input name="first_name" placeholder="Nombre" onChange={handleChange} className="input" />
+          <input name="last_name" placeholder="Apellido" onChange={handleChange} className="input" />
+          <input name="email" placeholder="Email" onChange={handleChange} className="input col-span-2" />
+          <input name="cedula" placeholder="Cédula" onChange={handleChange} className="input" />
+          <input name="telefono" placeholder="Teléfono" onChange={handleChange} className="input" />
 
-          <input name="password" type="password" placeholder="Contraseña"
-            onChange={handleChange}
-            className="input" />
-
-          <input name="first_name" placeholder="Nombre"
-            onChange={handleChange}
-            className="input" />
-
-          <input name="last_name" placeholder="Apellido"
-            onChange={handleChange}
-            className="input" />
-
-          <input name="email" placeholder="Email"
-            onChange={handleChange}
-            className="input col-span-2" />
-
-          <input name="cedula" placeholder="Cédula"
-            onChange={handleChange}
-            className="input" />
-
-          <input name="telefono" placeholder="Teléfono"
-            onChange={handleChange}
-            className="input" />
         </div>
 
-        {/* BUTTON */}
         <button
           onClick={handleSubmit}
           disabled={loading}
@@ -120,6 +117,7 @@ const CrearBarbero: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
           <UserPlus size={18} />
           {loading ? "Creando..." : "Crear Barbero"}
         </button>
+
       </div>
     </div>
   );
