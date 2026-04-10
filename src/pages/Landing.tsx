@@ -465,9 +465,14 @@ export default function Landing() {
           <div>
             <h4 className="mb-4 font-bold uppercase tracking-wider text-[10px] opacity-50">Síguenos</h4>
             <div className="flex justify-center md:justify-start gap-4">
-              {["facebook", "instagram", "twitter"].map((social) => (
-                <motion.a key={social} whileHover={{ y: -5 }} className="flex h-10 w-10 items-center justify-center rounded-xl bg-white dark:bg-white/5 shadow-sm border border-black/5 dark:border-white/10" href="#">
-                  <img src={`/Imagenes/${social}.${social === 'twitter' ? 'webp' : 'png'}`} alt={social} className="w-5 h-5 object-contain" />
+              {[
+                { name: "facebook", light: "/Imagenes/facebook.png", dark: "/Imagenes/facebook_darkmode.png" },
+                { name: "instagram", light: "/Imagenes/instagram.png", dark: "/Imagenes/instagram_darkmode.png" },
+                { name: "twitter", light: "/Imagenes/twitter.png", dark: "/Imagenes/X_darkmode.png" }
+              ].map((social) => (
+                <motion.a key={social.name} whileHover={{ y: -5 }} className="flex h-10 w-10 items-center justify-center rounded-xl bg-white dark:bg-white/5 shadow-sm border border-black/5 dark:border-white/10" href="#">
+                  <img src={social.light} alt={social.name} className="w-5 h-5 object-contain block dark:hidden" />
+                  <img src={social.dark} alt={social.name} className="w-5 h-5 object-contain hidden dark:block" />
                 </motion.a>
               ))}
             </div>

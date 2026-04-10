@@ -14,9 +14,11 @@ export default function Login() {
 
   useEffect(() => {
     const savedEmail = localStorage.getItem('remember_email');
+    const savedPassword = localStorage.getItem('remember_password');
     if (savedEmail) {
       setEmail(savedEmail);
       setRememberMe(true);
+      if (savedPassword) setPassword(savedPassword);
     }
   }, []);
 
@@ -46,13 +48,15 @@ export default function Login() {
       }
 
       if (data.data?.token) localStorage.setItem('token', data.data.token);
-      
+
       if (rememberMe) {
         localStorage.setItem('remember_email', email);
+        localStorage.setItem('remember_password', password);
       } else {
         localStorage.removeItem('remember_email');
+        localStorage.removeItem('remember_password');
       }
-      
+
       const username = data.data?.user?.username || data.data?.user?.nombres || "Usuario";
       localStorage.setItem('username', username);
 
@@ -70,16 +74,12 @@ export default function Login() {
   };
 
   const handleForgotPassword = () => {
-    if (!email) {
-      alert("Por favor escribe tu usuario en el campo superior para enviarte el enlace de recuperación.");
-      return;
-    }
-    alert(`Se ha enviado un enlace de recuperación a: ${email}\nPor favor revisa tu correo electrónico.`);
+    navigate("/forgot-password");
   };
 
   return (
     <div className="min-h-screen flex flex-col px-4 sm:px-6 md:px-10 transition-colors duration-500 bg-slate-50 dark:bg-[#0a0a0f] text-slate-900 dark:text-slate-100 font-sans antialiased overflow-x-hidden">
-      
+
       {/* Header Optimizado */}
       <header className="flex justify-between items-center py-4 sm:py-6 max-w-7xl mx-auto w-full">
         <div className="flex items-center gap-2 shrink-0">
@@ -90,7 +90,7 @@ export default function Login() {
             Barber<span className="text-primary">Tech</span>
           </h1>
         </div>
-        
+
         <div className="flex items-center gap-2 sm:gap-4">
           <button
             onClick={toggleTheme}
@@ -98,8 +98,8 @@ export default function Login() {
           >
             {darkMode ? <Sun size={18} fill="currentColor" /> : <Moon size={18} fill="currentColor" />}
           </button>
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="flex items-center gap-1 bg-primary hover:bg-[#7112b3] px-4 py-2 rounded-full text-white font-bold text-[10px] sm:text-xs shadow-md shadow-primary/30 transition-all"
           >
             <ArrowLeft size={14} /> <span className="hidden sm:inline">Volver</span>
@@ -174,11 +174,25 @@ export default function Login() {
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
                     />
+                    <div className="w-5 h-5 rounded-md border-2 border-slate-300 dark:border-white/20 peer-checked:bg-primary peer-checked:border-primary flex items-center justify-center transition-colors">
+                      <svg
+                        className={`w-3 h-3 text-white transition-opacity ${rememberMe ? 'opacity-100' : 'opacity-0'}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
                   </div>
+                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400 group-hover:text-primary transition-colors">
+                    Recordar contraseña
+                  </span>
                 </label>
 
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={handleForgotPassword}
                   className="text-xs font-bold text-primary hover:underline transition-colors focus:outline-none"
                 >

@@ -98,8 +98,7 @@ const ViewClientes: React.FC = () => {
                     </td>
                     <td className="px-8 py-6">
                       <div className="flex justify-center gap-3">
-                        <button onClick={() => handleCambiarRol(user.id, 'Barbero')} className="px-4 py-2 border border-slate-200 dark:border-slate-700 text-orange-600 hover:bg-orange-600 hover:text-white rounded-xl text-[11px] font-black transition-all">HACER BARBERO</button>
-                        <button onClick={() => handleCambiarRol(user.id, 'Admin')} className="px-4 py-2 border border-slate-200 dark:border-slate-700 text-purple-600 hover:bg-purple-600 hover:text-white rounded-xl text-[11px] font-black transition-all">HACER ADMIN</button>
+                        <button onClick={() => handleCambiarRol(user.id, 'Barbero')} className="px-4 py-2 border border-slate-200 dark:border-slate-700 text-purple-600 hover:bg-purple-600 hover:text-white rounded-xl text-[11px] font-black transition-all">HACER BARBERO</button>
                       </div>
                     </td>
                   </tr>
