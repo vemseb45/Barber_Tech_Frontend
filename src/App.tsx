@@ -6,6 +6,10 @@ import Register from "./pages/auth/Registro";
 import DashboardBarbero from "./pages/barbero/DashboardBarbero";
 import DashboardAdmin from "./pages/administrador/DashboardAdmin";
 import DashboardCliente from "./pages/cliente/DashboardCliente";
+import forgot-password from "./pages/auth/cambiarContraseña";
+import reset-password from "./pages/auth/olvidarContraseña";
+
+
 
 function App() {
   useEffect(() => {
@@ -20,6 +24,8 @@ function App() {
       <Route path="/dashboardBarbero" element={<DashboardBarbero />} />
       <Route path="/DashboardAdmin" element={<DashboardAdmin />} />
       <Route path="/DashboardCliente" element={<DashboardCliente />} />
+      <Route path="/forgot-password" element={<cambiarContraseña />} />
+      <Route path="/reset-password" element={<olvidarContraseña />} />
     </Routes>
   );
 }
