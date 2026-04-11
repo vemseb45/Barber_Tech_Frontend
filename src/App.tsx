@@ -7,9 +7,8 @@ import Register from "./pages/auth/Registro";
 import DashboardBarbero from "./pages/barbero/DashboardBarbero";
 import DashboardAdmin from "./pages/administrador/DashboardAdmin";
 import DashboardCliente from "./pages/cliente/DashboardCliente";
-
-import ForgotPassword from "./pages/auth/cambiarContraseña";
-import ResetPassword from "./pages/auth/olvidarContraseña";
+import ForgotPassword from "./pages/auth/cambiarContrasena";
+import ResetPassword from "./pages/auth/olvidarContrasena";
 
 function App() {
   useEffect(() => {
