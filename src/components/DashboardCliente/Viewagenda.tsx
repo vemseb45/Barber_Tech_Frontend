@@ -136,25 +136,25 @@ export default function AgendaCitasCliente() {
     }
   };
   const generarDias = (cantidad = 14) => {
-    const hoy = new Date();
-    const dias = [];
+  const hoy = new Date();
+  const dias = [];
 
-    for (let i = 0; i < cantidad; i++) {
-      const fecha = new Date();
-      fecha.setDate(hoy.getDate() + i);
+  for (let i = 0; i < cantidad; i++) {
+    const fecha = new Date(hoy);
+    fecha.setDate(hoy.getDate() + i);
 
-      dias.push({
-        fecha,
-        label: fecha.toLocaleDateString("es-CO", {
-          weekday: "short",
-        }),
-        dia: fecha.getDate(),
-        iso: fecha.toISOString().split("T")[0],
-      });
-    }
+    dias.push({
+      fecha,
+      label: fecha.toLocaleDateString("es-CO", {
+        weekday: "short",
+      }),
+      dia: fecha.getDate(),
+      iso: fecha.toLocaleDateString("sv-SE"), // ✅ FIX
+    });
+  }
 
-    return dias;
-  };
+  return dias;
+};
 
   return (
     <div className="landing-page py-12 px-4 sm:px-6 flex flex-col items-center justify-center">
