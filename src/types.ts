@@ -2,6 +2,7 @@ export interface Usuario {
   id: number;
   username: string;
   rol: string;
+  cedula?: string;
   // Estos campos son opcionales porque no sé si tu backend los devuelve, pero sirven para la UI
   estado?: 'Activo' | 'Inactivo';
   fechaRegistro?: string;

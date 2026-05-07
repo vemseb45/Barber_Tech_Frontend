@@ -123,7 +123,7 @@ const ViewBarberos: React.FC = () => {
                         </div>
                         <div>
                           <p className="font-bold text-slate-800 dark:text-white">{user.username}</p>
-                          <p className="text-[11px] text-slate-400 font-medium tracking-wider">UID-{user.id}</p>
+                          <p className="text-[11px] text-slate-400 font-medium tracking-wider">{user.cedula ? `C.C. ${user.cedula}` : `C.C. No registrada`}</p>
                         </div>
                       </div>
                     </td>

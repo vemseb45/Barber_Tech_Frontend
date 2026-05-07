@@ -1,91 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Edit3, Trash2, Clock, DollarSign, Sparkles } from 'lucide-react';
+import api from '../../api/axios';
+
+interface BarberiaDetalle {
+  id_barberia: number;
+  nombre: string;
+}
+
+interface EspecialidadDetalle {
+  id_especialidad: number;
+  nombre: string;
+}
 
 interface Servicio {
-  id: string;
+  id_servicio: number;
   nombre: string;
   descripcion: string;
   precio: number;
-  duracion: number;
-  imagen: string;
-  categoria: string;
+  duracion_minutos: number;
+  barberia: number;
+  especialidad: number;
+  barberia_detalle?: BarberiaDetalle;
+  especialidad_detalle?: EspecialidadDetalle;
 }
 
 export default function ViewServicios() {
-  const [servicios, setServicios] = useState<Servicio[]>([
-    {
-      id: '1',
-      nombre: 'Corte Clásico',
-      descripcion: 'Estilo tradicional con tijera y máquina. Incluye lavado y asesoría de imagen.',
-      precio: 25.00,
-      duracion: 30,
-      imagen: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=500&auto=format&fit=crop&q=60',
-      categoria: 'Cabello'
-    },
-    {
-      id: '2',
-      nombre: 'Perfilado de Barba',
-      descripcion: 'Ritual de toalla caliente, aceites esenciales y navaja para un acabado perfecto.',
-      precio: 15.00,
-      duracion: 20,
-      imagen: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=500&auto=format&fit=crop&q=60',
-      categoria: 'Barba'
-    },
-    {
-      id: '3',
-      nombre: 'Limpieza Facial',
-      descripcion: 'Exfoliación profunda con productos premium y mascarilla hidratante.',
-      precio: 35.00,
-      duracion: 45,
-      imagen: 'https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?w=500&auto=format&fit=crop&q=60',
-      categoria: 'Tratamientos'
-    },
-    {
-      id: '4',
-      nombre: 'Corte + Barba',
-      descripcion: 'Nuestro combo estrella. Corte premium y perfilado de barba completo.',
-      precio: 35.00,
-      duracion: 50,
-      imagen: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=500&auto=format&fit=crop&q=60',
-      categoria: 'Combos'
-    },
-    {
-      id: '5',
-      nombre: 'Corte de Niño',
-      descripcion: 'Corte clásico para los más pequeños con paciencia y cuidado.',
-      precio: 15.00,
-      duracion: 30,
-      imagen: 'https://plus.unsplash.com/premium_photo-1661720625480-d699b4836f44?w=500&auto=format&fit=crop&q=60',
-      categoria: 'Cabello'
-    },
-    {
-      id: '6',
-      nombre: 'Tinte Global',
-      descripcion: 'Cambio de color o cobertura de canas con productos de alta calidad.',
-      precio: 45.00,
-      duracion: 60,
-      imagen: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=500&auto=format&fit=crop&q=60',
-      categoria: 'Tratamientos'
-    },
-    {
-      id: '7',
-      nombre: 'Diseño',
-      descripcion: 'Diseños artísticos y líneas precisas en el cabello.',
-      precio: 10.00,
-      duracion: 20,
-      imagen: 'https://plus.unsplash.com/premium_photo-1677444398670-4f5aaaef65eb?w=500&auto=format&fit=crop&q=60',
-      categoria: 'Cabello'
-    },
-    {
-      id: '8',
-      nombre: 'Masaje Capilar',
-      descripcion: 'Masaje relajante en el cuero cabelludo para estimular el crecimiento.',
-      precio: 20.00,
-      duracion: 15,
-      imagen: 'https://images.unsplash.com/photo-1519823551278-64ac92734fb1?w=500&auto=format&fit=crop&q=60',
-      categoria: 'Tratamientos'
-    }
-  ]);
+  const [servicios, setServicios] = useState<Servicio[]>([]);
+  const [barberias, setBarberias] = useState<BarberiaDetalle[]>([]);
+  const [especialidades, setEspecialidades] = useState<EspecialidadDetalle[]>([]);
+  const [cargando, setCargando] = useState(false);
 
   const [activeTab, setActiveTab] = useState('Todos');
   const tabs = ['Todos', 'Cabello', 'Barba', 'Tratamientos', 'Combos'];
@@ -97,21 +40,43 @@ export default function ViewServicios() {
     nombre: '',
     descripcion: '',
     precio: '',
-    duracion: '',
-    imagen: '',
-    categoria: ''
+    duracion_minutos: '',
+    barberia: '',
+    especialidad: ''
   });
+
+  const fetchData = async () => {
+    setCargando(true);
+    try {
+      const [resServicios, resBarberias, resEspecialidades] = await Promise.all([
+        api.get('servicios/'),
+        api.get('barberias/'),
+        api.get('especialidades/')
+      ]);
+      setServicios(resServicios.data.data || resServicios.data || []);
+      setBarberias(resBarberias.data.data || resBarberias.data || []);
+      setEspecialidades(resEspecialidades.data.data || resEspecialidades.data || []);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const handleOpenModal = (servicio: Servicio | null = null) => {
     if (servicio) {
       setEditingService(servicio);
       setFormData({
         nombre: servicio.nombre,
-        descripcion: servicio.descripcion,
+        descripcion: servicio.descripcion || '',
         precio: servicio.precio.toString(),
-        duracion: servicio.duracion.toString(),
-        imagen: servicio.imagen,
-        categoria: servicio.categoria
+        duracion_minutos: servicio.duracion_minutos.toString(),
+        barberia: servicio.barberia.toString(),
+        especialidad: servicio.especialidad.toString()
       });
     } else {
       setEditingService(null);
@@ -119,9 +84,9 @@ export default function ViewServicios() {
         nombre: '',
         descripcion: '',
         precio: '',
-        duracion: '',
-        imagen: '',
-        categoria: 'Cabello'
+        duracion_minutos: '',
+        barberia: barberias.length > 0 ? barberias[0].id_barberia.toString() : '',
+        especialidad: especialidades.length > 0 ? especialidades[0].id_especialidad.toString() : ''
       });
     }
     setIsModalOpen(true);
@@ -136,45 +101,50 @@ export default function ViewServicios() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     
     const numPrecio = parseFloat(formData.precio) || 0;
-    const numDuracion = parseInt(formData.duracion, 10) || 0;
-    const imgUrl = formData.imagen.trim() || 'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=500&auto=format&fit=crop&q=60';
+    const numDuracion = parseInt(formData.duracion_minutos, 10) || 0;
+    const numBarberia = parseInt(formData.barberia, 10);
+    const numEspecialidad = parseInt(formData.especialidad, 10);
 
-    if (editingService) {
-      setServicios(servicios.map(s => s.id === editingService.id ? {
-        ...s,
-        nombre: formData.nombre,
-        descripcion: formData.descripcion,
-        precio: numPrecio,
-        duracion: numDuracion,
-        imagen: imgUrl,
-        categoria: formData.categoria
-      } : s));
-    } else {
-      const newService: Servicio = {
-        id: Date.now().toString(),
-        nombre: formData.nombre,
-        descripcion: formData.descripcion,
-        precio: numPrecio,
-        duracion: numDuracion,
-        imagen: imgUrl,
-        categoria: formData.categoria
-      };
-      setServicios([...servicios, newService]);
+    const payload = {
+      nombre: formData.nombre,
+      descripcion: formData.descripcion,
+      precio: numPrecio,
+      duracion_minutos: numDuracion,
+      barberia: numBarberia,
+      especialidad: numEspecialidad
+    };
+
+    try {
+      if (editingService) {
+        await api.put(`servicios/${editingService.id_servicio}/`, payload);
+      } else {
+        await api.post('servicios/', payload);
+      }
+      fetchData();
+      closeModal();
+    } catch (error) {
+      console.error("Error saving service:", error);
+      alert("Error al guardar el servicio");
     }
-    closeModal();
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: number) => {
     if (window.confirm("¿Estás seguro de que deseas eliminar este servicio del catálogo base?")) {
-      setServicios(servicios.filter(s => s.id !== id));
+      try {
+        await api.delete(`servicios/${id}/`);
+        fetchData();
+      } catch (error) {
+        console.error("Error deleting service:", error);
+        alert("Error al eliminar");
+      }
     }
   };
 
-  const filteredServicios = servicios.filter(s => activeTab === 'Todos' || s.categoria === activeTab);
+  const filteredServicios = servicios.filter(s => activeTab === 'Todos' || (s.especialidad_detalle?.nombre && s.especialidad_detalle.nombre === activeTab));
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-6 duration-700">
@@ -228,35 +198,30 @@ export default function ViewServicios() {
         ) : (
           filteredServicios.map((servicio) => (
             <div 
-              key={servicio.id} 
+              key={servicio.id_servicio} 
               className="group bg-white dark:bg-[#1e293b] rounded-[32px] border border-slate-200 dark:border-slate-700/50 overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 flex flex-col h-full"
             >
               {/* CONTENEDOR DE IMAGEN */}
-              <div className="h-56 relative overflow-hidden">
-                <img
-                  src={servicio.imagen}
-                  alt={servicio.nombre}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out"
-                  referrerPolicy="no-referrer"
-                />
+              <div className="h-56 relative overflow-hidden bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                <Sparkles className="text-slate-300 dark:text-slate-600 w-24 h-24 absolute opacity-20" />
                 
                 {/* CAPA DE GRADIENTE */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                 {/* CATEGORIA BADGE */}
                 <div className="absolute top-4 left-4 font-bold text-[10px] px-3 py-1.5 rounded-full backdrop-blur-md shadow-lg bg-white/90 text-slate-900 border border-black/5 uppercase">
-                  {servicio.categoria}
+                  {servicio.especialidad_detalle?.nombre || 'General'}
                 </div>
 
                 {/* BADGES FLOTANTES */}
                 <div className="absolute top-4 right-4 bg-white dark:bg-slate-900 px-4 py-2 rounded-2xl font-black text-primary text-sm shadow-xl flex items-center gap-1 group-hover:scale-110 transition-transform">
                   <DollarSign size={14} strokeWidth={3} />
-                  {servicio.precio.toFixed(2)}
+                  {Number(servicio.precio).toFixed(2)}
                 </div>
                 
                 <div className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-xl text-white text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 border border-white/10">
                   <Clock size={14} className="text-primary" />
-                  {servicio.duracion} MIN
+                  {servicio.duracion_minutos} MIN
                 </div>
               </div>
 
@@ -281,7 +246,7 @@ export default function ViewServicios() {
                     Modificar
                   </button>
                   <button 
-                    onClick={() => handleDelete(servicio.id)} 
+                    onClick={() => handleDelete(servicio.id_servicio)} 
                     className="p-3 rounded-[16px] border border-red-50 dark:border-red-900/20 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-300 cursor-pointer"
                     title="Eliminar del Sistema"
                   >
@@ -335,19 +300,18 @@ export default function ViewServicios() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Categoría</label>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Especialidad</label>
                     <select 
                       required 
-                      name="categoria" 
-                      value={formData.categoria} 
+                      name="especialidad" 
+                      value={formData.especialidad} 
                       onChange={handleChange} 
                       className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-5 py-3 text-slate-900 dark:text-white focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all cursor-pointer"
                     >
-                      <option value="" disabled>Selecciona categoría</option>
-                      <option value="Cabello">Cabello</option>
-                      <option value="Barba">Barba</option>
-                      <option value="Tratamientos">Tratamientos</option>
-                      <option value="Combos">Combos</option>
+                      <option value="" disabled>Selecciona especialidad</option>
+                      {especialidades.map(esp => (
+                        <option key={esp.id_especialidad} value={esp.id_especialidad}>{esp.nombre}</option>
+                      ))}
                     </select>
                   </div>
                 </div>
@@ -370,8 +334,8 @@ export default function ViewServicios() {
                     <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Duración (min)</label>
                     <input 
                       required 
-                      name="duracion" 
-                      value={formData.duracion} 
+                      name="duracion_minutos" 
+                      value={formData.duracion_minutos} 
                       onChange={handleChange} 
                       type="number" 
                       placeholder="30"
@@ -394,15 +358,19 @@ export default function ViewServicios() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">URL de Imagen (Opcional)</label>
-                  <input 
-                    name="imagen" 
-                    value={formData.imagen} 
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Barbería</label>
+                  <select 
+                    required 
+                    name="barberia" 
+                    value={formData.barberia} 
                     onChange={handleChange} 
-                    type="url" 
-                    placeholder="https://..."
-                    className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-5 py-3 text-slate-900 dark:text-white outline-none focus:border-primary transition-all text-sm" 
-                  />
+                    className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-5 py-3 text-slate-900 dark:text-white outline-none focus:border-primary transition-all text-sm cursor-pointer" 
+                  >
+                    <option value="" disabled>Selecciona una barbería</option>
+                    {barberias.map(b => (
+                      <option key={b.id_barberia} value={b.id_barberia}>{b.nombre}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 

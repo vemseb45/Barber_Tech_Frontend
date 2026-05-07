@@ -78,7 +78,7 @@ const ModalAsignarHorario: React.FC<ModalProps> = ({ isOpen, onClose, barberoId,
     setMensaje(null);
     try {
       const payload = {
-        cedula_barbero: barberoId,
+        barberoId: barberoId,
         dia,
         hora_inicio: `${horaInicio}:00`,
         hora_fin: `${horaFin}:00`
