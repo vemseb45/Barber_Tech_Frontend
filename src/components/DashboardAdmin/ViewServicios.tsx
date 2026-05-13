@@ -31,7 +31,7 @@ export default function ViewServicios() {
   const [cargando, setCargando] = useState(false);
 
   const [activeTab, setActiveTab] = useState('Todos');
-  const tabs = ['Todos', 'Cabello', 'Barba', 'Tratamientos', 'Combos'];
+  const tabs = ['Todos', 'Cabello', 'Barba', 'Tratamientos', 'Combos', 'Otro'];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<Servicio | null>(null);
@@ -109,13 +109,13 @@ export default function ViewServicios() {
     const numBarberia = parseInt(formData.barberia, 10);
     const numEspecialidad = parseInt(formData.especialidad, 10);
 
-    const payload = {
+    const payload: any = {
       nombre: formData.nombre,
       descripcion: formData.descripcion,
       precio: numPrecio,
       duracion_minutos: numDuracion,
       barberia: numBarberia,
-      especialidad: numEspecialidad
+      especialidad: isNaN(numEspecialidad) ? null : numEspecialidad
     };
 
     try {
@@ -124,11 +124,11 @@ export default function ViewServicios() {
       } else {
         await api.post('servicios/', payload);
       }
-      fetchData();
+      await fetchData(); // Await para asegurar que los datos estén listos antes de cerrar
       closeModal();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving service:", error);
-      alert("Error al guardar el servicio");
+      alert(error.response?.data?.message || "Error al guardar el servicio. Verifica que todos los campos sean válidos.");
     }
   };
 
@@ -144,7 +144,11 @@ export default function ViewServicios() {
     }
   };
 
-  const filteredServicios = servicios.filter(s => activeTab === 'Todos' || (s.especialidad_detalle?.nombre && s.especialidad_detalle.nombre === activeTab));
+  const filteredServicios = servicios.filter(s => {
+    if (activeTab === 'Todos') return true;
+    if (activeTab === 'Otro') return !s.especialidad_detalle || !s.especialidad_detalle.nombre;
+    return s.especialidad_detalle?.nombre && s.especialidad_detalle.nombre === activeTab;
+  });
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-6 duration-700">
@@ -286,33 +290,47 @@ export default function ViewServicios() {
             <form onSubmit={handleSave} className="p-8 space-y-6">
               <div className="space-y-4">
                 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Nombre</label>
-                    <input 
-                      required 
-                      name="nombre" 
-                      value={formData.nombre} 
-                      onChange={handleChange} 
-                      type="text" 
-                      placeholder="Ej. Corte Premium"
-                      className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-5 py-3 text-slate-900 dark:text-white focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all" 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Especialidad</label>
-                    <select 
-                      required 
-                      name="especialidad" 
-                      value={formData.especialidad} 
-                      onChange={handleChange} 
-                      className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-5 py-3 text-slate-900 dark:text-white focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all cursor-pointer"
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Nombre</label>
+                  <input 
+                    required 
+                    name="nombre" 
+                    value={formData.nombre} 
+                    onChange={handleChange} 
+                    type="text" 
+                    placeholder="Ej. Corte Premium"
+                    className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-5 py-3 text-slate-900 dark:text-white focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all" 
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 ml-1">Categoría</label>
+                  <div className="flex flex-wrap gap-2">
+                    {especialidades.map(esp => (
+                      <button
+                        key={esp.id_especialidad}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, especialidad: esp.id_especialidad.toString() })}
+                        className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all border ${
+                          formData.especialidad === esp.id_especialidad.toString()
+                            ? 'bg-primary text-white border-primary shadow-md shadow-primary/20 scale-[1.02]'
+                            : 'bg-slate-50 dark:bg-slate-900/50 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-primary/50 hover:bg-slate-100 dark:hover:bg-slate-800'
+                        }`}
+                      >
+                        {esp.nombre}
+                      </button>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, especialidad: '' })}
+                      className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all border ${
+                        formData.especialidad === ''
+                          ? 'bg-primary text-white border-primary shadow-md shadow-primary/20 scale-[1.02]'
+                          : 'bg-slate-50 dark:bg-slate-900/50 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-primary/50 hover:bg-slate-100 dark:hover:bg-slate-800'
+                      }`}
                     >
-                      <option value="" disabled>Selecciona especialidad</option>
-                      {especialidades.map(esp => (
-                        <option key={esp.id_especialidad} value={esp.id_especialidad}>{esp.nombre}</option>
-                      ))}
-                    </select>
+                      Otro
+                    </button>
                   </div>
                 </div>
 
