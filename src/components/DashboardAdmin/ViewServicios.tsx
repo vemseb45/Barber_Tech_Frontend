@@ -28,10 +28,18 @@ export default function ViewServicios() {
   const [servicios, setServicios] = useState<Servicio[]>([]);
   const [barberias, setBarberias] = useState<BarberiaDetalle[]>([]);
   const [especialidades, setEspecialidades] = useState<EspecialidadDetalle[]>([]);
+  
+  const especialidadesFijas = [
+    { id_especialidad: 1, nombre: 'Cabello' },
+    { id_especialidad: 2, nombre: 'Barba' },
+    { id_especialidad: 3, nombre: 'Tratamientos' },
+    { id_especialidad: 4, nombre: 'Combos' }
+  ];
+
   const [cargando, setCargando] = useState(false);
 
   const [activeTab, setActiveTab] = useState('Todos');
-  const tabs = ['Todos', 'Cabello', 'Barba', 'Tratamientos', 'Combos', 'Otro'];
+  const tabs = ['Todos', 'Cabello', 'Barba', 'Tratamientos', 'Combos', 'Otros'];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<Servicio | null>(null);
@@ -146,7 +154,7 @@ export default function ViewServicios() {
 
   const filteredServicios = servicios.filter(s => {
     if (activeTab === 'Todos') return true;
-    if (activeTab === 'Otro') return !s.especialidad_detalle || !s.especialidad_detalle.nombre;
+    if (activeTab === 'Otros') return !s.especialidad_detalle || !s.especialidad_detalle.nombre;
     return s.especialidad_detalle?.nombre && s.especialidad_detalle.nombre === activeTab;
   });
 
@@ -214,7 +222,7 @@ export default function ViewServicios() {
 
                 {/* CATEGORIA BADGE */}
                 <div className="absolute top-4 left-4 font-bold text-[10px] px-3 py-1.5 rounded-full backdrop-blur-md shadow-lg bg-white/90 text-slate-900 border border-black/5 uppercase">
-                  {servicio.especialidad_detalle?.nombre || 'General'}
+                  {servicio.especialidad_detalle?.nombre || 'Otros'}
                 </div>
 
                 {/* BADGES FLOTANTES */}
@@ -306,7 +314,7 @@ export default function ViewServicios() {
                 <div>
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 ml-1">Categoría</label>
                   <div className="flex flex-wrap gap-2">
-                    {especialidades.map(esp => (
+                    {especialidadesFijas.map(esp => (
                       <button
                         key={esp.id_especialidad}
                         type="button"
@@ -329,7 +337,7 @@ export default function ViewServicios() {
                           : 'bg-slate-50 dark:bg-slate-900/50 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-primary/50 hover:bg-slate-100 dark:hover:bg-slate-800'
                       }`}
                     >
-                      Otro
+                      Otros
                     </button>
                   </div>
                 </div>

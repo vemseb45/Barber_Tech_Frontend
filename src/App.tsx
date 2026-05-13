@@ -12,7 +12,14 @@ import ResetPassword from "./pages/auth/olvidarContrasena";
 
 function App() {
   useEffect(() => {
-    document.documentElement.classList.add('dark');
+    if (!localStorage.getItem('theme')) {
+      localStorage.setItem('theme', 'dark');
+    }
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   }, []);
 
   return (

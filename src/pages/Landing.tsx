@@ -17,7 +17,12 @@ const testimonialsData = [
 ];
 
 export default function Landing() {
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') !== 'light';
+    }
+    return true;
+  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeService, setActiveService] = useState(0);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
@@ -47,7 +52,13 @@ export default function Landing() {
   };
 
   const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    if (newMode) {
+      localStorage.setItem('theme', 'dark');
+    } else {
+      localStorage.setItem('theme', 'light');
+    }
   };
 
   useEffect(() => {

@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../layouts/AdminLayout';
 import ViewInicio from '../../components/DashboardAdmin/ViewInicio';
 import ViewClientes from '../../components/DashboardAdmin/ViewUsuarios'; // 👈 Nuevo
-import ViewBarberos from '../../components/DashboardAdmin/ViewBarberos'; // 👈 Nuevo
+import ViewBarberos from '../../components/DashboardAdmin/ViewBarberos';
 import ViewServicios from '../../components/DashboardAdmin/ViewServicios';
+import ViewAnaliticas from '../../components/DashboardAdmin/ViewAnaliticas';
 import ViewBarberias from '../../components/DashboardAdmin/ViewBarberias';
 import { motion, AnimatePresence } from 'framer-motion'; 
 import type { AdminView } from '../../types';
@@ -45,7 +46,7 @@ const DashboardAdmin: React.FC = () => {
                 return <ViewBarberias />;
               
               case 'Reportes':
-                return <PlaceholderView icon="📊" title="Módulo de Reportes" />;
+                return <ViewAnaliticas />;
               
               default:
                 return <ViewInicio />;
