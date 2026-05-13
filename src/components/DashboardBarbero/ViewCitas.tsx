@@ -9,6 +9,7 @@ interface Cita {
   fecha: string;
   hora: string;
   id_servicio: number;
+  nombre_servicio?: string;
   estado?: string;
 }
 
@@ -58,6 +59,9 @@ export default function ViewCitas() {
   };
 
   const handleCancelar = async (id: number) => {
+    if (!window.confirm("¿Estás seguro de que deseas cancelar esta cita? Esta acción no se puede deshacer.")) {
+      return;
+    }
     const token = localStorage.getItem("token");
     try {
       const res = await fetch(`http://127.0.0.1:8000/api/cita/cancelar/${id}/`, {
@@ -201,8 +205,8 @@ export default function ViewCitas() {
                           <Scissors size={18} />
                         </div>
                         <div>
-                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">ID Servicio</p>
-                          <p className="text-sm font-bold text-slate-800 dark:text-slate-200">Ref: #{cita.id_servicio}</p>
+                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Servicio</p>
+                          <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{cita.nombre_servicio || `Ref: #${cita.id_servicio}`}</p>
                         </div>
                       </div>
                     </div>

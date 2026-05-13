@@ -162,7 +162,7 @@ export default function ViewInicioCliente({ onViewChange }: ViewInicioProps) {
               <div className="space-y-4 flex-1">
                 <div>
                   <h4 className="text-xl font-bold dark:text-white">
-                    {proximaCita.servicio?.nombre || "Servicio"}
+                    {proximaCita.servicio_nombre || proximaCita.servicio?.nombre || "Servicio"}
                   </h4>
                   <p className="text-slate-500 text-sm font-medium">
                     Con el Master Barber: <span className="text-primary">

@@ -12,9 +12,9 @@ interface BarberoLayoutProps {
 const BarberoLayout: React.FC<BarberoLayoutProps> = ({ children, activeView, onViewChange }) => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
-      return document.documentElement.classList.contains('dark');
+      return localStorage.getItem('theme') !== 'light';
     }
-    return false;
+    return true;
   });
 
   const toggleTheme = () => {
@@ -31,9 +31,12 @@ const BarberoLayout: React.FC<BarberoLayoutProps> = ({ children, activeView, onV
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
+    if (savedTheme !== 'light') {
       document.documentElement.classList.add('dark');
       setIsDarkMode(true);
+    } else {
+      document.documentElement.classList.remove('dark');
+      setIsDarkMode(false);
     }
   }, []);
 

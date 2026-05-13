@@ -25,14 +25,14 @@ export default function ViewInicio({ onViewChange }: ViewInicioProps) {
   const [proximasCitas, setProximasCitas] = useState<any[]>([]);
   const [miIdBarbero, setMiIdBarbero] = useState<string | null>(null);
 
-  const stats = {
-    citasHoy: 12,
-    citasCrecimiento: 15,
+  const [stats, setStats] = useState({
+    citasHoy: 0,
+    citasCrecimiento: 0,
     ganancias: 450.00,
     gananciasCrecimiento: 10,
-    nuevosClientes: 4,
-    clientesCrecimiento: 5
-  };
+    nuevosClientes: 0,
+    clientesCrecimiento: 0
+  });
 
   const tipsDelDia = [
     "Planifica tu semana y revisa el inventario. ¡La preparación es clave!",
@@ -67,11 +67,13 @@ export default function ViewInicio({ onViewChange }: ViewInicioProps) {
     const fetchCitas = async () => {
       try {
         if (!miIdBarbero) return;
-        const hoy = new Date();
-        const fechaInicio = hoy.toISOString().split("T")[0];
+        const ayer = new Date();
+        ayer.setDate(ayer.getDate() - 1);
+        const fechaInicio = ayer.toISOString().split("T")[0]; // Desde ayer
+
         const futura = new Date();
         futura.setDate(futura.getDate() + 7);
-        const fechaFin = futura.toISOString().split("T")[0];
+        const fechaFin = futura.toISOString().split("T")[0]; // Hasta en 7 días
 
         const res = await fetch(
           `http://127.0.0.1:8000/api/agenda/miAgenda/?barberoId=${miIdBarbero}&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`
@@ -80,15 +82,44 @@ export default function ViewInicio({ onViewChange }: ViewInicioProps) {
         const lista = data.data || [];
         const ahora = new Date();
 
+        // 1. Calcular KPIs Reales (Hoy vs Ayer)
+        const hoy = new Date();
+        const hoyStr = hoy.toISOString().split("T")[0];
+        const ayerStr = ayer.toISOString().split("T")[0];
+
+        const citasHoyArr = lista.filter((c: any) => c.fecha === hoyStr);
+        const citasAyerArr = lista.filter((c: any) => c.fecha === ayerStr);
+
+        const countHoy = citasHoyArr.length;
+        const countAyer = citasAyerArr.length;
+        let citasCrecimiento = 0;
+        if (countAyer === 0 && countHoy > 0) citasCrecimiento = 100;
+        else if (countAyer > 0) citasCrecimiento = Math.round(((countHoy - countAyer) / countAyer) * 100);
+
+        const clientesHoy = new Set(citasHoyArr.map((c: any) => c.cedula_cliente_id)).size;
+        const clientesAyer = new Set(citasAyerArr.map((c: any) => c.cedula_cliente_id)).size;
+        let clientesCrecimiento = 0;
+        if (clientesAyer === 0 && clientesHoy > 0) clientesCrecimiento = 100;
+        else if (clientesAyer > 0) clientesCrecimiento = Math.round(((clientesHoy - clientesAyer) / clientesAyer) * 100);
+
+        setStats(prev => ({
+          ...prev,
+          citasHoy: countHoy,
+          citasCrecimiento,
+          nuevosClientes: clientesHoy,
+          clientesCrecimiento
+        }));
+
+        // 2. Filtrar próximas citas (solo futuras a partir de este instante)
         const citas = lista
           .map((cita: any) => ({
             cedula: cita.cedula_cliente_id,
-            cliente: `Cliente ${cita.cedula_cliente_id}`,
-            servicio: cita.id_servicio || 'Servicio',
+            cliente: cita.cliente_nombre || `Cliente ${cita.cedula_cliente_id}`,
+            servicio: cita.nombre_servicio || 'Servicio',
             fecha: new Date(`${cita.fecha}T${cita.hora}`),
             estadoBase: cita.estado || 'Pendiente'
           }))
-          .filter((cita: any) => cita.fecha.getTime() > ahora.getTime())
+          .filter((cita: any) => cita.fecha.getTime() > ahora.getTime() && cita.fecha.toISOString().split("T")[0] >= hoyStr)
           .sort((a: any, b: any) => a.fecha.getTime() - b.fecha.getTime())
           .slice(0, 3);
 
@@ -167,7 +198,7 @@ export default function ViewInicio({ onViewChange }: ViewInicioProps) {
               <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] rounded-md font-black uppercase tracking-widest">Top 3</span>
             </h4>
             <button
-              onClick={() => onViewChange('Pendientes' as any)}
+              onClick={() => onViewChange('Citas' as any)}
               className="text-primary text-xs font-black uppercase tracking-widest hover:opacity-70 flex items-center gap-2 transition-all"
             >
               Ver Todas <ArrowRight size={14} />
@@ -189,25 +220,28 @@ export default function ViewInicio({ onViewChange }: ViewInicioProps) {
                       <span className="text-[9px] font-black text-primary uppercase">HORA</span>
                     </div>
                     <div>
-                      <h5 className="font-black text-slate-800 dark:text-white text-sm uppercase tracking-tight group-hover:text-primary transition-colors">
+                      <h5 className="font-black text-slate-800 dark:text-white text-lg tracking-tight group-hover:text-primary transition-colors">
                         {cita.cliente}
                       </h5>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Briefcase size={12} className="text-slate-400" />
-                        <span className="text-xs font-bold text-slate-500">{cita.servicio}</span>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Cédula: {cita.cedula}</span>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="flex items-center">
+                    <div className="flex items-center">
                     {muyProximo ? (
                       <div className="flex items-center gap-2 px-4 py-2 bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-xl font-black text-[10px] uppercase animate-pulse">
                          <div className="w-2 h-2 rounded-full bg-rose-500" />
                          En {faltanMinutos} min
                       </div>
                     ) : (
-                      <span className="px-4 py-2 bg-white dark:bg-slate-800 text-slate-400 rounded-xl font-black text-[10px] uppercase tracking-widest border border-slate-100 dark:border-slate-700">
-                        {cita.estadoBase}
+                      <span className={`px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest border ${
+                        cita.estadoBase === 'PENT' 
+                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' 
+                          : 'bg-white dark:bg-slate-800 text-slate-400 border-slate-100 dark:border-slate-700'
+                      }`}>
+                        {cita.estadoBase === 'PENT' ? 'En espera' : cita.estadoBase}
                       </span>
                     )}
                   </div>

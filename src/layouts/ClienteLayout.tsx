@@ -10,16 +10,16 @@ interface ClienteLayoutProps {
 
 const ClienteLayout: React.FC<ClienteLayoutProps> = ({ children, activeView, onViewChange }) => {
 
-  // ✅ estado correcto
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    return localStorage.getItem('theme') === 'dark';
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') !== 'light';
+    }
+    return true;
   });
 
-  // ✅ función corregida
   const toggleTheme = () => {
     const newMode = !isDarkMode;
     setIsDarkMode(newMode);
-
     if (newMode) {
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
@@ -29,14 +29,16 @@ const ClienteLayout: React.FC<ClienteLayoutProps> = ({ children, activeView, onV
     }
   };
 
-  // ✅ sincronización inicial
   useEffect(() => {
-    if (isDarkMode) {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme !== 'light') {
       document.documentElement.classList.add('dark');
+      setIsDarkMode(true);
     } else {
       document.documentElement.classList.remove('dark');
+      setIsDarkMode(false);
     }
-  }, [isDarkMode]);
+  }, []);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 

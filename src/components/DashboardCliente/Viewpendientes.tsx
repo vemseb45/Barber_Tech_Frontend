@@ -7,8 +7,9 @@ interface Cita {
   id: number;
   fecha: string;
   hora: string;
-  servicio: { nombre: string; precio: string; duracion_minutos: number };
-  cedula_barbero: { username: string };
+  servicio_nombre?: string;
+  servicio_precio?: string | number;
+  barbero_nombre?: string;
 }
 
 const ViewPendientes = () => {
@@ -45,6 +46,9 @@ const ViewPendientes = () => {
   };
 
   const handleCancelar = async (cita: Cita) => {
+    if (!window.confirm("¿Estás seguro de que deseas cancelar esta cita? Esta acción no se puede deshacer.")) {
+      return;
+    }
     const token = localStorage.getItem("token");
 
     // 🔥 convertir a fecha real
@@ -196,7 +200,7 @@ const ViewPendientes = () => {
                         Próximamente
                       </span>
                       <h4 className="text-xl font-bold text-slate-800 dark:text-white group-hover:text-primary transition-colors">
-                        {cita.servicio?.nombre || "Corte de Cabello"}
+                        {cita.servicio_nombre || "Corte de Cabello"}
                       </h4>
                     </div>
                     <div className="flex gap-2">
@@ -222,7 +226,7 @@ const ViewPendientes = () => {
                       <div>
                         <p className="text-[10px] uppercase font-bold text-slate-400 leading-none mb-1">Barbero</p>
                         <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
-                          {cita.cedula_barbero?.username || "Especialista"}
+                          {cita.barbero_nombre || "Especialista"}
                         </p>
                       </div>
                     </div>
@@ -234,7 +238,7 @@ const ViewPendientes = () => {
                       <div>
                         <p className="text-[10px] uppercase font-bold text-slate-400 leading-none mb-1">Inversión</p>
                         <p className="text-sm font-bold text-primary">
-                          ${Number(cita.servicio?.precio).toLocaleString('es-CO')}
+                          ${Number(cita.servicio_precio || 0).toLocaleString('es-CO')}
                         </p>
                       </div>
                     </div>

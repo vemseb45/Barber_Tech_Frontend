@@ -6,8 +6,9 @@ interface Cita {
   id: number;
   fecha: string;
   hora: string;
-  servicio: { nombre: string; precio: string };
-  cedula_barbero: { username: string };
+  servicio_nombre?: string;
+  servicio_precio?: string | number;
+  barbero_nombre?: string;
 }
 
 const ViewTerminadas = () => {
@@ -122,7 +123,7 @@ const ViewTerminadas = () => {
                     <div className="col-span-2 lg:col-span-1">
                       <p className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 mb-1">Servicio Realizado</p>
                       <h4 className="font-black text-slate-800 dark:text-slate-100 text-lg leading-tight group-hover:text-primary transition-colors">
-                        {cita.servicio?.nombre || "Corte Standard"}
+                        {cita.servicio_nombre || "Corte Standard"}
                       </h4>
                     </div>
 
@@ -132,7 +133,7 @@ const ViewTerminadas = () => {
                         <div className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
                            <User size={12} className="text-slate-500" />
                         </div>
-                        <span className="text-sm font-bold">{cita.cedula_barbero?.username}</span>
+                        <span className="text-sm font-bold">{cita.barbero_nombre || "Especialista"}</span>
                       </div>
                     </div>
 
@@ -158,7 +159,7 @@ const ViewTerminadas = () => {
                 <div className="flex items-center justify-between md:flex-col md:items-end md:justify-center border-t md:border-none pt-4 md:pt-0 gap-2">
                   <div className="flex flex-col items-start md:items-end">
                     <span className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">
-                      ${Number(cita.servicio?.precio).toLocaleString('es-CO')}
+                      ${Number(cita.servicio_precio || 0).toLocaleString('es-CO')}
                     </span>
                     <div className="flex items-center gap-1.5 px-3 py-1 bg-green-100 dark:bg-green-500/10 text-green-600 dark:text-green-400 rounded-full">
                        <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
