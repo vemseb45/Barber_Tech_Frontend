@@ -1,19 +1,17 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, AlertCircle, CheckCircle2, Mail, Hammer } from "lucide-react";
+import { ArrowLeft, AlertCircle, Mail, Hammer } from "lucide-react";
 
 export default function ForgotPassword() {
-
   // --- ESTADOS DE CONTROL ---
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [email, setEmail] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-
-  // --- LÓGICA DE VALIDACIÓN (FRONTEND) ---
-  const validateEmail = (value) => {
+  // --- LÓGICA DE VALIDACIÓN ---
+  
+  const validateEmail = (value: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     
     if (!value) {
@@ -25,25 +23,22 @@ export default function ForgotPassword() {
     }
   };
 
-  const handleEmailChange = (e) => {
+  // Añadimos el tipo al evento de cambio
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setEmail(value);
     validateEmail(value);
   };
 
-
-  // --- MANEJADOR SIMULADO (SIN BACKEND) ---
-  const handleSubmit = async (e) => {
+  // --- MANEJADOR SIMULADO ---
+  const handleSubmit = async (e: React.FormEvent) => {
     if (e) e.preventDefault();
     if (error || !email) return;
 
     setIsLoading(true);
     
-    // Simulamos una demora de red
     setTimeout(() => {
       setIsLoading(false);
-
-      // Mostramos un error controlado indicando que la función está en desarrollo
       setError("Esta función estará disponible próximamente (Mantenimiento del servidor)");
     }, 1500);
   };
@@ -51,7 +46,7 @@ export default function ForgotPassword() {
   return (
     <div className="min-h-screen flex flex-col px-4 bg-slate-50 dark:bg-[#0a0a0f] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-500">
       
-      
+      {/* --- CABECERA --- */}
       <header className="flex justify-between items-center py-6 max-w-7xl mx-auto w-full">
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 bg-[#9333ea] text-white rounded-xl flex items-center justify-center font-black shadow-lg shadow-[#9333ea]/30 text-lg">
@@ -70,7 +65,7 @@ export default function ForgotPassword() {
         </Link>
       </header>
 
-      
+      {/* --- FORMULARIO --- */}
       <main className="flex-grow flex justify-center items-center py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -93,7 +88,6 @@ export default function ForgotPassword() {
               Ingresa tu correo para recibir las instrucciones (Módulo en Desarrollo).
             </p>
 
-            
             <div className="space-y-6 text-left">
               <div>
                 <label className="text-[10px] font-black mb-2 block ml-1 uppercase opacity-60">
@@ -116,7 +110,6 @@ export default function ForgotPassword() {
                     required
                   />
                 </div>
-                
                 
                 <AnimatePresence>
                   {error && (
