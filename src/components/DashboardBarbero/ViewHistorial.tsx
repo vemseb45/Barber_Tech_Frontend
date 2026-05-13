@@ -74,7 +74,7 @@ export default function ViewHistorial() {
           <div>
             <p className="text-[11px] font-black uppercase tracking-widest text-slate-400">Total Generado</p>
             <h3 className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
-              ${totalGenerado.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              ${totalGenerado.toLocaleString('es-CO')}
             </h3>
           </div>
           <div className="absolute top-[-10px] right-[-10px] opacity-[0.03] dark:opacity-[0.05] text-emerald-500 rotate-12">
@@ -138,7 +138,7 @@ export default function ViewHistorial() {
                     </td>
                     <td className="px-8 py-6 text-right">
                       <span className="font-black text-emerald-600 dark:text-emerald-400">
-                        +${item.precio.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        +${item.precio.toLocaleString('es-CO')}
                       </span>
                     </td>
                     <td className="px-8 py-6 text-center">

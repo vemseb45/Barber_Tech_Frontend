@@ -228,7 +228,7 @@ export default function ViewServicios() {
                 {/* BADGES FLOTANTES */}
                 <div className="absolute top-4 right-4 bg-white dark:bg-slate-900 px-4 py-2 rounded-2xl font-black text-primary text-sm shadow-xl flex items-center gap-1 group-hover:scale-110 transition-transform">
                   <DollarSign size={14} strokeWidth={3} />
-                  {Number(servicio.precio).toFixed(2)}
+                  {Number(servicio.precio).toLocaleString('es-CO')}
                 </div>
                 
                 <div className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-xl text-white text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 border border-white/10">

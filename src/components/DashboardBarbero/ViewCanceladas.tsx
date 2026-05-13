@@ -73,7 +73,7 @@ export default function ViewCanceladas() {
           <div>
             <p className="text-[11px] font-black uppercase tracking-widest text-slate-400">Monto No Percibido</p>
             <h3 className="text-2xl font-black text-slate-800 dark:text-white">
-              ${totalPerdido.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              ${totalPerdido.toLocaleString('es-CO')}
             </h3>
           </div>
           <div className="absolute top-[-10px] right-[-10px] opacity-[0.03] dark:opacity-[0.05] text-red-500 rotate-12">
@@ -134,7 +134,7 @@ export default function ViewCanceladas() {
                     </td>
                     <td className="px-8 py-6 text-right">
                       <span className="font-black text-slate-900 dark:text-white">
-                        ${item.precio.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        ${item.precio.toLocaleString('es-CO')}
                       </span>
                     </td>
                     <td className="px-8 py-6 text-center">

@@ -158,7 +158,7 @@ const ViewTerminadas = () => {
                 <div className="flex items-center justify-between md:flex-col md:items-end md:justify-center border-t md:border-none pt-4 md:pt-0 gap-2">
                   <div className="flex flex-col items-start md:items-end">
                     <span className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">
-                      ${Number(cita.servicio?.precio).toLocaleString()}
+                      ${Number(cita.servicio?.precio).toLocaleString('es-CO')}
                     </span>
                     <div className="flex items-center gap-1.5 px-3 py-1 bg-green-100 dark:bg-green-500/10 text-green-600 dark:text-green-400 rounded-full">
                        <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />

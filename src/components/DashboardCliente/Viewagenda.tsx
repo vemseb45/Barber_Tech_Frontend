@@ -210,7 +210,7 @@ export default function AgendaCitasCliente() {
                     <p className="text-xs opacity-70">{serv.duracion_minutos} min</p>
                   </div>
                   <p className="font-black text-primary">
-                    ${Number(serv.precio).toLocaleString()}
+                    ${Number(serv.precio).toLocaleString('es-CO')}
                   </p>
                 </button>
               ))}

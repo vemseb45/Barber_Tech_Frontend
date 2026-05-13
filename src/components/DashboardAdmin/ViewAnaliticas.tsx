@@ -1,27 +1,56 @@
-import React, { useState } from 'react';
-import { Sparkles, TrendingUp, Users, DollarSign, Download, MoreVertical, Star } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Sparkles, TrendingUp, Users, DollarSign, Download, MoreVertical, Star, Loader2, AlertCircle } from 'lucide-react';
+import { getAdminAnalytics } from '../../api/analiticas';
+import type { AdminAnalyticsData } from '../../api/analiticas';
 
 export default function ViewAnaliticas() {
   const [activeTab, setActiveTab] = useState('Últimos 30 días');
   const tabs = ['Últimos 30 días', 'Mes anterior', 'Este año'];
 
-  // Datos simulados
-  const popularServices = [
-    { name: 'Corte de Cabello', value: 65, color: 'bg-[#5213fc]' },
-    { name: 'Marcado de Barba', value: 42, color: 'bg-purple-500' },
-    { name: 'Tratamiento Facial', value: 40, color: 'bg-blue-500' },
-    { name: 'Teñido', value: 24, color: 'bg-slate-400' },
-  ];
+  const [data, setData] = useState<AdminAnalyticsData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const barbersPerformance = [
-    { name: 'Carlos Mendoza', role: 'Especialista en Barba', citas: 124, completadas: 95, rating: 4.9, ingresos: 3120.00, avatar: 'https://i.pravatar.cc/150?u=carlos' },
-    { name: 'Roberto García', role: 'Cortes Clásicos', citas: 98, completadas: 88, rating: 4.8, ingresos: 2450.00, avatar: 'https://i.pravatar.cc/150?u=roberto' },
-    { name: 'Diego Ruiz', role: 'Tendencias Urbanas', citas: 115, completadas: 92, rating: 4.7, ingresos: 2850.00, avatar: 'https://i.pravatar.cc/150?u=diego' },
-  ];
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const result = await getAdminAnalytics(activeTab);
+        setData(result);
+      } catch (err: any) {
+        setError(err.message || 'Error al cargar las analíticas');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Datos para el gráfico simulado (altura en porcentajes)
-  const chartData = [20, 35, 25, 45, 60, 50, 75];
-  const chartLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+    fetchAnalytics();
+  }, [activeTab]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] text-primary">
+        <Loader2 className="w-12 h-12 animate-spin mb-4" />
+        <p className="text-lg font-medium text-slate-500 dark:text-slate-400">Cargando analíticas...</p>
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] text-red-500">
+        <AlertCircle className="w-12 h-12 mb-4" />
+        <p className="text-lg font-medium">{error || 'No se pudieron cargar los datos.'}</p>
+        <button
+          onClick={() => setActiveTab(activeTab)}
+          className="mt-4 px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+        >
+          Reintentar
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-6 duration-700">
@@ -73,7 +102,7 @@ export default function ViewAnaliticas() {
           </div>
           <div>
             <p className="text-slate-500 dark:text-slate-400 text-sm font-bold mb-1">Total Ganado</p>
-            <h3 className="text-3xl font-black text-slate-800 dark:text-white">$50.000</h3>
+            <h3 className="text-3xl font-black text-slate-800 dark:text-white">${data.total_ganado.toLocaleString('es-CO')}</h3>
           </div>
         </div>
 
@@ -88,7 +117,7 @@ export default function ViewAnaliticas() {
           </div>
           <div>
             <p className="text-slate-500 dark:text-slate-400 text-sm font-bold mb-1">Clientes Nuevos</p>
-            <h3 className="text-3xl font-black text-slate-800 dark:text-white">342</h3>
+            <h3 className="text-3xl font-black text-slate-800 dark:text-white">{data.clientes_nuevos}</h3>
           </div>
         </div>
 
@@ -100,7 +129,7 @@ export default function ViewAnaliticas() {
           </div>
           <div>
             <p className="text-slate-500 dark:text-slate-400 text-sm font-bold mb-1">Valor promedio por día</p>
-            <h3 className="text-3xl font-black text-slate-800 dark:text-white">$140.000</h3>
+            <h3 className="text-3xl font-black text-slate-800 dark:text-white">${data.valor_promedio_dia.toLocaleString('es-CO', { maximumFractionDigits: 0 })}</h3>
           </div>
         </div>
       </div>
@@ -115,17 +144,17 @@ export default function ViewAnaliticas() {
           </div>
 
           <div className="flex-1 flex items-end justify-between gap-3 px-2">
-            {chartData.map((val, i) => (
+            {data.chart_data.map((val, i) => (
               <div key={i} className="flex-1 flex flex-col items-center gap-4 group">
                 <div
                   className="w-full rounded-t-2xl transition-all duration-1000 ease-out relative bg-gradient-to-t from-slate-400 dark:from-white/20 to-primary shadow-sm border-t border-white/10"
                   style={{ height: `${val * 2.2}px` }}
                 >
-                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold py-1.5 px-2.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-1 shadow-xl z-20">
+                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold py-1.5 px-2.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-1 shadow-xl z-20 whitespace-nowrap">
                     {val}%
                   </div>
                 </div>
-                <span className="text-xs font-bold text-slate-400">{chartLabels[i]}</span>
+                <span className="text-xs font-bold text-slate-400">{data.chart_labels[i]}</span>
               </div>
             ))}
           </div>
@@ -139,17 +168,21 @@ export default function ViewAnaliticas() {
           </div>
 
           <div className="space-y-6">
-            {popularServices.map((service, idx) => (
-              <div key={idx}>
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="font-bold text-slate-700 dark:text-slate-200">{service.name}</span>
-                  <span className="font-bold text-slate-900 dark:text-white">{service.value}%</span>
+            {data.popular_services.length === 0 ? (
+              <p className="text-sm text-slate-500">No hay datos suficientes para mostrar.</p>
+            ) : (
+              data.popular_services.map((service, idx) => (
+                <div key={idx}>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="font-bold text-slate-700 dark:text-slate-200">{service.name}</span>
+                    <span className="font-bold text-slate-900 dark:text-white">{service.value}%</span>
+                  </div>
+                  <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                    <div className={`${service.color} h-2.5 rounded-full transition-all duration-1000`} style={{ width: `${service.value}%` }}></div>
+                  </div>
                 </div>
-                <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
-                  <div className={`${service.color} h-2.5 rounded-full transition-all duration-1000`} style={{ width: `${service.value}%` }}></div>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
@@ -174,39 +207,47 @@ export default function ViewAnaliticas() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
-              {barbersPerformance.map((barber, i) => (
-                <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
-                  <td className="py-4 pl-2">
-                    <div className="flex items-center gap-3">
-                      <img src={barber.avatar} alt={barber.name} className="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-700" />
-                      <div>
-                        <p className="font-bold text-slate-900 dark:text-white">{barber.name}</p>
-                        <p className="text-xs text-slate-500">{barber.role}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-4 font-bold text-slate-700 dark:text-slate-300">
-                    {barber.citas}
-                  </td>
-                  <td className="py-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-24 bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                        <div className="bg-emerald-500 h-1.5 rounded-full" style={{ width: `${(barber.completadas / barber.citas) * 100}%` }}></div>
-                      </div>
-                      <span className="text-xs font-bold text-slate-500">{Math.round((barber.completadas / barber.citas) * 100)}%</span>
-                    </div>
-                  </td>
-                  <td className="py-4">
-                    <div className="flex items-center gap-1 font-bold text-slate-700 dark:text-slate-300">
-                      <Star size={14} className="text-amber-500 fill-amber-500" />
-                      {barber.rating}
-                    </div>
-                  </td>
-                  <td className="py-4 text-right pr-2 font-black text-slate-900 dark:text-white">
-                    ${barber.ingresos.toFixed(2)}
+              {data.barbers_performance.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-8 text-center text-slate-500">
+                    No se encontraron barberos con citas en este periodo.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                data.barbers_performance.map((barber, i) => (
+                  <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+                    <td className="py-4 pl-2">
+                      <div className="flex items-center gap-3">
+                        <img src={barber.avatar} alt={barber.name} className="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-700" />
+                        <div>
+                          <p className="font-bold text-slate-900 dark:text-white">{barber.name}</p>
+                          <p className="text-xs text-slate-500">{barber.role}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4 font-bold text-slate-700 dark:text-slate-300">
+                      {barber.citas}
+                    </td>
+                    <td className="py-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-24 bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                          <div className="bg-emerald-500 h-1.5 rounded-full" style={{ width: `${barber.citas > 0 ? (barber.completadas / barber.citas) * 100 : 0}%` }}></div>
+                        </div>
+                        <span className="text-xs font-bold text-slate-500">{barber.citas > 0 ? Math.round((barber.completadas / barber.citas) * 100) : 0}%</span>
+                      </div>
+                    </td>
+                    <td className="py-4">
+                      <div className="flex items-center gap-1 font-bold text-slate-700 dark:text-slate-300">
+                        <Star size={14} className="text-amber-500 fill-amber-500" />
+                        {barber.rating}
+                      </div>
+                    </td>
+                    <td className="py-4 text-right pr-2 font-black text-slate-900 dark:text-white">
+                      ${barber.ingresos.toLocaleString('es-CO', { maximumFractionDigits: 0 })}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

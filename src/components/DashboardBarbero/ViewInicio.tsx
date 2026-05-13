@@ -108,14 +108,14 @@ export default function ViewInicio({ onViewChange }: ViewInicioProps) {
     <div className="max-w-7xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
       
       {/* WELCOME SECTION */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-gradient-to-r from-slate-900 to-slate-800 dark:from-slate-800 dark:to-slate-900 p-8 rounded-[40px] shadow-2xl shadow-slate-200 dark:shadow-none relative overflow-hidden">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-gradient-to-r from-slate-100 to-white dark:from-slate-900 dark:to-slate-800 p-8 rounded-[40px] shadow-sm border border-slate-200 dark:border-transparent dark:shadow-none relative overflow-hidden">
         <div className="relative z-10">
-          <h2 className="text-4xl font-black text-white tracking-tight">
+          <h2 className="text-4xl font-black text-slate-800 dark:text-white tracking-tight">
             ¡Buen día, {username.split(' ')[0]}!
           </h2>
-          <p className="text-slate-300 mt-2 font-medium flex items-center gap-2">
+          <p className="text-slate-500 dark:text-slate-300 mt-2 font-medium flex items-center gap-2">
             <Clock size={16} className="text-primary" />
-            Tienes <span className="text-white font-bold">{stats.citasHoy} citas</span> programadas para hoy.
+            Tienes <span className="text-slate-800 dark:text-white font-bold">{stats.citasHoy} citas</span> programadas para hoy.
           </p>
         </div>
         <button

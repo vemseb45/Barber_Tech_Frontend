@@ -5,9 +5,9 @@ import "../index.css";
 import { Sun, Moon, Menu, X, ChevronLeft, ChevronRight } from "lucide-react";
 
 const servicesData = [
-  { img: "/Imagenes/cortecabello.png", title: "Corte de Cabello", desc: "Cortes clasicos y de tendencia.", price: "$25", time: "45 min" },
-  { img: "/Imagenes/barba.png", title: "Arreglo de Barba", desc: "Perfilado preciso e hidratacion.", price: "$15", time: "30 min" },
-  { img: "/Imagenes/tratamiento.png", title: "Tratamiento Facial", desc: "Limpieza profunda y masaje.", price: "$20", time: "40 min" }
+  { img: "/Imagenes/cortecabello.png", title: "Corte de Cabello", desc: "Cortes clasicos y de tendencia.", price: "$25.000", time: "45 min" },
+  { img: "/Imagenes/barba.png", title: "Arreglo de Barba", desc: "Perfilado preciso e hidratacion.", price: "$15.000", time: "30 min" },
+  { img: "/Imagenes/tratamiento.png", title: "Tratamiento Facial", desc: "Limpieza profunda y masaje.", price: "$20.000", time: "40 min" }
 ];
 
 const testimonialsData = [

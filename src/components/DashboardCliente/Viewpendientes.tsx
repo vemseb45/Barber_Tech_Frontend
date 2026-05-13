@@ -234,7 +234,7 @@ const ViewPendientes = () => {
                       <div>
                         <p className="text-[10px] uppercase font-bold text-slate-400 leading-none mb-1">Inversión</p>
                         <p className="text-sm font-bold text-primary">
-                          ${Number(cita.servicio?.precio).toLocaleString()}
+                          ${Number(cita.servicio?.precio).toLocaleString('es-CO')}
                         </p>
                       </div>
                     </div>

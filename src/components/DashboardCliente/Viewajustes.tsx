@@ -95,13 +95,13 @@ export default function ViewAjustesCliente() {
             </div>
           </div>
 
-          <div className="p-6 bg-gradient-to-br from-slate-800 to-slate-900 rounded-[28px] text-white shadow-xl">
+          <div className="p-6 bg-gradient-to-br from-slate-100 to-white dark:from-slate-800 dark:to-slate-900 rounded-[28px] text-slate-800 dark:text-white shadow-xl border border-slate-200 dark:border-transparent">
              <div className="flex items-center gap-3 mb-4">
                 <CreditCard className="text-primary" />
-                <span className="text-xs font-bold uppercase tracking-widest">Método de pago</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-slate-700 dark:text-white">Método de pago</span>
              </div>
-             <p className="text-sm font-medium opacity-70">Visa terminada en •••• 4242</p>
-             <button className="mt-4 text-[10px] font-black uppercase text-primary hover:text-white transition-colors">Cambiar tarjeta</button>
+             <p className="text-sm font-medium text-slate-500 dark:text-white dark:opacity-70">Visa terminada en •••• 4242</p>
+             <button className="mt-4 text-[10px] font-black uppercase text-primary hover:text-slate-900 dark:hover:text-white transition-colors">Cambiar tarjeta</button>
           </div>
         </div>
 
