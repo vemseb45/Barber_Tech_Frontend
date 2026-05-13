@@ -2,8 +2,8 @@
 import "../../index.css";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Sun, Moon, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Sun, Moon, Eye, EyeOff, ArrowLeft, Check, X, AlertCircle } from "lucide-react";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -17,9 +17,20 @@ export default function Register() {
     confirmPassword: ""
   });
 
+  // --- NUEVOS ESTADOS PARA VALIDACIÓN ---
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [passRequirements, setPassRequirements] = useState({
+    length: false,
+    upper: false,
+    lower: false,
+    number: false,
+    special: false
+  });
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,28 +43,64 @@ export default function Register() {
 
   const toggleTheme = () => setDarkMode(!darkMode);
 
+  // --- LÓGICA DE VALIDACIÓN EN TIEMPO REAL ---
+  const validateField = (name: string, value: string) => {
+    let error = "";
+    
+    if (name === "email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(value)) error = "Correo inválido (ejemplo@gmail.com)";
+    }
+
+    if (name === "password") {
+      setPassRequirements({
+        length: value.length >= 8,
+        upper: /[A-Z]/.test(value),
+        lower: /[a-z]/.test(value),
+        number: /[0-9]/.test(value),
+        special: /[!@#$%^&*(),.?":{}|<>]/.test(value)
+      });
+    }
+
+    if (name === "confirmPassword") {
+      if (value !== formData.password) error = "Las contraseñas no coinciden";
+    }
+
+    setFieldErrors(prev => ({ ...prev, [name]: error }));
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    
+    // Filtros de entrada (Solo letras o solo números)
     if (name === "first_name" || name === "last_name") {
       if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(value)) return;
     }
     if (name === "cedula" || name === "telefono") {
       if (!/^[0-9]*$/.test(value)) return;
     }
-    setFormData({ ...formData, [name]: value });
+
+    setFormData(prev => ({ ...prev, [name]: value }));
+    validateField(name, value);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.com$/;
-    if (!emailRegex.test(formData.email)) {
-      alert("El correo debe tener formato ejemplo@gmail.com");
+    
+    // Validar que todos los requisitos de contraseña se cumplan
+    const allPassRules = Object.values(passRequirements).every(Boolean);
+    if (!allPassRules) {
+      setFieldErrors(prev => ({ ...prev, password: "La contraseña no cumple los requisitos" }));
       return;
     }
+
     if (formData.password !== formData.confirmPassword) {
-      alert("Las contraseñas no coinciden");
+      setFieldErrors(prev => ({ ...prev, confirmPassword: "Las contraseñas deben ser iguales" }));
       return;
     }
+
+    setIsLoading(true);
+
     try {
       const { confirmPassword, ...dataToSend } = formData;
       const response = await fetch("http://localhost:8000/api/usuarios/registro/", {
@@ -61,89 +108,65 @@ export default function Register() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dataToSend)
       });
+
       const data = await response.json();
       if (!response.ok) {
         alert(data.message || "Error al registrar usuario");
         return;
       }
-      alert("Usuario registrado correctamente");
+      alert("¡Usuario registrado con éxito!");
       navigate("/login");
     } catch (error) {
-      console.error("Error:", error);
-      alert("Error al conectar con el servidor");
+      alert("Error de conexión con el servidor");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const inputClass = "w-full p-3.5 sm:p-4 rounded-2xl bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/5 text-slate-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm placeholder:text-slate-400 dark:placeholder:text-slate-500 font-medium";
+  const inputClass = (name: string) => `w-full p-3.5 sm:p-4 rounded-2xl bg-slate-100 dark:bg-white/10 border ${fieldErrors[name] ? 'border-red-500 ring-1 ring-red-500/20' : 'border-slate-200 dark:border-white/5'} text-slate-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm placeholder:text-slate-400 dark:placeholder:text-slate-500 font-medium`;
 
   return (
-    <div className="min-h-screen flex flex-col px-4 sm:px-6 md:px-10 transition-colors duration-500 bg-slate-50 dark:bg-[#0a0a0f] text-slate-900 dark:text-slate-100 font-sans antialiased overflow-x-hidden">
-
+    <div className="min-h-screen flex flex-col px-4 sm:px-6 md:px-10 transition-colors duration-500 bg-slate-50 dark:bg-[#0a0a0f] text-slate-900 dark:text-slate-100 font-sans antialiased">
+      
       {/* Header */}
       <header className="flex justify-between items-center py-4 sm:py-6 max-w-7xl mx-auto w-full">
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary text-white rounded-xl flex items-center justify-center font-black shadow-lg shadow-primary/30 text-lg shrink-0">
-            B
-          </div>
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary text-white rounded-xl flex items-center justify-center font-black shadow-lg shadow-primary/30 text-lg">B</div>
           <h1 className="text-sm sm:text-lg font-black tracking-tighter uppercase leading-none">
             Barber<span className="text-primary">Tech</span>
           </h1>
         </div>
-        
         <div className="flex items-center gap-2 sm:gap-4">
-          <button
-            onClick={toggleTheme}
-            className="p-2 sm:p-2.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-yellow-400 cursor-pointer shadow-sm transition-transform active:scale-95"
-            aria-label="Cambiar tema"
-          >
+          <button onClick={toggleTheme} className="p-2 sm:p-2.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-yellow-400 cursor-pointer transition-transform active:scale-95">
             {darkMode ? <Sun size={18} fill="currentColor" /> : <Moon size={18} fill="currentColor" />}
           </button>
-          <Link
-            to="/login"
-            className="flex items-center gap-1.5 bg-primary hover:bg-[#7112b3] px-4 py-2 sm:px-6 sm:py-2.5 rounded-full text-white font-bold text-[10px] sm:text-xs shadow-md shadow-primary/30 transition-all hover:-translate-y-0.5"
-          >
-            <ArrowLeft size={14} /> <span className="hidden xs:inline">Volver</span>
+          <Link to="/login" className="flex items-center gap-1.5 bg-primary hover:bg-[#7112b3] px-4 py-2 sm:px-6 sm:py-2.5 rounded-full text-white font-bold text-[10px] sm:text-xs shadow-md shadow-primary/30 transition-all">
+            <ArrowLeft size={14} /> <span>Volver</span>
           </Link>
         </div>
       </header>
 
-      {/* Contenido Principal */}
       <main className="flex-grow flex justify-center items-center py-6 sm:py-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-2xl"
-        >
-          <form
-            onSubmit={handleSubmit}
-            className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 p-6 sm:p-10 md:p-12 rounded-[32px] sm:rounded-[40px] shadow-2xl shadow-black/5 text-center backdrop-blur-sm"
-          >
-            <div className="mb-8">
-              <span className="text-primary text-[10px] font-black tracking-[3px] uppercase block mb-2">
-                Únete a la experiencia
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-black mb-2 tracking-tight">
-                Crea tu <span className="text-primary">Cuenta</span>
-              </h2>
-              <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xs mx-auto">
-                Completa tus datos para empezar tu transformación.
-              </p>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-2xl">
+          <form onSubmit={handleSubmit} className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 p-6 sm:p-10 rounded-[40px] shadow-2xl backdrop-blur-sm">
+            
+            <div className="mb-8 text-center">
+              <span className="text-primary text-[10px] font-black tracking-[3px] uppercase block mb-2">Únete a la experiencia</span>
+              <h2 className="text-3xl sm:text-4xl font-black mb-2 tracking-tight text-slate-900 dark:text-white">Crea tu <span className="text-primary">Cuenta</span></h2>
+              <p className="text-slate-500 dark:text-slate-400 text-sm">Completa tus datos para empezar.</p>
             </div>
 
-            {/* Grid de Inputs Adaptable */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 mb-6 text-left">
               {[
-                { label: "Usuario", name: "username", type: "text", placeholder: "Ej: Pepito01" },
+                { label: "Usuario", name: "username", type: "text", placeholder: "Pepito01" },
                 { label: "Correo", name: "email", type: "email", placeholder: "ejemplo@gmail.com" },
                 { label: "Nombres", name: "first_name", type: "text", placeholder: "Tus nombres" },
                 { label: "Apellidos", name: "last_name", type: "text", placeholder: "Tus apellidos" },
                 { label: "Cédula", name: "cedula", type: "text", placeholder: "12345678", max: 10 },
                 { label: "Teléfono", name: "telefono", type: "text", placeholder: "300...", max: 10 },
               ].map((field) => (
-                <div key={field.name} className="text-left">
-                  <label className="text-xs font-bold mb-1.5 block ml-1 text-slate-600 dark:text-slate-400 opacity-80">
-                    {field.label}
-                  </label>
+                <div key={field.name}>
+                  <label className="text-[10px] font-black mb-1.5 block ml-1 uppercase opacity-60">{field.label}</label>
                   <input
                     type={field.type}
                     name={field.name}
@@ -151,64 +174,70 @@ export default function Register() {
                     onChange={handleChange}
                     maxLength={field.max}
                     placeholder={field.placeholder}
-                    className={inputClass}
+                    className={inputClass(field.name)}
                     required
                   />
+                  {fieldErrors[field.name] && <p className="text-[10px] text-red-500 font-bold mt-1 ml-2 italic">{fieldErrors[field.name]}</p>}
                 </div>
               ))}
 
-              {/* Password Fields */}
-              <div className="text-left relative">
-                <label className="text-xs font-bold mb-1.5 block ml-1 text-slate-600 dark:text-slate-400 opacity-80">Contraseña</label>
+              {/* Password Field con Indicadores */}
+              <div className="md:col-span-1">
+                <label className="text-[10px] font-black mb-1.5 block ml-1 uppercase opacity-60">Contraseña</label>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    placeholder="********"
-                    className={`${inputClass} pr-12`}
+                    className={`${inputClass("password")} pr-12`}
                     required
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors cursor-pointer"
-                  >
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors">
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
+
+                {/* --- INDICADORES DE REQUISITOS --- */}
+                <div className="mt-4 p-4 bg-slate-100 dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/5">
+                    <p className="text-[9px] font-black uppercase tracking-wider mb-2 opacity-50">Seguridad requerida:</p>
+                    <div className="grid grid-cols-1 gap-1.5">
+                        <RequirementItem met={passRequirements.length} text="Mínimo 8 caracteres" />
+                        <RequirementItem met={passRequirements.upper} text="Una Mayúscula (A-Z)" />
+                        <RequirementItem met={passRequirements.lower} text="Una Minúscula (a-z)" />
+                        <RequirementItem met={passRequirements.number} text="Un Número (0-9)" />
+                        <RequirementItem met={passRequirements.special} text="Un Carácter Especial (!@#$)" />
+                    </div>
+                </div>
               </div>
 
-              <div className="text-left relative">
-                <label className="text-xs font-bold mb-1.5 block ml-1 text-slate-600 dark:text-slate-400 opacity-80">Confirmar Contraseña</label>
+              {/* Confirm Password Field */}
+              <div className="md:col-span-1">
+                <label className="text-[10px] font-black mb-1.5 block ml-1 uppercase opacity-60">Confirmar Contraseña</label>
                 <div className="relative">
                   <input
                     type={showConfirmPassword ? "text" : "password"}
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    placeholder="********"
-                    className={`${inputClass} pr-12`}
+                    className={inputClass("confirmPassword")}
                     required
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors cursor-pointer"
-                  >
+                  <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors">
                     {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
+                {fieldErrors.confirmPassword && <p className="text-[10px] text-red-500 font-bold mt-1 ml-2 italic">{fieldErrors.confirmPassword}</p>}
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-5">
+            <div className="flex flex-col items-center gap-5 mt-8">
               <button
                 type="submit"
-                className="w-full max-w-xs bg-primary hover:bg-[#7112b3] text-white font-black py-4 rounded-2xl shadow-xl shadow-primary/30 transition-all active:scale-95 cursor-pointer uppercase tracking-widest text-sm"
+                disabled={isLoading}
+                className="w-full max-w-xs bg-primary hover:bg-[#7112b3] text-white font-black py-4 rounded-2xl shadow-xl shadow-primary/30 transition-all active:scale-95 disabled:opacity-50 uppercase tracking-widest text-sm"
               >
-                Registrarse ahora
+                {isLoading ? "Creando cuenta..." : "Registrarse ahora"}
               </button>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                 ¿Ya tienes cuenta? <Link to="/login" className="text-primary font-bold hover:underline">Inicia Sesión</Link>
@@ -217,10 +246,16 @@ export default function Register() {
           </form>
         </motion.div>
       </main>
+    </div>
+  );
+}
 
-      <footer className="py-6 text-center text-[10px] opacity-40 uppercase tracking-[2px] font-bold">
-        © 2026 BarberTech. Estilo con precisión.
-      </footer>
+// Sub-componente para los requisitos de contraseña
+function RequirementItem({ met, text }: { met: boolean; text: string }) {
+  return (
+    <div className={`flex items-center gap-2 text-[10px] font-bold transition-colors ${met ? 'text-green-500' : 'text-slate-400 dark:text-slate-500'}`}>
+      {met ? <Check size={12} strokeWidth={4} /> : <X size={12} strokeWidth={4} />}
+      <span>{text}</span>
     </div>
   );
 }

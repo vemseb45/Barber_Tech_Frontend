@@ -24,7 +24,7 @@ function App() {
       <Route path="/dashboardAdmin" element={<DashboardAdmin />} />
       <Route path="/dashboardCliente" element={<DashboardCliente />} />
 
-      {/* 🔐 RECUPERACIÓN */}
+      {/*  RECUPERACIÓN */}
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
     </Routes>

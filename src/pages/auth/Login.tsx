@@ -1,8 +1,8 @@
 import "../../index.css";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Sun, Moon, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Sun, Moon, Eye, EyeOff, ArrowLeft, AlertCircle, X } from "lucide-react";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -10,6 +10,8 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
+  const [error, setError] = useState(""); 
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,6 +36,9 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    setIsLoading(true); 
+
     try {
       const response = await fetch("http://localhost:8000/api/usuarios/login/", {
         method: "POST",
@@ -42,8 +47,12 @@ export default function Login() {
       });
 
       const data = await response.json();
+
       if (!response.ok) {
-        alert(data.message || "Error al iniciar sesión");
+
+        // Se cpturan errores enviados por el servidor (ej: credenciales o DB)
+        setError(data.message || "Error al iniciar sesión");
+        setIsLoading(false);
         return;
       }
 
@@ -69,7 +78,11 @@ export default function Login() {
 
     } catch (error) {
       console.error("Error:", error);
-      alert("Error al conectar con el servidor");
+
+      // Se Captura cuando el servidor está caído o no hay internet
+      setError("No se pudo conectar con el servidor. Verifica tu conexión o el estado de la base de datos.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -80,7 +93,6 @@ export default function Login() {
   return (
     <div className="min-h-screen flex flex-col px-4 sm:px-6 md:px-10 transition-colors duration-500 bg-slate-50 dark:bg-[#0a0a0f] text-slate-900 dark:text-slate-100 font-sans antialiased overflow-x-hidden">
 
-      {/* Header Optimizado */}
       <header className="flex justify-between items-center py-4 sm:py-6 max-w-7xl mx-auto w-full">
         <div className="flex items-center gap-2 shrink-0">
           <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary text-white rounded-xl flex items-center justify-center font-black shadow-lg shadow-primary/30 text-lg shrink-0">
@@ -107,7 +119,6 @@ export default function Login() {
         </div>
       </header>
 
-      {/* Main Content con Glassmorphism */}
       <main className="flex-grow flex justify-center items-center py-8">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -129,6 +140,35 @@ export default function Login() {
             <p className="text-slate-500 dark:text-slate-400 text-sm mb-8">
               Gestiona tus citas de forma rápida.
             </p>
+
+            {/* --- COMPONENTE DE ERROR PERSONALIZADO --- */}
+            <AnimatePresence>
+              {error && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-start gap-3 text-left relative"
+                >
+                  <div className="bg-red-500/20 p-1.5 rounded-lg shrink-0">
+                    <AlertCircle size={16} className="text-red-500" />
+                  </div>
+                  <div className="flex-1 pr-6">
+                    <p className="text-[10px] font-black text-red-500 uppercase tracking-widest mb-0.5">No pudo ingresar</p>
+                    <p className="text-slate-600 dark:text-slate-300 text-[11px] font-medium leading-tight">
+                      {error}
+                    </p>
+                  </div>
+                  <button 
+                    type="button"
+                    onClick={() => setError("")}
+                    className="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition-colors"
+                  >
+                    <X size={14} />
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <div className="space-y-5 text-left">
               <div>
@@ -164,7 +204,6 @@ export default function Login() {
                 </div>
               </div>
 
-              {/* Remember Me & Forgot Password */}
               <div className="flex items-center justify-between mt-2 px-1">
                 <label className="flex items-center gap-2 cursor-pointer group">
                   <div className="relative flex items-center justify-center">
@@ -204,9 +243,10 @@ export default function Login() {
             <div className="mt-10">
               <button
                 type="submit"
-                className="w-full bg-primary hover:bg-[#7112b3] text-white font-black py-4 rounded-2xl shadow-xl shadow-primary/30 transition-all active:scale-95 cursor-pointer uppercase tracking-widest text-sm"
+                disabled={isLoading}
+                className="w-full bg-primary hover:bg-[#7112b3] text-white font-black py-4 rounded-2xl shadow-xl shadow-primary/30 transition-all active:scale-95 cursor-pointer uppercase tracking-widest text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Ingresar
+                {isLoading ? "Conectando..." : "Ingresar"}
               </button>
 
               <p className="mt-6 text-xs text-slate-500 dark:text-slate-400 font-medium">
