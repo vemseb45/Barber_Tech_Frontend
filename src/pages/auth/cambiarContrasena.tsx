@@ -1,143 +1,154 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+// 1. CAMBIO AQUÍ: Importamos useParams en lugar de useSearchParams
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, AlertCircle, Mail, Hammer } from "lucide-react";
+import { ArrowLeft, AlertCircle, CheckCircle2, Lock, KeyRound } from "lucide-react";
+import api from "../../api/axios"; 
 
-export default function ForgotPassword() {
-  // --- ESTADOS DE CONTROL ---
-  const [email, setEmail] = useState<string>("");
+export default function ResetPassword() {
+  // 2. CAMBIO AQUÍ: Extraemos el token directamente de los parámetros de la URL
+  const { token } = useParams<{ token: string }>();
+  const navigate = useNavigate();
+
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [successMsg, setSuccessMsg] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // --- LÓGICA DE VALIDACIÓN ---
-  
-  const validateEmail = (value: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    if (error) setError("");
+  };
+
+  const handleConfirmChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setConfirmPassword(e.target.value);
+    if (error) setError("");
+  };
+
+  const handleReset = async (e: React.FormEvent) => {
+    e.preventDefault();
     
-    if (!value) {
-      setError("El correo es obligatorio");
-    } else if (!emailRegex.test(value)) {
-      setError("Formato de correo inválido");
-    } else {
-      setError("");
+    if (!token) {
+      setError("No se encontró un token válido en la URL.");
+      return;
     }
-  };
-
-  // Añadimos el tipo al evento de cambio
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setEmail(value);
-    validateEmail(value);
-  };
-
-  // --- MANEJADOR SIMULADO ---
-  const handleSubmit = async (e: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (error || !email) return;
+    if (password.length < 8) {
+      setError("La contraseña debe tener al menos 8 caracteres.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
 
     setIsLoading(true);
+    setError("");
+    setSuccessMsg("");
     
-    setTimeout(() => {
+    try {
+      await api.post("/recuperacion/restablecer/", {
+        token: token,
+        password: password,
+      });
+
+      setSuccessMsg("¡Contraseña actualizada con éxito! Redirigiendo...");
+      setTimeout(() => { navigate('/login'); }, 2500);
+
+    } catch (err: any) {
+      const backendMessage = err.response?.data?.error || "El enlace es inválido o ha expirado.";
+      setError(backendMessage);
+    } finally {
       setIsLoading(false);
-      setError("Esta función estará disponible próximamente (Mantenimiento del servidor)");
-    }, 1500);
+    }
   };
 
   return (
     <div className="min-h-screen flex flex-col px-4 bg-slate-50 dark:bg-[#0a0a0f] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-500">
       
-      {/* --- CABECERA --- */}
       <header className="flex justify-between items-center py-6 max-w-7xl mx-auto w-full">
         <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-[#9333ea] text-white rounded-xl flex items-center justify-center font-black shadow-lg shadow-[#9333ea]/30 text-lg">
-            B
-          </div>
-          <h1 className="text-lg font-black tracking-tighter uppercase">
-            Barber<span className="text-[#9333ea]">Tech</span>
-          </h1>
+          <div className="w-10 h-10 bg-[#9333ea] text-white rounded-xl flex items-center justify-center font-black shadow-lg shadow-[#9333ea]/30 text-lg">B</div>
+          <h1 className="text-lg font-black tracking-tighter uppercase">Barber<span className="text-[#9333ea]">Tech</span></h1>
         </div>
-
-        <Link
-          to="/login"
-          className="flex items-center gap-2 bg-[#9333ea] hover:bg-[#7112b3] px-5 py-2 rounded-full text-white font-bold text-xs shadow-md transition-all active:scale-95"
-        >
+        <Link to="/login" className="flex items-center gap-2 bg-[#9333ea] hover:bg-[#7112b3] px-5 py-2 rounded-full text-white font-bold text-xs shadow-md transition-all active:scale-95">
           <ArrowLeft size={14} /> <span>Volver</span>
         </Link>
       </header>
 
-      {/* --- FORMULARIO --- */}
       <main className="flex-grow flex justify-center items-center py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-md"
-        >
-          <form
-            onSubmit={handleSubmit}
-            className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 p-10 rounded-[40px] shadow-2xl text-center backdrop-blur-md"
-          >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
+          <form onSubmit={handleReset} className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 p-10 rounded-[40px] shadow-2xl text-center backdrop-blur-md">
+            
             <div className="flex justify-center mb-4 text-[#9333ea] opacity-50">
-               <Hammer size={32} />
+               <Lock size={32} />
             </div>
 
             <h2 className="text-4xl font-black mb-3 tracking-tight text-slate-900 dark:text-white">
-              Recuperar <span className="text-[#9333ea]">Acceso</span>
+              Nueva <span className="text-[#9333ea]">Clave</span>
             </h2>
 
             <p className="text-slate-500 dark:text-slate-400 text-sm mb-8 font-medium px-4">
-              Ingresa tu correo para recibir las instrucciones (Módulo en Desarrollo).
+              Crea una contraseña segura para recuperar tu acceso.
             </p>
 
-            <div className="space-y-6 text-left">
+            <div className="space-y-4 text-left">
               <div>
-                <label className="text-[10px] font-black mb-2 block ml-1 uppercase opacity-60">
-                  Correo Electrónico
-                </label>
+                <label className="text-[10px] font-black mb-2 block ml-1 uppercase opacity-60">Nueva Contraseña</label>
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                    <Mail size={18} />
+                    <KeyRound size={18} />
                   </div>
                   <input
-                    type="email"
-                    placeholder="tu@correo.com"
+                    type="password"
+                    placeholder="Mínimo 8 caracteres"
                     className={`w-full p-4 pl-12 rounded-2xl bg-slate-100 dark:bg-white/5 border transition-all outline-none text-sm font-medium ${
-                      error 
-                        ? "border-red-500 ring-4 ring-red-500/10" 
-                        : "border-transparent focus:border-[#9333ea] focus:ring-4 focus:ring-[#9333ea]/10"
+                      error && error.includes("caracteres") ? "border-red-500 ring-4 ring-red-500/10" : "border-transparent focus:border-[#9333ea] focus:ring-4 focus:ring-[#9333ea]/10"
                     }`}
-                    value={email}
-                    onChange={handleEmailChange}
+                    value={password}
+                    onChange={handlePasswordChange}
                     required
                   />
                 </div>
-                
-                <AnimatePresence>
-                  {error && (
-                    <motion.div 
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="flex items-center gap-1.5 text-[10px] text-red-500 font-bold mt-2 ml-2 italic"
-                    >
-                      <AlertCircle size={12} />
-                      <span>{error}</span>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </div>
+
+              <div>
+                <label className="text-[10px] font-black mb-2 block ml-1 uppercase opacity-60">Confirmar Contraseña</label>
+                <div className="relative">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                    <Lock size={18} />
+                  </div>
+                  <input
+                    type="password"
+                    placeholder="Repite tu contraseña"
+                    className={`w-full p-4 pl-12 rounded-2xl bg-slate-100 dark:bg-white/5 border transition-all outline-none text-sm font-medium ${
+                      error && error.includes("coinciden") ? "border-red-500 ring-4 ring-red-500/10" : successMsg ? "border-green-500 ring-4 ring-green-500/10" : "border-transparent focus:border-[#9333ea] focus:ring-4 focus:ring-[#9333ea]/10"
+                    }`}
+                    value={confirmPassword}
+                    onChange={handleConfirmChange}
+                    required
+                  />
+                </div>
+              </div>
+                
+              <AnimatePresence mode="wait">
+                {error && (
+                  <motion.div key="error" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="flex items-center gap-1.5 text-[11px] text-red-500 font-bold mt-2 ml-2 italic overflow-hidden">
+                    <AlertCircle size={12} /><span>{error}</span>
+                  </motion.div>
+                )}
+                {successMsg && (
+                  <motion.div key="success" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="flex items-center gap-1.5 text-[12px] text-green-500 font-bold mt-3 ml-2 overflow-hidden">
+                    <CheckCircle2 size={16} /><span>{successMsg}</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
-            <div className="mt-10">
-              <button
-                type="submit"
-                disabled={isLoading || !!error || !email}
-                className="w-full bg-[#9333ea] hover:bg-[#7112b3] disabled:opacity-40 text-white font-black py-4 rounded-2xl shadow-xl shadow-[#9333ea]/40 transition-all active:scale-95 uppercase tracking-widest text-sm"
-              >
-                {isLoading ? "Validando..." : "Enviar Instrucciones"}
+            <div className="mt-8">
+              <button type="submit" disabled={isLoading || !password || !confirmPassword || !!successMsg || !token} className="w-full bg-[#9333ea] hover:bg-[#7112b3] disabled:opacity-40 text-white font-black py-4 rounded-2xl shadow-xl shadow-[#9333ea]/40 transition-all active:scale-95 uppercase tracking-widest text-sm">
+                {isLoading ? "Guardando..." : "Cambiar Contraseña"}
               </button>
-
-              <p className="mt-6 text-xs text-slate-500 dark:text-slate-400 font-medium">
-                ¿Ya tienes una clave? <Link to="/login" className="text-[#9333ea] font-black hover:underline underline-offset-4">Inicia sesión</Link>
-              </p>
             </div>
           </form>
         </motion.div>
