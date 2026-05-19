@@ -8,10 +8,10 @@ import DashboardBarbero from "./pages/barbero/DashboardBarbero";
 import DashboardAdmin from "./pages/administrador/DashboardAdmin";
 import DashboardCliente from "./pages/cliente/DashboardCliente";
 
-// --- AQUÍ ESTÁ LA CORRECCIÓN ---
+// Importaciones unificadas
 import ForgotPassword from "./pages/auth/olvidarContrasena";
-import ResetPassword from "./pages/auth/cambiarContrasena"; 
-// -------------------------------
+import ResetPassword from "./pages/auth/cambiarContrasena";
+import NotFound from "./pages/Errores/Error_Notfund";
 
 function App() {
   useEffect(() => {
@@ -37,6 +37,9 @@ function App() {
       {/* RECUPERACIÓN */}
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+      {/* RUTA COMODÍN (Cualquier ruta que no coincida con las de arriba caerá aquí) */}
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
