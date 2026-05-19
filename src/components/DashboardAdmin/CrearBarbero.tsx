@@ -138,7 +138,7 @@ const CrearBarbero: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
 
-      <div className="w-full max-w-2xl bg-white dark:bg-[#1e293b] rounded-[32px] p-8 shadow-2xl border border-slate-200 dark:border-slate-700">
+      <div className="w-full max-w-2xl bg-white dark:bg-[#1e293b] rounded-[32px] p-6 md:p-8 shadow-2xl border border-slate-200 dark:border-slate-700 max-h-[90vh] overflow-y-auto custom-scrollbar">
 
         {/* HEADER */}
         <div className="flex justify-between items-center mb-6">

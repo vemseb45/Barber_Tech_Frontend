@@ -299,8 +299,8 @@ export default function ViewServicios() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={closeModal}></div>
           
-          <div className="relative bg-white dark:bg-[#1e293b] rounded-[32px] shadow-2xl w-full max-w-xl overflow-hidden border border-slate-200 dark:border-slate-700 animate-in zoom-in-95 duration-200">
-            <div className="p-8 border-b border-slate-100 dark:border-slate-700/50 flex justify-between items-center">
+          <div className="relative bg-white dark:bg-[#1e293b] rounded-[32px] shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden border border-slate-200 dark:border-slate-700 animate-in zoom-in-95 duration-200">
+            <div className="p-6 md:p-8 border-b border-slate-100 dark:border-slate-700/50 flex justify-between items-center shrink-0">
               <div>
                 <h3 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
                   <Sparkles className="text-primary" size={24} />
@@ -318,8 +318,9 @@ export default function ViewServicios() {
               </button>
             </div>
 
-            <form onSubmit={handleSave} className="p-8 space-y-6">
-              <div className="space-y-4">
+            <form onSubmit={handleSave} className="flex flex-col flex-1 overflow-hidden">
+              <div className="p-6 md:p-8 space-y-6 overflow-y-auto">
+                <div className="space-y-4">
                 
                 <div>
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Nombre</label>
@@ -435,8 +436,9 @@ export default function ViewServicios() {
                   </select>
                 </div>
               </div>
+              </div>
 
-              <div className="flex gap-3 pt-4">
+              <div className="p-6 md:p-8 border-t border-slate-100 dark:border-slate-700/50 flex gap-3 shrink-0 bg-white dark:bg-[#1e293b]">
                 <button 
                   type="button" 
                   onClick={closeModal} 

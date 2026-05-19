@@ -199,7 +199,7 @@ const ModalAsignarHorario: React.FC<ModalProps> = ({ isOpen, onClose, barberoId,
         {/* MODAL INTERNO (FORMULARIO) */}
         {dia && (
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[1001] p-4">
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-8 rounded-[28px] w-full max-w-md shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-6 md:p-8 rounded-[28px] w-full max-w-md shadow-2xl animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto custom-scrollbar">
               <div className="text-center mb-6">
                 <div className="inline-flex p-3 bg-primary/10 rounded-full text-primary mb-3">
                   <Clock size={28} />

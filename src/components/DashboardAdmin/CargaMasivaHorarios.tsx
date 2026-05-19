@@ -158,10 +158,10 @@ const CargaMasivaHorarios: React.FC<Props> = ({ isOpen, onClose }) => {
     return (
         <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
 
-            <div className="bg-white dark:bg-[#1e293b] w-full max-w-2xl rounded-[32px] shadow-2xl border border-slate-200 dark:border-slate-700/50 overflow-hidden">
+            <div className="bg-white dark:bg-[#1e293b] w-full max-w-2xl rounded-[32px] shadow-2xl border border-slate-200 dark:border-slate-700/50 flex flex-col max-h-[90vh] overflow-hidden">
 
                 {/* HEADER */}
-                <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/30">
+                <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/30 shrink-0">
                     <div>
                         <h3 className="text-xl font-bold text-slate-800 dark:text-white">
                             Carga Masiva de Horarios
@@ -180,7 +180,7 @@ const CargaMasivaHorarios: React.FC<Props> = ({ isOpen, onClose }) => {
                 </div>
 
                 {/* CONTENIDO */}
-                <div className="p-6 space-y-6">
+                <div className="p-6 space-y-6 overflow-y-auto custom-scrollbar">
 
                     {/* BOTONES */}
                     <div className="flex flex-wrap gap-3">
